@@ -76,6 +76,16 @@
   :type 'boolean
   :group 'moom)
 
+(defcustom moom-frame-width-single 80
+  "The width of the current frame as the default value"
+  :type 'integer
+  :group 'moom)
+
+(defcustom moom-frame-width-double 163
+  "The width of the current frame (double size)"
+  :type 'integer
+  :group 'moom)
+
 (defun moom--make-frame-height-ring ()
   ""
   (let ((max-height (moom-max-frame-height)))
@@ -353,7 +363,19 @@
   (interactive "p")
   (move-frame-left N FRAME))
 
+;;;###autoload
+(defun moom-change-frame-width-single ()
+  "Change the frame width to double"
+  (interactive)
+  (setq moom--target-frame-width moom-frame-width-single)
+  (set-frame-width (selected-frame) moom-frame-width-single))
 
+;;;###autoload
+(defun moom-change-frame-width-double ()
+  "Change the frame width to double"
+  (interactive)
+  (setq moom--target-frame-width moom-frame-width-double)
+  (set-frame-width (selected-frame) moom-frame-width-double))
 
 
 ;; init
