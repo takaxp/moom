@@ -3,10 +3,12 @@
 ;; Copyright (C) 2017 Takaaki ISHIKAWA
 ;;
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
-;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
-;; Twitter: @takaxp
-;; Repository: nil
 ;; Keywords: frame-cmds, frame, size, position
+;; Version: 0.9.0
+;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
+;; URL: https://github.com/takaxp/Moom
+;; Package-Requires: ((frame-cmds))
+;; Twitter: @takaxp
 ;;
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -23,8 +25,23 @@
 ;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 ;; Boston, MA 02110-1301, USA.
 
+;;; Commentary:
+
+;; This package provides a set of tools to control frame size, position, and font size.
+
+;;; Change Log:
+
+;;; Code:
+
 (require 'frame-cmds)
 (eval-when-compile (require 'cl-lib))
+
+(defconst moom "0.9.0"
+  "The version number for moom.el. Currently, prerelease")
+
+(defgroup moom nil
+  "A tool to control frame size, position, and font size."
+  :group 'convenience)
 
 (defcustom moom-move-frame-pixel-menubar-offset 22
   "Offset of the menubar. The default height is 22 for MacOSX"
@@ -378,7 +395,9 @@
   (set-frame-width (selected-frame) moom-frame-width-double))
 
 
-;; init
+;; init call
 (moom--make-frame-height-ring)
 
 (provide 'moom)
+
+;;; moom.el ends here
