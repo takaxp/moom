@@ -1,2 +1,8 @@
+#+TITLE: Moom
+
 * Moom
-A Moom port for Emacs
+A Moom port to GNU Emacs
+
+* References
+  - [[https://manytricks.com/moom/][Moom · Many Tricks]]
+
