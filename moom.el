@@ -335,12 +335,14 @@
 (defvar moom-after-fullscreen-hook nil "")
 
 ;;;###autoload
-(defun moom-fit-frame-to-fullscreen ()
+(defun moom-fit-frame-to-fullscreen (&optional center)
   "Change font size and expand height to fit full"
   (interactive)
   (setq moom--target-font-size moom-fullscreen-fontsize)
   (moom--set-font-size moom--target-font-size)
   (moom-reset-frame-height (moom-max-frame-height))
+  (when center
+    (moom-move-frame-to-center))
   (run-hooks 'moom-after-fullscreen-hook))
 
 (defvar moom--height-ring nil)
