@@ -107,14 +107,14 @@
   ""
   (let ((max-height (moom-max-frame-height)))
     (moom-make-height-ring
-     ;; 最大，最小，最大の50%，最大の75% を指定
+     ;; Specify Maximum, Minimum, 50%, and 75% values
      (cons max-height
            (sort (list
                   (max (moom-min-frame-height) (/ max-height 4))
                   (/ max-height 2)
                   (* 3 (/ max-height 4))) '<)))))
 
-(defvar moom--target-frame-width 80)
+(defvar moom--target-frame-width moom-frame-width-single)
 (defun moom--set-font-size (arg)
   (let* ((font-size arg)
          (frame-width moom--target-frame-width)
@@ -186,7 +186,8 @@
   (when moom-verbose
     (message "0: %s" moom--target-font-size))
   (moom--make-frame-height-ring)
-  (moom-open-height-ring))
+  (moom-open-height-ring)
+  (run-hooks 'moom-reset-font-size-hook))
 
 ;;;###autoload
 (defun moom-cycle-line-spacing ()
@@ -333,16 +334,15 @@
       (set-frame-height (selected-frame) height))))
 
 (defvar moom-after-fullscreen-hook nil "")
+(defvar moom-reset-font-size-hook nil "")
 
 ;;;###autoload
-(defun moom-fit-frame-to-fullscreen (&optional center)
-  "Change font size and expand height to fit full"
+(defun moom-fit-frame-to-fullscreen ()
+  "Change font size and expand height to fit full. Add an appropriate function to `moom-after-fullscreen-hook' if the frame move to specific position."
   (interactive)
   (setq moom--target-font-size moom-fullscreen-fontsize)
   (moom--set-font-size moom--target-font-size)
   (moom-reset-frame-height (moom-max-frame-height))
-  (when center
-    (moom-move-frame-to-center))
   (run-hooks 'moom-after-fullscreen-hook))
 
 (defvar moom--height-ring nil)
