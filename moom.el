@@ -7,7 +7,7 @@
 ;; Version: 0.9.0
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
-;; Package-Requires: ((frame-cmds))
+;; Package-Requires: ((frame-cmds "0"))
 ;; Twitter: @takaxp
 
 ;; This program is free software: you can redistribute it and/or modify
