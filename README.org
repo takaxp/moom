@@ -3,6 +3,19 @@
 * Moom
 A Moom port to GNU Emacs
 
+* Commands to move the frame
+
+- moom-move-frame-right
+- moom-move-frame-left
+- moom-move-frame-to-horizontal-center
+- moom-move-frame-to-vertical-center
+- moom-move-frame-to-edge-top
+- moom-move-frame-to-edge-bottom
+- moom-move-frame-to-center
+- moom-fit-frame-to-fullscreen
+- moom-change-frame-width-single
+- moom-change-frame-width-double 
+
 * References
   - [[https://manytricks.com/moom/][Moom · Many Tricks]]
 
