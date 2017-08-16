@@ -36,9 +36,6 @@
 (require 'frame-cmds)
 (eval-when-compile (require 'cl-lib))
 
-(defconst moom "0.9.0"
-  "The version number for moom.el. Currently, prerelease")
-
 (defgroup moom nil
   "A tool to control frame size, position, and font size."
   :group 'convenience)
@@ -101,6 +98,13 @@
 (defcustom moom-frame-width-double 163
   "The width of the current frame (double size)"
   :type 'integer
+  :group 'moom)
+
+(defcustom moom-horizontal-shifts '(40 40)
+  "Distance to move the frame horizontally"
+  :type '(choice (integer :tag "common value for left and right")
+                 (list (integer :tag "value for left")
+                       (integer :tag "value for right")))
   :group 'moom)
 
 (defun moom--make-frame-height-ring ()
@@ -373,14 +377,30 @@
 ;;;###autoload
 (defun moom-move-frame-right (&optional N FRAME)
   ""
-  (interactive "p")
-  (move-frame-right N FRAME))
+  (interactive)
+  (move-frame-right
+   (if N N
+     (cond ((integerp moom-horizontal-shifts)
+            moom-horizontal-shifts)
+           ((listp moom-horizontal-shifts)
+            (nth 1 moom-horizontal-shifts))
+           (t
+            (error (format "%s is wrong value." moom-horizontal-shifts)))))
+   FRAME))
 
 ;;;###autoload
 (defun moom-move-frame-left (&optional N FRAME)
   ""
-  (interactive "p")
-  (move-frame-left N FRAME))
+  (interactive)
+  (move-frame-left
+   (if N N
+     (cond ((integerp moom-horizontal-shifts)
+            moom-horizontal-shifts)
+           ((listp moom-horizontal-shifts)
+            (nth 0 moom-horizontal-shifts))
+           (t
+            (error (format "%s is wrong value." moom-horizontal-shifts)))))
+   FRAME))
 
 ;;;###autoload
 (defun moom-change-frame-width-single ()
@@ -396,6 +416,11 @@
   (setq moom--target-frame-width moom-frame-width-double)
   (set-frame-width (selected-frame) moom-frame-width-double))
 
+;;;###autoload
+(defun moom-version ()
+  "The release version of Moom."
+  (let ((moom-release "0.9.0"))
+    moom-release))
 
 ;; init call
 (moom--make-frame-height-ring)
