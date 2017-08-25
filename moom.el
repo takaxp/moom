@@ -119,8 +119,8 @@
                   (* 3 (/ max-height 4))) '<)))))
 
 (defvar moom--target-frame-width moom-frame-width-single)
-(defun moom--set-font-size (arg)
-  (let* ((font-size arg)
+(defun moom--set-font-size (&optional arg)
+  (let* ((font-size (or arg moom--target-font-size))
          (frame-width moom--target-frame-width)
          (ja-font-scale 1.2)
          (ja-font "Migu 2M")
@@ -140,7 +140,6 @@
     (moom-reset-frame-height (frame-height))))
 
 (defvar moom--target-font-size moom-init-font-size)
-
 
 ;;;###autoload
 (defun moom-set-font-size-input (n)
@@ -379,13 +378,13 @@
   ""
   (interactive)
   (move-frame-right
-   (if N N
-     (cond ((integerp moom-horizontal-shifts)
-            moom-horizontal-shifts)
-           ((listp moom-horizontal-shifts)
-            (nth 1 moom-horizontal-shifts))
-           (t
-            (error (format "%s is wrong value." moom-horizontal-shifts)))))
+   (or N
+       (cond ((integerp moom-horizontal-shifts)
+              moom-horizontal-shifts)
+             ((listp moom-horizontal-shifts)
+              (nth 1 moom-horizontal-shifts))
+             (t
+              (error (format "%s is wrong value." moom-horizontal-shifts)))))
    FRAME))
 
 ;;;###autoload
@@ -393,13 +392,13 @@
   ""
   (interactive)
   (move-frame-left
-   (if N N
-     (cond ((integerp moom-horizontal-shifts)
-            moom-horizontal-shifts)
-           ((listp moom-horizontal-shifts)
-            (nth 0 moom-horizontal-shifts))
-           (t
-            (error (format "%s is wrong value." moom-horizontal-shifts)))))
+   (or N
+       (cond ((integerp moom-horizontal-shifts)
+              moom-horizontal-shifts)
+             ((listp moom-horizontal-shifts)
+              (nth 0 moom-horizontal-shifts))
+             (t
+              (error (format "%s is wrong value." moom-horizontal-shifts)))))
    FRAME))
 
 ;;;###autoload
@@ -419,6 +418,7 @@
 ;;;###autoload
 (defun moom-version ()
   "The release version of Moom."
+  (interactive)
   (let ((moom-release "0.9.0"))
     moom-release))
 
