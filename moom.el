@@ -116,7 +116,8 @@
            (sort (list
                   (max (moom-min-frame-height) (/ max-height 4))
                   (/ max-height 2)
-                  (* 3 (/ max-height 4))) '<)))))
+                  (* 3 (/ max-height 4)))
+                 '<)))))
 
 (defvar moom--target-frame-width moom-frame-width-single)
 (defun moom--set-font-size (&optional arg)
@@ -309,7 +310,8 @@
 (defun moom-max-frame-height ()
   "Return the maximum height based on screen size."
   (interactive)
-  (/ (- (display-pixel-height) 64) (frame-char-height)))
+  (/ (- (display-pixel-height) (* 2 moom-move-frame-pixel-menubar-offset))
+     (frame-char-height)))
 
 ;;;###autoload
 (defun moom-min-frame-height ()
@@ -420,7 +422,7 @@
   "The release version of Moom."
   (interactive)
   (let ((moom-release "0.9.0"))
-    moom-release))
+    (message "Moom: v%s" moom-release)))
 
 ;; init call
 (moom--make-frame-height-ring)
