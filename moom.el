@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 0.9.0
+;; Version: 0.9.1
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((frame-cmds "0"))
@@ -85,6 +85,11 @@
   :type 'integer
   :group 'moom)
 
+(defcustom moom-jp-font-scale 1.2
+  "The default value to scale JP fonts."
+  :type 'float
+  :group 'moom)
+
 (defcustom moom-verbose nil
   "Show responses from `moom`"
   :type 'boolean
@@ -123,7 +128,7 @@
 (defun moom--set-font-size (&optional arg)
   (let* ((font-size (or arg moom--target-font-size))
          (frame-width moom--target-frame-width)
-         (ja-font-scale 1.2)
+         (ja-font-scale moom-jp-font-scale)
          (ja-font "Migu 2M")
          (ascii-font "Monaco"))
 
@@ -151,6 +156,18 @@
     (message "0: %s" moom--target-font-size))
   (moom--make-frame-height-ring)
   (moom-reset-frame-height (moom-max-frame-height)))
+
+;;;###autoload
+(defun moom-fullscreen-font-size ()
+  "Return the maximum font-size for full screen"
+  (if window-system
+      (let ((ns-frame-margin 2))
+        (floor (/ (- (display-pixel-width)
+                     (+ (frame-parameter nil 'left-fringe)
+                        (frame-parameter nil 'right-fringe)
+                        (* 2 ns-frame-margin)))
+                  (* (/ 80 2) moom-jp-font-scale))))
+    moom-fullscreen-font-size))
 
 ;;;###autoload
 (defun moom-increase-font-size (&optional inc)
@@ -437,7 +454,7 @@
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "0.9.0"))
+  (let ((moom-release "0.9.1"))
     (message "Moom: v%s" moom-release)))
 
 ;; init call
