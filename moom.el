@@ -401,12 +401,14 @@
 (defun moom-print-status ()
   "Print font size, frame origin, and frame size in mini buffer."
   (interactive)
-  (message "Font: %spt | Origin: (%s,\t%s) | Frame: (%d, %d)"
+  (message "Font: %spt | Origin: (%d, %d) | Frame: (%d, %d) | Pix: (%d, %d)"
            moom--target-font-size
            (frame-parameter (selected-frame) 'left)
            (frame-parameter (selected-frame) 'top)
            (frame-width)
-           (frame-height)))
+           (frame-height)
+           (frame-pixel-width)
+           (frame-pixel-height)))
 
 ;;;###autoload
 (defun moom-move-frame-right (&optional N FRAME)
