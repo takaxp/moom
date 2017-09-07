@@ -60,7 +60,7 @@
   :type 'integer
   :group 'moom)
 
-(defcustom moom-fullscreen-fontsize 24
+(defcustom moom-fullscreen-font-size 24
   "Font size will be used for fullscreen"
   :type 'integer
   :group 'moom)
@@ -264,6 +264,22 @@
                          moom-move-frame-pixel-menubar-offset)))
 
 ;;;###autoload
+(defun moom-move-frame-to-edge-right ()
+  "Move the current frame to the right edge of the window display."
+  (interactive)
+  (set-frame-position (selected-frame)
+                      (- (display-pixel-width) (frame-pixel-width))
+                      (frame-parameter (selected-frame) 'top)))
+
+;;;###autoload
+(defun moom-move-frame-to-edge-left ()
+  "Move the current frame to the left edge of the window display."
+  (interactive)
+  (set-frame-position (selected-frame)
+                      0
+                      (frame-parameter (selected-frame) 'top)))
+
+;;;###autoload
 (defun moom-move-frame-to-center ()
   "Move the current frame to the center of the window display."
   (interactive)
@@ -345,7 +361,7 @@
 (defun moom-fit-frame-to-fullscreen ()
   "Change font size and expand height to fit full. Add an appropriate function to `moom-after-fullscreen-hook' if the frame move to specific position."
   (interactive)
-  (setq moom--target-font-size moom-fullscreen-fontsize)
+  (setq moom--target-font-size moom-fullscreen-font-size)
   (moom--set-font-size moom--target-font-size)
   (moom-reset-frame-height (moom-max-frame-height))
   (run-hooks 'moom-after-fullscreen-hook))
@@ -368,7 +384,7 @@
 (defun moom-print-status ()
   "Print font size, frame origin, and frame size in mini buffer."
   (interactive)
-  (message "Font: %spt | Origin: (%s, %s) | Frame: (%d, %d)"
+  (message "Font: %spt | Origin: (%s,\t%s) | Frame: (%d, %d)"
            moom--target-font-size
            (frame-parameter (selected-frame) 'left)
            (frame-parameter (selected-frame) 'top)
