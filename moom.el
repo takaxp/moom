@@ -343,7 +343,9 @@
 (defun moom-max-frame-height ()
   "Return the maximum height based on screen size."
   (interactive)
-  (/ (- (display-pixel-height) (* 2 moom-move-frame-pixel-menubar-offset))
+  (/ (- (display-pixel-height)
+        (+ (nthcdr 2 (assoc 'title-bar-size (frame-geometry)))
+           moom-move-frame-pixel-menubar-offset))
      (frame-char-height)))
 
 ;;;###autoload
