@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 0.9.1
+;; Version: 0.9.2
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((frame-cmds "0"))
@@ -90,6 +90,16 @@
   :type 'float
   :group 'moom)
 
+(defcustom moom-jp-font "Migu 2M"
+  "Font name for Japanese font."
+  :type 'string
+  :group 'moom)
+
+(defcustom moom-ascii-font "Monaco"
+  "Font name for ASCII font."
+  :type 'string
+  :group 'moom)
+
 (defcustom moom-verbose nil
   "Show responses from `moom`"
   :type 'boolean
@@ -129,8 +139,8 @@
   (let* ((font-size (or arg moom--target-font-size))
          (frame-width moom--target-frame-width)
          (ja-font-scale moom-jp-font-scale)
-         (ja-font "Migu 2M")
-         (ascii-font "Monaco"))
+         (ja-font moom-jp-font)
+         (ascii-font moom-ascii-font))
 
     (set-fontset-font nil 'ascii (font-spec :family ascii-font :size font-size))
     (let ((spec (font-spec :family ja-font :size font-size)))
@@ -458,7 +468,7 @@
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "0.9.1"))
+  (let ((moom-release "0.9.2"))
     (message "Moom: v%s" moom-release)))
 
 ;; init call
