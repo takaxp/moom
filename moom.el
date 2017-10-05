@@ -85,12 +85,12 @@
   :type 'integer
   :group 'moom)
 
-(defcustom moom-jp-font-scale 1.2
+(defcustom moom-ja-font-scale 1.2
   "The default value to scale JP fonts."
   :type 'float
   :group 'moom)
 
-(defcustom moom-jp-font "Migu 2M"
+(defcustom moom-ja-font "Migu 2M"
   "Font name for Japanese font."
   :type 'string
   :group 'moom)
@@ -138,8 +138,8 @@
 (defun moom--set-font-size (&optional arg)
   (let* ((font-size (or arg moom--target-font-size))
          (frame-width moom--target-frame-width)
-         (ja-font-scale moom-jp-font-scale)
-         (ja-font moom-jp-font)
+         (ja-font-scale moom-ja-font-scale)
+         (ja-font moom-ja-font)
          (ascii-font moom-ascii-font))
 
     (set-fontset-font nil 'ascii (font-spec :family ascii-font :size font-size))
@@ -176,7 +176,7 @@
                      (+ (frame-parameter nil 'left-fringe)
                         (frame-parameter nil 'right-fringe)
                         (* 2 ns-frame-margin)))
-                  (* (/ 80 2) moom-jp-font-scale))))
+                  (* (/ 80 2) moom-ja-font-scale))))
     moom-fullscreen-font-size))
 
 ;;;###autoload
