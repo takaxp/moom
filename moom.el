@@ -404,6 +404,8 @@
 (defun moom-open-height-ring ()
   ""
   (interactive)
+  (unless moom--height-ring
+    (moom--make-frame-height-ring))
   (moom-reset-frame-height (car moom--height-ring))
   (setq moom--height-ring
         (append (cdr moom--height-ring)
