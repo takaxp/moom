@@ -1,6 +1,6 @@
 ;;; moom.el --- Commands to control frame size and position
 
-;; Copyright (C) 2017 Takaaki ISHIKAWA
+;; Copyright (C) 2017-2018 Takaaki ISHIKAWA
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
@@ -465,6 +465,16 @@
   (interactive)
   (setq moom--target-frame-width moom-frame-width-double)
   (set-frame-width (selected-frame) moom-frame-width-double))
+
+;;;###autoload
+(defun moom-change-frame-width (&optional width)
+  "Change the frame width by the `width' argument.
+If `width' is not provided, `moom-frame-width-single' will be used."
+  (interactive)
+  (let ((width (or width
+                   moom-frame-width-single)))
+    (setq moom--target-frame-width width)
+    (set-frame-width (selected-frame) width)))
 
 ;;;###autoload
 (defun moom-version ()
