@@ -4,10 +4,11 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 0.9.2
+;; Package-Version: 20180125.421
+;; Version: 0.9.3
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
-;; Package-Requires: ((frame-cmds "0"))
+;; Package-Requires: ((emacs "25") (frame-cmds "0"))
 ;; Twitter: @takaxp
 
 ;; This program is free software: you can redistribute it and/or modify
@@ -41,188 +42,144 @@
   :group 'convenience)
 
 (defcustom moom-move-frame-pixel-menubar-offset 22
-  "Offset of the menubar. The default height is 22 for MacOSX"
+  "Offset of the menubar.
+The default height is 22 for macOS."
   :type 'integer
   :group 'moom)
 
 (defcustom moom-move-frame-pixel-offset '(0 . 0)
-  "Offset of the center position"
+  "Offset of the center position."
   :type 'sexp
   :group 'moom)
 
 (defcustom moom-auto-move-frame-to-center nil
-  "Toggle status of moving frame to center"
+  "Toggle status of moving frame to center."
   :type 'boolean
   :group 'moom)
 
 (defcustom moom-min-frame-height 16
-  "The minimum height"
+  "The minimum height."
   :type 'integer
   :group 'moom)
 
 (defcustom moom-fullscreen-font-size 24
-  "Font size will be used for fullscreen"
+  "Font size will be used for fullscreen."
   :type 'integer
   :group 'moom)
 
 (defcustom moom-init-line-spacing line-spacing
-  "The default value to set line-spacing"
+  "The default value to set ‘line-spacing’."
   :type 'float
   :group 'moom)
 
 (defcustom moom-min-line-spacing 0.1
-  "The minimum value for line spacing"
+  "The minimum value for line spacing."
   :type 'float
   :group 'moom)
 
 (defcustom moom-max-line-spacing 0.8
-  "The maximum value for line spacing"
+  "The maximum value for line spacing."
   :type 'float
-  :group 'moom)
-
-(defcustom moom-init-font-size 12
-  "The default value to set font size"
-  :type 'integer
-  :group 'moom)
-
-(defcustom moom-ja-font-scale 1.2
-  "The default value to scale JP fonts."
-  :type 'float
-  :group 'moom)
-
-(defcustom moom-ja-font "Migu 2M"
-  "Font name for Japanese font."
-  :type 'string
-  :group 'moom)
-
-(defcustom moom-ascii-font "Monaco"
-  "Font name for ASCII font."
-  :type 'string
-  :group 'moom)
-
-(defcustom moom-verbose nil
-  "Show responses from `moom`"
-  :type 'boolean
   :group 'moom)
 
 (defcustom moom-frame-width-single 80
-  "The width of the current frame as the default value"
+  "The width of the current frame as the default value."
   :type 'integer
   :group 'moom)
 
 (defcustom moom-frame-width-double 163
-  "The width of the current frame (double size)"
+  "The width of the current frame (double size)."
   :type 'integer
   :group 'moom)
 
 (defcustom moom-horizontal-shifts '(40 40)
-  "Distance to move the frame horizontally"
+  "Distance to move the frame horizontally."
   :type '(choice (integer :tag "common value for left and right")
                  (list (integer :tag "value for left")
                        (integer :tag "value for right")))
   :group 'moom)
 
+(defcustom moom-verbose nil
+  "Show responses from \"moom\"."
+  :type 'boolean
+  :group 'moom)
+
+(defcustom moom-after-fullscreen-hook nil
+  "Hook for fullscreen."
+  :type 'hook
+  :group 'moom)
+
+(defvar moom-font-module (require 'moom-font nil t)
+  "A flag to check the availability of `moom-font'.")
+(defvar moom--height-ring nil)
+(defvar moom--frame-width moom-frame-width-single)
+
+(defun moom--min-frame-height ()
+  "Return the minimum height of frame."
+  moom-min-frame-height)
+
+(defun moom--max-frame-width ()
+  "Return the maximum width based on screen size."
+  (let ((ns-frame-margin 2))
+    (/ (- (display-pixel-width)
+          (+ (frame-parameter nil 'left-fringe)
+             (frame-parameter nil 'right-fringe)
+             (* 2 ns-frame-margin)))
+       (frame-char-width))))
+
+(defun moom--max-frame-height ()
+  "Return the maximum height based on screen size."
+  (/ (- (display-pixel-height)
+        (+ (nthcdr 2 (assoc 'title-bar-size (frame-geometry)))
+           moom-move-frame-pixel-menubar-offset))
+     (frame-char-height)))
+
+(defun moom--update-frame-height-ring ()
+  "Open ring after re-creating ring."
+  (moom-open-height-ring t))
+
 (defun moom--make-frame-height-ring ()
-  ""
-  (let ((max-height (moom-max-frame-height)))
+  "Create ring to change frame height."
+  (let ((max-height (moom--max-frame-height)))
     (moom-make-height-ring
      ;; Specify Maximum, Minimum, 50%, and 75% values
      (cons max-height
            (sort (list
-                  (max (moom-min-frame-height) (/ max-height 4))
+                  (max (moom--min-frame-height) (/ max-height 4))
                   (/ max-height 2)
                   (* 3 (/ max-height 4)))
                  '<)))))
 
-(defvar moom--target-frame-width moom-frame-width-single)
-(defun moom--set-font-size (&optional arg)
-  (let* ((font-size (or arg moom--target-font-size))
-         (frame-width moom--target-frame-width)
-         (ja-font-scale moom-ja-font-scale)
-         (ja-font moom-ja-font)
-         (ascii-font moom-ascii-font))
-
-    (set-fontset-font nil 'ascii (font-spec :family ascii-font :size font-size))
-    (let ((spec (font-spec :family ja-font :size font-size)))
-      (set-fontset-font nil 'japanese-jisx0208 spec)
-      (set-fontset-font nil 'katakana-jisx0201 spec)
-      (set-fontset-font nil 'japanese-jisx0212 spec)
-      (set-fontset-font nil '(#x0080 . #x024F) spec)
-      (set-fontset-font nil '(#x0370 . #x03FF) spec)
-      (set-fontset-font nil 'mule-unicode-0100-24ff spec))
-    (setq face-font-rescale-alist
-          `((".*Migu.*" . ,ja-font-scale)))
-    (set-frame-width (selected-frame) frame-width)
-    (moom-reset-frame-height (frame-height))))
-
-(defvar moom--target-font-size moom-init-font-size)
-
-;;;###autoload
-(defun moom-set-font-size-input (n)
-  (interactive "nSize: ")
-  (setq moom--target-font-size n)
-  (moom--set-font-size moom--target-font-size)
-  (when moom-verbose
-    (message "0: %s" moom--target-font-size))
-  (moom--make-frame-height-ring)
-  (moom-reset-frame-height (moom-max-frame-height)))
-
 ;;;###autoload
 (defun moom-fullscreen-font-size ()
-  "Return the maximum font-size for full screen"
+  "Return the maximum font-size for full screen."
   (if window-system
-      (let ((ns-frame-margin 2))
+      (let ((ns-frame-margin 2)
+            (scale (if (boundp 'moom-font-ja-scale)
+                       moom-font-ja-scale
+                     1.0)))
         (floor (/ (- (display-pixel-width)
                      (+ (frame-parameter nil 'left-fringe)
                         (frame-parameter nil 'right-fringe)
                         (* 2 ns-frame-margin)))
-                  (* (/ 80 2) moom-ja-font-scale))))
+                  (* (/ 80 2) scale))))
     moom-fullscreen-font-size))
 
 ;;;###autoload
-(defun moom-increase-font-size (&optional inc)
-  "Increase font size"
+(defun moom-fit-frame-to-fullscreen ()
+  "Change font size and expand height to fit full.
+Add an appropriate function to `moom-after-fullscreen-hook'
+if the frame move to specific position."
   (interactive)
-  (setq moom--target-font-size
-        (+ moom--target-font-size
-           (if (and (integerp inc) (> inc 0))
-               inc 1)))
-  (moom--set-font-size moom--target-font-size)
-  (when moom-verbose
-    (message "+%d: %s" inc moom--target-font-size))
-  (moom--make-frame-height-ring)
-  (moom-open-height-ring))
-
-;;;###autoload
-(defun moom-decrease-font-size (&optional dec)
-  "Decrease font size"
-  (interactive)
-  (when (and (integerp dec)
-             (> dec 0)
-             (> moom--target-font-size dec))
-    (setq moom--target-font-size (- moom--target-font-size dec)))
-  (when (and moom-verbose
-             (> moom--target-font-size 0))
-    (message "-%d: %s" dec moom--target-font-size))
-  (moom--set-font-size moom--target-font-size)
-  (moom--make-frame-height-ring)
-  (moom-open-height-ring))
-
-;;;###autoload
-(defun moom-reset-font-size ()
-  "Reset font size"
-  (interactive)
-  (moom--set-font-size moom-init-font-size)
-  (setq moom--target-font-size moom-init-font-size)
-  (when moom-verbose
-    (message "0: %s" moom--target-font-size))
-  (moom--make-frame-height-ring)
-  (moom-open-height-ring)
-  (run-hooks 'moom-reset-font-size-hook))
+  (if (fboundp 'moom-font-resize)
+      (moom-font-resize (moom-fullscreen-font-size))
+    (moom-change-frame-width (moom--max-frame-width)))
+  (moom-change-frame-height (moom--max-frame-height))
+  (run-hooks 'moom-after-fullscreen-hook))
 
 ;;;###autoload
 (defun moom-cycle-line-spacing ()
-  "Change line-spacing value between a range"
+  "Change ‘line-spacing’ value between a range."
   (interactive)
   (if (< line-spacing moom-max-line-spacing)
       (setq line-spacing (+ line-spacing 0.1))
@@ -232,24 +189,53 @@
 
 ;;;###autoload
 (defun moom-reset-line-spacing ()
-  "Reset the defaut value for line spacing"
+  "Reset the defaut value for line spacing."
   (interactive)
   (setq line-spacing moom-init-line-spacing)
   (when moom-verbose
     (message "%.1f" line-spacing)))
 
 ;;;###autoload
-(defun moom-toggle-auto-move-frame-to-center ()
-  "Change whether move the frame to center automatically"
+(defun moom-move-frame-right (&optional N FRAME)
+  "Move it N times `frame-char-width', where N is the prefix arg.
+In Lisp code, FRAME is the frame to move."
   (interactive)
-  (cond (moom-auto-move-frame-to-center
-         (setq moom-auto-move-frame-to-center nil)
-         (when moom-verbose
-           (message "Toggle auto move OFF")))
-        (t
-         (setq moom-auto-move-frame-to-center t)
-         (when moom-verbose
-           (message "Toggle auto move ON")))))
+  (move-frame-right
+   (or N
+       (cond ((integerp moom-horizontal-shifts)
+              moom-horizontal-shifts)
+             ((listp moom-horizontal-shifts)
+              (nth 1 moom-horizontal-shifts))
+             (t
+              (error (format "%s is wrong value." moom-horizontal-shifts)))))
+   FRAME)
+  )
+
+;;;###autoload
+(defun moom-move-frame-left (&optional N FRAME)
+  "Move it N times `frame-char-width', where N is the prefix arg.
+In Lisp code, FRAME is the frame to move."
+  (interactive)
+  (move-frame-left
+   (or N
+       (cond ((integerp moom-horizontal-shifts)
+              moom-horizontal-shifts)
+             ((listp moom-horizontal-shifts)
+              (nth 0 moom-horizontal-shifts))
+             (t
+              (error (format "%s is wrong value." moom-horizontal-shifts)))))
+   FRAME))
+
+;;;###autoload
+(defun moom-toggle-auto-move-frame-to-center ()
+  "Change whether move the frame to center automatically."
+  (interactive)
+  (setq moom-auto-move-frame-to-center
+        (not moom-auto-move-frame-to-center))
+  (when moom-verbose
+    (if moom-auto-move-frame-to-center
+        (message "Toggle auto move ON")
+      (message "Toggle auto move OFF"))))
 
 ;;;###autoload
 (defun moom-move-frame-to-horizontal-center ()
@@ -272,7 +258,7 @@
 
 ;;;###autoload
 (defun moom-move-frame-to-edge-top ()
-  "Move the current frame to the top of the window display"
+  "Move the current frame to the top of the window display."
   (interactive)
   (set-frame-position (selected-frame)
                       (frame-parameter (selected-frame) 'left)
@@ -280,10 +266,10 @@
 
 ;;;###autoload
 (defun moom-move-frame-to-edge-bottom ()
-  "Move the current frame to the top of the window display
-   If you find the frame is NOT moved to the bottom exactly,
-   Please set `moom-move-frame-pixel-menubar-offset'.
-   22 is the default value for MacOSX"
+  "Move the current frame to the top of the window display.
+If you find the frame is NOT moved to the bottom exactly,
+Please set `moom-move-frame-pixel-menubar-offset'.
+22 is the default value for MacOSX"
   (interactive)
   (set-frame-position (selected-frame)
                       (frame-parameter (selected-frame) 'left)
@@ -310,15 +296,14 @@
 (defun moom-move-frame-to-center ()
   "Move the current frame to the center of the window display."
   (interactive)
-  (let
-      ((prev-pos-x (frame-parameter (selected-frame) 'left))
-       (prev-pos-y (frame-parameter (selected-frame) 'top))
-       (center-pos-x
-        (+ (car moom-move-frame-pixel-offset)
-           (/ (- (display-pixel-width) (frame-pixel-width)) 2)))
-       (center-pos-y
-        (+ (cdr moom-move-frame-pixel-offset)
-           (/ (- (display-pixel-height) (frame-pixel-height)) 2))))
+  (let ((prev-pos-x (frame-parameter (selected-frame) 'left))
+        (prev-pos-y (frame-parameter (selected-frame) 'top))
+        (center-pos-x
+         (+ (car moom-move-frame-pixel-offset)
+            (/ (- (display-pixel-width) (frame-pixel-width)) 2)))
+        (center-pos-y
+         (+ (cdr moom-move-frame-pixel-offset)
+            (/ (- (display-pixel-height) (frame-pixel-height)) 2))))
     (set-frame-position (selected-frame) center-pos-x center-pos-y)
     (when moom-verbose
       (message "Frame move: from (%s, %s) to (%s, %s)"
@@ -330,7 +315,7 @@
 ;;;###autoload
 (defun moom-move-frame-with-user-specify (&optional arg)
   "Move the frame to somewhere (default: 0,0).
-   Use prefix to specify the destination position."
+Use prefix to specify the destination position by ARG."
   (interactive "P")
   (let ((pos-x 0)
         (pos-y moom-move-frame-pixel-menubar-offset))
@@ -350,28 +335,27 @@
                (frame-parameter (selected-frame) 'top)))))
 
 ;;;###autoload
-(defun moom-max-frame-height ()
-  "Return the maximum height based on screen size."
+(defun moom-open-height-ring (&optional force)
+  "Change frame height and update the ring.
+If FORCE non-nil, generate ring again with new values."
   (interactive)
-  (/ (- (display-pixel-height)
-        (+ (nthcdr 2 (assoc 'title-bar-size (frame-geometry)))
-           moom-move-frame-pixel-menubar-offset))
-     (frame-char-height)))
+  (when (or (not moom--height-ring)
+            force)
+    (moom--make-frame-height-ring))
+  (moom-change-frame-height (car moom--height-ring))
+  (setq moom--height-ring
+        (append (cdr moom--height-ring)
+                (list (car moom--height-ring)))))
 
 ;;;###autoload
-(defun moom-min-frame-height ()
-  "Return the minimum height of frame"
-  (interactive)
-  moom-min-frame-height)
-
-;;;###autoload
-(defun moom-reset-frame-height (new-height)
-  "Reset the hight of the current frame."
+(defun moom-change-frame-height (new-height)
+  "Change the hight of the current frame.
+Argument NEW-HEIGHT specifies new frame height."
   (interactive
    (list (string-to-number
           (read-string "New Height: " (number-to-string (frame-height))))))
-  (let ((min-height (moom-min-frame-height))
-        (max-height (moom-max-frame-height)))
+  (let ((min-height (moom--min-frame-height))
+        (max-height (moom--max-frame-height)))
     (when (> new-height max-height)
       (setq new-height max-height)
       (when moom-verbose
@@ -383,108 +367,61 @@
     (let ((height (floor new-height)))
       (set-frame-height (selected-frame) height))))
 
-(defvar moom-after-fullscreen-hook nil "")
-(defvar moom-reset-font-size-hook nil "")
-
 ;;;###autoload
-(defun moom-fit-frame-to-fullscreen ()
-  "Change font size and expand height to fit full. Add an appropriate function to `moom-after-fullscreen-hook' if the frame move to specific position."
-  (interactive)
-  (setq moom--target-font-size moom-fullscreen-font-size)
-  (moom--set-font-size moom--target-font-size)
-  (moom-reset-frame-height (moom-max-frame-height))
-  (run-hooks 'moom-after-fullscreen-hook))
-
-(defvar moom--height-ring nil)
 (defun moom-make-height-ring (heights)
-  "Cycle change the height of the current frame."
+  "Cycle change the height of the current frame.
+Argument HEIGHTS specifies a secuece of frame heights."
   (setq moom--height-ring (copy-sequence heights)))
 
 ;;;###autoload
-(defun moom-open-height-ring ()
-  ""
+(defun moom-change-frame-width (&optional width)
+  "Change the frame width by the `width' argument.
+If WIDTH is not provided, `moom-frame-width-single' will be used."
   (interactive)
-  (unless moom--height-ring
-    (moom--make-frame-height-ring))
-  (moom-reset-frame-height (car moom--height-ring))
-  (setq moom--height-ring
-        (append (cdr moom--height-ring)
-                (list (car moom--height-ring)))))
+  (let ((width (or width
+                   moom-frame-width-single)))
+    (setq moom--frame-width width)
+    (set-frame-width (selected-frame) width)))
+
+;;;###autoload
+(defun moom-change-frame-width-single ()
+  "Change the frame width to single."
+  (interactive)
+  (moom-change-frame-width))
+
+;;;###autoload
+(defun moom-change-frame-width-double ()
+  "Change the frame width to double."
+  (interactive)
+  (moom-change-frame-width moom-frame-width-double))
 
 ;;;###autoload
 (defun moom-print-status ()
   "Print font size, frame origin, and frame size in mini buffer."
   (interactive)
-  (message "Font: %spt | Origin: (%d, %d) | Frame: (%d, %d) | Pix: (%d, %d)"
-           moom--target-font-size
+  (message
+   (format "Font: %spt | Origin: (%d, %d) | Frame: (%d, %d) | Pix: (%d, %d)"
+           (if (boundp 'moom-font--size) moom-font--size "**")
            (frame-parameter (selected-frame) 'left)
            (frame-parameter (selected-frame) 'top)
            (frame-width)
            (frame-height)
            (frame-pixel-width)
-           (frame-pixel-height)))
-
-;;;###autoload
-(defun moom-move-frame-right (&optional N FRAME)
-  ""
-  (interactive)
-  (move-frame-right
-   (or N
-       (cond ((integerp moom-horizontal-shifts)
-              moom-horizontal-shifts)
-             ((listp moom-horizontal-shifts)
-              (nth 1 moom-horizontal-shifts))
-             (t
-              (error (format "%s is wrong value." moom-horizontal-shifts)))))
-   FRAME))
-
-;;;###autoload
-(defun moom-move-frame-left (&optional N FRAME)
-  ""
-  (interactive)
-  (move-frame-left
-   (or N
-       (cond ((integerp moom-horizontal-shifts)
-              moom-horizontal-shifts)
-             ((listp moom-horizontal-shifts)
-              (nth 0 moom-horizontal-shifts))
-             (t
-              (error (format "%s is wrong value." moom-horizontal-shifts)))))
-   FRAME))
-
-;;;###autoload
-(defun moom-change-frame-width-single ()
-  "Change the frame width to double"
-  (interactive)
-  (setq moom--target-frame-width moom-frame-width-single)
-  (set-frame-width (selected-frame) moom-frame-width-single))
-
-;;;###autoload
-(defun moom-change-frame-width-double ()
-  "Change the frame width to double"
-  (interactive)
-  (setq moom--target-frame-width moom-frame-width-double)
-  (set-frame-width (selected-frame) moom-frame-width-double))
-
-;;;###autoload
-(defun moom-change-frame-width (&optional width)
-  "Change the frame width by the `width' argument.
-If `width' is not provided, `moom-frame-width-single' will be used."
-  (interactive)
-  (let ((width (or width
-                   moom-frame-width-single)))
-    (setq moom--target-frame-width width)
-    (set-frame-width (selected-frame) width)))
+           (frame-pixel-height))))
 
 ;;;###autoload
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "0.9.2"))
+  (let ((moom-release "0.9.3"))
     (message "Moom: v%s" moom-release)))
 
 ;; init call
 (moom--make-frame-height-ring)
+
+;; JP-font module
+(when moom-font-module
+  (add-hook 'moom-font-resize-hook #'moom--update-frame-height-ring))
 
 (provide 'moom)
 
