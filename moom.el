@@ -4,7 +4,6 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Package-Version: 20180125.421
 ;; Version: 0.9.3
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
