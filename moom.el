@@ -170,10 +170,13 @@ The default height is 22 for macOS."
 Add an appropriate function to `moom-after-fullscreen-hook'
 if the frame move to specific position."
   (interactive)
-  (if (fboundp 'moom-font-resize)
-      (moom-font-resize (moom-fullscreen-font-size))
+  (if (not (fboundp 'moom-font-resize))
+      (moom-change-frame-height (moom--max-frame-height))
+    (moom-font-resize (moom-fullscreen-font-size))
+    (when (< (display-pixel-width)
+             (frame-pixel-width))
+      (moom-font-resize (1- (moom-fullscreen-font-size))))
     (moom-change-frame-width (moom--max-frame-width)))
-  (moom-change-frame-height (moom--max-frame-height))
   (run-hooks 'moom-after-fullscreen-hook))
 
 ;;;###autoload
