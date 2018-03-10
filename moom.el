@@ -110,8 +110,8 @@ The default height is 22 for macOS."
 
 (defvar moom-font-module (require 'moom-font nil t)
   "A flag to check the availability of `moom-font'.")
-(defvar moom--height-ring nil)
 (defvar moom--frame-width moom-frame-width-single)
+(defvar moom--height-ring nil)
 
 (defun moom--min-frame-height ()
   "Return the minimum height of frame."
@@ -170,13 +170,13 @@ The default height is 22 for macOS."
 Add appropriate functions to `moom-after-fullscreen-hook'
 in order to move the frame to specific position."
   (interactive)
-  (if (not (fboundp 'moom-font-resize))
-      (moom-change-frame-height (moom--max-frame-height))
-    (let ((f (moom-fullscreen-font-size)))
-      (moom-font-resize f)
-      (when (< (display-pixel-width)
-               (frame-pixel-width))
-        (moom-font-resize (1- f))))
+  (if (fboundp 'moom-font-resize)
+      (let ((f (moom-fullscreen-font-size)))
+        (moom-font-resize f)
+        (when (< (display-pixel-width)
+                 (frame-pixel-width))
+          (moom-font-resize (1- f))))
+    (moom-change-frame-height (moom--max-frame-height))
     (moom-change-frame-width (moom--max-frame-width)))
   (run-hooks 'moom-after-fullscreen-hook))
 
@@ -340,7 +340,7 @@ Use prefix to specify the destination position by ARG."
 ;;;###autoload
 (defun moom-open-height-ring (&optional force)
   "Change frame height and update the ring.
-If FORCE non-nil, generate ring again with new values."
+If FORCE non-nil, generate ring by with new values."
   (interactive)
   (when (or (not moom--height-ring)
             force)
@@ -351,37 +351,38 @@ If FORCE non-nil, generate ring again with new values."
                 (list (car moom--height-ring)))))
 
 ;;;###autoload
-(defun moom-change-frame-height (new-height)
-  "Change the hight of the current frame.
-Argument NEW-HEIGHT specifies new frame height."
-  (interactive
-   (list (string-to-number
-          (read-string "New Height: " (number-to-string (frame-height))))))
-  (let ((min-height (moom--min-frame-height))
-        (max-height (moom--max-frame-height)))
-    (when (> new-height max-height)
-      (setq new-height max-height)
-      (when moom-verbose
-        (message "Force set the height %s." new-height)))
-    (when (< new-height min-height)
-      (setq new-height min-height)
-      (when moom-verbose
-        (message "Force set the height %s." new-height)))
-    (let ((height (floor new-height)))
-      (set-frame-height (selected-frame) height))))
-
-;;;###autoload
 (defun moom-make-height-ring (heights)
   "Cycle change the height of the current frame.
 Argument HEIGHTS specifies a secuece of frame heights."
   (setq moom--height-ring (copy-sequence heights)))
 
 ;;;###autoload
-(defun moom-change-frame-width (&optional width)
-  "Change the frame width by the `width' argument.
+(defun moom-change-frame-height (&optional frame-height)
+  "Change the hight of the current frame.
+Argument FRAME-HEIGHT specifies new frame height."
+  (interactive
+   (list (string-to-number
+          (read-string "New Height: " (number-to-string (frame-height))))))
+  (when (not frame-height)
+    (setq frame-height moom-min-frame-height))
+  (let ((min-height (moom--min-frame-height))
+        (max-height (moom--max-frame-height)))
+    (when (> frame-height max-height)
+      (setq frame-height max-height)
+      (when moom-verbose
+        (message "Force set the height %s." frame-height)))
+    (when (< frame-height min-height)
+      (setq frame-height min-height)
+      (when moom-verbose
+        (message "Force set the height %s." frame-height)))
+    (set-frame-height (selected-frame) (floor frame-height))))
+
+;;;###autoload
+(defun moom-change-frame-width (&optional frame-width)
+  "Change the frame width by the WIDTH argument.
 If WIDTH is not provided, `moom-frame-width-single' will be used."
   (interactive)
-  (let ((width (or width
+  (let ((width (or frame-width
                    moom-frame-width-single)))
     (setq moom--frame-width width)
     (set-frame-width (selected-frame) width)))
