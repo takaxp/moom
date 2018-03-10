@@ -117,14 +117,18 @@ The default height is 22 for macOS."
   "Return the minimum height of frame."
   moom-min-frame-height)
 
+(defun moom--max-frame-pixel-width ()
+  "Return the maximum width on pixel base."
+  (let ((ns-frame-margin 2))
+    (- (display-pixel-width)
+       (+ (frame-parameter nil 'left-fringe)
+          (frame-parameter nil 'right-fringe)
+          (* 2 ns-frame-margin)))))
+
 (defun moom--max-frame-width ()
   "Return the maximum width based on screen size."
-  (let ((ns-frame-margin 2))
-    (/ (- (display-pixel-width)
-          (+ (frame-parameter nil 'left-fringe)
-             (frame-parameter nil 'right-fringe)
-             (* 2 ns-frame-margin)))
-       (frame-char-width))))
+  (/ (moom--max-frame-pixel-width)
+     (frame-char-width)))
 
 (defun moom--max-frame-height ()
   "Return the maximum height based on screen size."
@@ -170,14 +174,15 @@ The default height is 22 for macOS."
 Add appropriate functions to `moom-after-fullscreen-hook'
 in order to move the frame to specific position."
   (interactive)
-  (if (fboundp 'moom-font-resize)
-      (let ((f (moom-fullscreen-font-size)))
-        (moom-font-resize f)
-        (when (< (display-pixel-width)
-                 (frame-pixel-width))
-          (moom-font-resize (1- f))))
-    (moom-change-frame-height (moom--max-frame-height))
-    (moom-change-frame-width (moom--max-frame-width)))
+  (when (fboundp 'moom-font-resize)
+    (let ((f (moom-fullscreen-font-size)))
+      (moom-font-resize f)
+      (when (< (display-pixel-width)
+               (frame-pixel-width))
+        (moom-font-resize (1- f)))))
+  (set-frame-width (selected-frame)
+                   (moom--max-frame-pixel-width) nil t)
+  (moom-change-frame-height (moom--max-frame-height))
   (run-hooks 'moom-after-fullscreen-hook))
 
 ;;;###autoload
