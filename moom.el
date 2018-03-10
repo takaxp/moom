@@ -405,6 +405,12 @@ If WIDTH is not provided, `moom-frame-width-single' will be used."
   (moom-change-frame-width moom-frame-width-double))
 
 ;;;###autoload
+(defun moom-change-frame-width-half-again ()
+  "Change the frame width to half as large again as single width."
+  (interactive)
+  (moom-change-frame-width (floor (* 1.5 moom-frame-width-single))))
+
+;;;###autoload
 (defun moom-print-status ()
   "Print font size, frame origin, and frame size in mini buffer."
   (interactive)
