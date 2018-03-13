@@ -4,10 +4,10 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 0.9.3
+;; Version: 0.9.4
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
-;; Package-Requires: ((emacs "25") (frame-cmds "0"))
+;; Package-Requires: ((emacs "25.1") (frame-cmds "0"))
 ;; Twitter: @takaxp
 
 ;; This program is free software: you can redistribute it and/or modify
@@ -258,8 +258,7 @@ In Lisp code, FRAME is the frame to move."
               (nth 1 moom-horizontal-shifts))
              (t
               (error (format "%s is wrong value." moom-horizontal-shifts)))))
-   FRAME)
-  )
+   FRAME))
 
 ;;;###autoload
 (defun moom-move-frame-left (&optional N FRAME)
@@ -469,7 +468,7 @@ If WIDTH is not provided, `moom-frame-width-single' will be used."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "0.9.3"))
+  (let ((moom-release "0.9.4"))
     (message "Moom: v%s" moom-release)))
 
 ;; init call
