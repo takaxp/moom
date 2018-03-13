@@ -394,7 +394,7 @@ If FORCE non-nil, generate ring by with new values."
     (if (equal height (moom--max-frame-height))
         (set-frame-height (selected-frame)
                           (moom--max-frame-pixel-height) nil t)
-      (moom-change-frame-height (car moom--height-ring))))
+      (moom-change-frame-height height)))
   (setq moom--height-ring
         (append (cdr moom--height-ring)
                 (list (car moom--height-ring)))))
