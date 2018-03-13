@@ -57,8 +57,13 @@
   :type 'boolean
   :group 'moom)
 
-(defcustom moom-font-resize-hook nil
-  "A hook called after resizing font size."
+(defcustom moom-font-before-resize-hook nil
+  "Hook runs before resizing font size."
+  :type 'hook
+  :group 'moom)
+
+(defcustom moom-font-after-resize-hook nil
+  "Hook runs after resizing font size."
   :type 'hook
   :group 'moom)
 
@@ -88,8 +93,7 @@ If `ARG' is nil, the default size is used."
       (set-fontset-font nil '(#x0370 . #x03FF) spec)
       (set-fontset-font nil 'mule-unicode-0100-24ff spec))
     (setq face-font-rescale-alist
-          `((".*Migu.*" . ,ja-font-scale))))
-  (run-hooks 'moom-font-resize-hook))
+          `((".*Migu.*" . ,ja-font-scale)))))
 
 ;;;###autoload
 (defun moom-font-resize (&optional n width)
@@ -99,31 +103,34 @@ Optional argument N specifies the target font size.
 If WIDTH is non-nil, ensure an appropriate font size so that
 the actual pixel width will not over the WIDTH."
   (interactive "nSize: ")
+  (run-hooks 'moom-font-before-resize-hook)
   (moom-font--change-size
    (setq moom-font--size (or n moom-font-init-size)))
-  ;; (when (and width (> width 480)) ;; safe guard
   (when (< width (frame-pixel-width))
-    (moom-font-decrease)) ;; adjust frame-width
+    (moom-font--change-size
+     (setq moom-font--size (1- moom-font--size)))) ;; adjust frame-width
   (when moom-font-verbose
     (message "0: %s" moom-font--size))
-  (run-hooks 'moom-font-resize-hook))
+  (run-hooks 'moom-font-after-resize-hook))
 
 ;;;###autoload
 (defun moom-font-size-reset ()
   "Reset font to the initial size."
   (interactive)
+  (run-hooks 'moom-font-before-resize-hook)
   (moom-font--change-size
    (setq moom-font--size moom-font-init-size))
   (when moom-font-verbose
     (message "0: %s" moom-font--size))
   (run-hooks 'moom-font-size-reset-hook)
-  (run-hooks 'moom-font-resize-hook))
+  (run-hooks 'moom-font-after-resize-hook))
 
 ;;;###autoload
 (defun moom-font-increase (&optional inc)
   "Increase font size.
 Optional argument INC specifies an increasing step."
   (interactive)
+  (run-hooks 'moom-font-before-resize-hook)
   (setq moom-font--size
         (+ moom-font--size
            (if (and (integerp inc) (> inc 0))
@@ -131,13 +138,14 @@ Optional argument INC specifies an increasing step."
   (moom-font--change-size moom-font--size)
   (when moom-font-verbose
     (message "+%d: %s" inc moom-font--size))
-  (run-hooks 'moom-font-resize-hook))
+  (run-hooks 'moom-font-after-resize-hook))
 
 ;;;###autoload
 (defun moom-font-decrease (&optional dec)
   "Decrease font size.
 Optional argument DEC specifies an decreasing step."
   (interactive)
+  (run-hooks 'moom-font-before-resize-hook)
   (setq moom-font--size
         (- moom-font--size
            (if (and (integerp dec)
@@ -148,7 +156,7 @@ Optional argument DEC specifies an decreasing step."
              (> moom-font--size 0))
     (message "-%d: %s" dec moom-font--size))
   (moom-font--change-size moom-font--size)
-  (run-hooks 'moom-font-resize-hook))
+  (run-hooks 'moom-font-after-resize-hook))
 
 (provide 'moom-font)
 
