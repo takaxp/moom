@@ -40,7 +40,7 @@
   "A tool to control frame size, position, and font size."
   :group 'convenience)
 
-(defcustom moom-move-frame-pixel-menubar-offset 22
+(defcustom moom-move-frame-pixel-menubar-offset 23
   "Offset of the menubar.
 The default height is 22 for macOS."
   :type 'integer
@@ -103,8 +103,13 @@ The default height is 22 for macOS."
   :type 'boolean
   :group 'moom)
 
+(defcustom moom-before-fullscreen-hook nil
+  "Hook runs before changing to fullscreen."
+  :type 'hook
+  :group 'moom)
+
 (defcustom moom-after-fullscreen-hook nil
-  "Hook for fullscreen."
+  "Hook runs after changing to fullscreen."
   :type 'hook
   :group 'moom)
 
@@ -132,11 +137,13 @@ The default height is 22 for macOS."
 
 (defun moom--max-frame-pixel-height ()
   "Return the maximum height on pixel base."
-  (- (display-pixel-height)
-     (+ (nthcdr 2 (assoc 'title-bar-size (frame-geometry)))
-        (unless (eq window-system 'mac) ;; TODO check others {x, w32}
-          (nthcdr 2 (assoc 'menu-bar-size (frame-geometry))))
-        moom-move-frame-pixel-menubar-offset)))
+  (let ((ns-frame-margin 2))
+    (- (display-pixel-height)
+       (+ (nthcdr 2 (assoc 'title-bar-size (frame-geometry)))
+          (unless (eq window-system 'mac) ;; TODO check others {x, w32}
+            (nthcdr 2 (assoc 'menu-bar-size (frame-geometry))))
+          moom-move-frame-pixel-menubar-offset
+          (* ns-frame-margin 2)))))
 
 (defun moom--max-frame-height ()
   "Return the maximum height based on screen size."
@@ -181,9 +188,10 @@ The default height is 22 for macOS."
 ;;;###autoload
 (defun moom-fit-frame-to-fullscreen ()
   "Change font size and expand frame width and height to fit full.
-Add appropriate functions to `moom-after-fullscreen-hook'
+Add appropriate functions to `moom-before-fullscreen-hook'
 in order to move the frame to specific position."
   (interactive)
+  (run-hooks 'moom-before-fullscreen-hook)
   (when (fboundp 'moom-font-resize)
     (moom-font-resize (moom-fullscreen-font-size)
                       (display-pixel-width)))
@@ -216,8 +224,8 @@ AREA would be 'top, 'bottom, 'left, or 'right."
            (setq pos-x (floor (/ (display-pixel-width) 2))))
           (nil t))
     (when (memq area '(top bottom left right))
-      (set-frame-size (selected-frame) pixel-width pixel-height t)
-      (set-frame-position (selected-frame) pos-x pos-y))))
+      (set-frame-position (selected-frame) pos-x pos-y)
+      (set-frame-size (selected-frame) pixel-width pixel-height t))))
 
 ;;;###autoload
 (defun moom-cycle-line-spacing ()
@@ -310,8 +318,7 @@ In Lisp code, FRAME is the frame to move."
 (defun moom-move-frame-to-edge-bottom ()
   "Move the current frame to the top of the window display.
 If you find the frame is NOT moved to the bottom exactly,
-Please set `moom-move-frame-pixel-menubar-offset'.
-22 is the default value for MacOSX"
+Please set `moom-move-frame-pixel-menubar-offset'."
   (interactive)
   (set-frame-position (selected-frame)
                       (frame-parameter (selected-frame) 'left)
@@ -470,7 +477,7 @@ If WIDTH is not provided, `moom-frame-width-single' will be used."
 
 ;; JP-font module
 (when moom-font-module
-  (add-hook 'moom-font-resize-hook #'moom--update-frame-height-ring))
+  (add-hook 'moom-font-before-resize-hook #'moom--update-frame-height-ring))
 
 (provide 'moom)
 
