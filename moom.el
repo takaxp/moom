@@ -195,9 +195,9 @@ in order to move the frame to specific position."
   (when (fboundp 'moom-font-resize)
     (moom-font-resize (moom-fullscreen-font-size)
                       (display-pixel-width)))
-  (set-frame-width (selected-frame)
-                   (moom--max-frame-pixel-width) nil t)
-  (moom-change-frame-height (moom--max-frame-height))
+  (set-frame-size (selected-frame)
+                  (moom--max-frame-pixel-width)
+                  (moom--max-frame-pixel-height) t)
   (run-hooks 'moom-after-fullscreen-hook))
 
 ;;;###autoload
@@ -390,7 +390,11 @@ If FORCE non-nil, generate ring by with new values."
   (when (or (not moom--height-ring)
             force)
     (moom--make-frame-height-ring))
-  (moom-change-frame-height (car moom--height-ring))
+  (let ((height (car moom--height-ring)))
+    (if (equal height (moom--max-frame-height))
+        (set-frame-height (selected-frame)
+                          (moom--max-frame-pixel-height) nil t)
+      (moom-change-frame-height (car moom--height-ring))))
   (setq moom--height-ring
         (append (cdr moom--height-ring)
                 (list (car moom--height-ring)))))
@@ -476,7 +480,7 @@ If WIDTH is not provided, `moom-frame-width-single' will be used."
 
 ;; JP-font module
 (when moom-font-module
-  (add-hook 'moom-font-before-resize-hook #'moom--update-frame-height-ring))
+  (add-hook 'moom-font-after-resize-hook #'moom--update-frame-height-ring))
 
 (provide 'moom)
 

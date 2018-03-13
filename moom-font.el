@@ -122,8 +122,8 @@ the actual pixel width will not over the WIDTH."
    (setq moom-font--size moom-font-init-size))
   (when moom-font-verbose
     (message "0: %s" moom-font--size))
-  (run-hooks 'moom-font-size-reset-hook)
-  (run-hooks 'moom-font-after-resize-hook))
+  (run-hooks 'moom-font-after-resize-hook)
+  (run-hooks 'moom-font-size-reset-hook))
 
 ;;;###autoload
 (defun moom-font-increase (&optional inc)
