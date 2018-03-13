@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 0.9.4
+;; Version: 0.9.5
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1") (frame-cmds "0"))
@@ -118,37 +118,49 @@ The default height is 22 for macOS."
 (defvar moom--frame-width moom-frame-width-single)
 (defvar moom--height-ring nil)
 
-(defun moom--min-frame-height ()
-  "Return the minimum height of frame."
-  moom-min-frame-height)
+(defun moom--frame-internal-width ()
+  "Width of internal objects.
+Including fringes and border."
+  (if window-system
+      (+ (frame-parameter nil 'left-fringe)
+         (frame-parameter nil 'right-fringe)
+         (* 2 (cdr (assoc 'internal-border-width (frame-geometry)))))
+    0)) ;; TODO check this by terminal
+
+(defun moom--frame-internal-height ()
+  "Height of internal objects.
+Including title-bar, menu-bar, offset depends on variable `window-system', and border."
+  (if window-system
+      (+ (nthcdr 2 (assoc 'title-bar-size (frame-geometry)))
+         (unless (eq window-system 'mac) ;; TODO check others {x, w32}
+           (nthcdr 2 (assoc 'menu-bar-size (frame-geometry))))
+         (* 2 (cdr (assoc 'internal-border-width (frame-geometry)))))
+    0)) ;; TODO check this by terminal
 
 (defun moom--max-frame-pixel-width ()
   "Return the maximum width on pixel base."
-  (let ((ns-frame-margin 2))
-    (- (display-pixel-width)
-       (+ (frame-parameter nil 'left-fringe)
-          (frame-parameter nil 'right-fringe)
-          (* 2 ns-frame-margin)))))
-
-(defun moom--max-frame-width ()
-  "Return the maximum width based on screen size."
-  (/ (moom--max-frame-pixel-width)
-     (frame-char-width)))
+  (- (display-pixel-width)
+     (moom--frame-internal-width)))
 
 (defun moom--max-frame-pixel-height ()
   "Return the maximum height on pixel base."
-  (let ((ns-frame-margin 2))
-    (- (display-pixel-height)
-       (+ (nthcdr 2 (assoc 'title-bar-size (frame-geometry)))
-          (unless (eq window-system 'mac) ;; TODO check others {x, w32}
-            (nthcdr 2 (assoc 'menu-bar-size (frame-geometry))))
-          moom-move-frame-pixel-menubar-offset
-          (* ns-frame-margin 2)))))
+  (- (display-pixel-height)
+     (moom--frame-internal-height)
+     moom-move-frame-pixel-menubar-offset))
+
+(defun moom--max-frame-width ()
+  "Return the maximum width based on screen size."
+  (floor (/ (moom--max-frame-pixel-width)
+            (frame-char-width))))
 
 (defun moom--max-frame-height ()
   "Return the maximum height based on screen size."
-  (/ (moom--max-frame-pixel-height)
-     (frame-char-height)))
+  (floor (/ (moom--max-frame-pixel-height)
+            (frame-char-height))))
+
+(defun moom--min-frame-height ()
+  "Return the minimum height of frame."
+  moom-min-frame-height)
 
 (defun moom--update-frame-height-ring ()
   "Open ring after re-creating ring."
@@ -168,14 +180,10 @@ The default height is 22 for macOS."
 
 (defun moom--font-size (pixel-width)
   "Return an appropriate font-size based on PIXEL-WIDTH."
-  (let ((ns-frame-margin 2)
-        (scale (if (boundp 'moom-font-ja-scale)
+  (let ((scale (if (boundp 'moom-font-ja-scale)
                    moom-font-ja-scale
                  1.0)))
-    (floor (/ (- pixel-width
-                 (+ (frame-parameter nil 'left-fringe)
-                    (frame-parameter nil 'right-fringe)
-                    (* 2 ns-frame-margin)))
+    (floor (/ (- pixel-width (moom--frame-internal-width))
               (* (/ 80 2) scale)))))
 
 ;;;###autoload
@@ -207,8 +215,13 @@ Font size will be changed appropriately.
 AREA would be 'top, 'bottom, 'left, or 'right."
   (interactive)
   (let ((pixel-width
-         (floor (- (/ (moom--max-frame-pixel-width) 2) 10))) ;; FIXME
-        (pixel-height (floor (/ (moom--max-frame-pixel-height) 2)))
+         (- (floor (/ (display-pixel-width) 2.0))
+            (moom--frame-internal-width)))
+        (pixel-height
+         (floor (/ (- (display-pixel-height)
+                      moom-move-frame-pixel-menubar-offset
+                      (* 2 (moom--frame-internal-height)))
+                   2.0)))
         (pos-x 0)
         (pos-y 0))
     (cond ((memq area '(top bottom))
@@ -219,9 +232,13 @@ AREA would be 'top, 'bottom, 'left, or 'right."
     (when (fboundp 'moom-font-resize)
       (moom-font-resize (moom--font-size pixel-width) pixel-width))
     (cond ((eq area 'bottom)
-           (setq pos-y (floor (/ (display-pixel-height) 2))))
+           (setq pos-y
+                 (+ moom-move-frame-pixel-menubar-offset
+                    (ceiling (/ (- (display-pixel-height)
+                                   moom-move-frame-pixel-menubar-offset)
+                                2.0)))))
           ((eq area 'right)
-           (setq pos-x (floor (/ (display-pixel-width) 2))))
+           (setq pos-x (ceiling (/ (display-pixel-width) 2.0))))
           (nil t))
     (when (memq area '(top bottom left right))
       (set-frame-position (selected-frame) pos-x pos-y)
@@ -277,7 +294,7 @@ In Lisp code, FRAME is the frame to move."
 
 ;;;###autoload
 (defun moom-toggle-auto-move-frame-to-center ()
-  "Change whether move the frame to center automatically."
+  "Toggle auto move to the center of the display."
   (interactive)
   (setq moom-auto-move-frame-to-center
         (not moom-auto-move-frame-to-center))
@@ -292,7 +309,9 @@ In Lisp code, FRAME is the frame to move."
   (interactive)
   (set-frame-position (selected-frame)
                       (+ (car moom-move-frame-pixel-offset)
-                         (/ (- (display-pixel-width) (frame-pixel-width)) 2))
+                         (/ (- (display-pixel-width)
+                               (frame-pixel-width))
+                            2))
                       (frame-parameter (selected-frame) 'top)))
 
 ;;;###autoload
@@ -303,7 +322,8 @@ In Lisp code, FRAME is the frame to move."
                       (frame-parameter (selected-frame) 'left)
                       (+ (cdr moom-move-frame-pixel-offset)
                          (/ (- (display-pixel-height)
-                               (frame-pixel-height)) 2))))
+                               (frame-pixel-height))
+                            2))))
 
 ;;;###autoload
 (defun moom-move-frame-to-edge-top ()
@@ -321,7 +341,8 @@ Please set `moom-move-frame-pixel-menubar-offset'."
   (interactive)
   (set-frame-position (selected-frame)
                       (frame-parameter (selected-frame) 'left)
-                      (- (- (display-pixel-height) (frame-pixel-height))
+                      (- (- (display-pixel-height)
+                            (frame-pixel-height))
                          moom-move-frame-pixel-menubar-offset)))
 
 ;;;###autoload
@@ -394,7 +415,7 @@ If FORCE non-nil, generate ring by with new values."
     (if (equal height (moom--max-frame-height))
         (set-frame-height (selected-frame)
                           (moom--max-frame-pixel-height) nil t)
-      (moom-change-frame-height height)))
+      (moom-change-frame-height (car moom--height-ring))))
   (setq moom--height-ring
         (append (cdr moom--height-ring)
                 (list (car moom--height-ring)))))
@@ -472,7 +493,7 @@ If WIDTH is not provided, `moom-frame-width-single' will be used."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "0.9.4"))
+  (let ((moom-release "0.9.5"))
     (message "Moom: v%s" moom-release)))
 
 ;; init call
