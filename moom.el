@@ -130,11 +130,17 @@ The default height is 22 for macOS."
   (/ (moom--max-frame-pixel-width)
      (frame-char-width)))
 
+(defun moom--max-frame-pixel-height ()
+  "Return the maximum height on pixel base."
+  (- (display-pixel-height)
+     (+ (nthcdr 2 (assoc 'title-bar-size (frame-geometry)))
+        (unless (eq window-system 'mac) ;; TODO check others {x, w32}
+          (nthcdr 2 (assoc 'menu-bar-size (frame-geometry))))
+        moom-move-frame-pixel-menubar-offset)))
+
 (defun moom--max-frame-height ()
   "Return the maximum height based on screen size."
-  (/ (- (display-pixel-height)
-        (+ (nthcdr 2 (assoc 'title-bar-size (frame-geometry)))
-           moom-move-frame-pixel-menubar-offset))
+  (/ (moom--max-frame-pixel-height)
      (frame-char-height)))
 
 (defun moom--update-frame-height-ring ()
@@ -153,19 +159,23 @@ The default height is 22 for macOS."
                   (* 3 (/ max-height 4)))
                  '<)))))
 
+(defun moom--font-size (pixel-width)
+  "Return an appropriate font-size based on PIXEL-WIDTH."
+  (let ((ns-frame-margin 2)
+        (scale (if (boundp 'moom-font-ja-scale)
+                   moom-font-ja-scale
+                 1.0)))
+    (floor (/ (- pixel-width
+                 (+ (frame-parameter nil 'left-fringe)
+                    (frame-parameter nil 'right-fringe)
+                    (* 2 ns-frame-margin)))
+              (* (/ 80 2) scale)))))
+
 ;;;###autoload
 (defun moom-fullscreen-font-size ()
   "Return the maximum font-size for full screen."
   (if window-system
-      (let ((ns-frame-margin 2)
-            (scale (if (boundp 'moom-font-ja-scale)
-                       moom-font-ja-scale
-                     1.0)))
-        (floor (/ (- (display-pixel-width)
-                     (+ (frame-parameter nil 'left-fringe)
-                        (frame-parameter nil 'right-fringe)
-                        (* 2 ns-frame-margin)))
-                  (* (/ 80 2) scale))))
+      (moom--font-size (display-pixel-width))
     moom-fullscreen-font-size))
 
 ;;;###autoload
@@ -175,15 +185,39 @@ Add appropriate functions to `moom-after-fullscreen-hook'
 in order to move the frame to specific position."
   (interactive)
   (when (fboundp 'moom-font-resize)
-    (let ((f (moom-fullscreen-font-size)))
-      (moom-font-resize f)
-      (when (< (display-pixel-width)
-               (frame-pixel-width))
-        (moom-font-resize (1- f)))))
+    (moom-font-resize (moom-fullscreen-font-size)
+                      (display-pixel-width)))
   (set-frame-width (selected-frame)
                    (moom--max-frame-pixel-width) nil t)
   (moom-change-frame-height (moom--max-frame-height))
   (run-hooks 'moom-after-fullscreen-hook))
+
+;;;###autoload
+(defun moom-fit-frame (area)
+  "Move the frame to AREA.
+Font size will be changed appropriately.
+AREA would be 'top, 'bottom, 'left, or 'right."
+  (interactive)
+  (let ((pixel-width
+         (floor (- (/ (moom--max-frame-pixel-width) 2) 10))) ;; FIXME
+        (pixel-height (floor (/ (moom--max-frame-pixel-height) 2)))
+        (pos-x 0)
+        (pos-y 0))
+    (cond ((memq area '(top bottom))
+           (setq pixel-width (moom--max-frame-pixel-width)))
+          ((memq area '(left right))
+           (setq pixel-height (moom--max-frame-pixel-height)))
+          (nil t))
+    (when (fboundp 'moom-font-resize)
+      (moom-font-resize (moom--font-size pixel-width) pixel-width))
+    (cond ((eq area 'bottom)
+           (setq pos-y (floor (/ (display-pixel-height) 2))))
+          ((eq area 'right)
+           (setq pos-x (floor (/ (display-pixel-width) 2))))
+          (nil t))
+    (when (memq area '(top bottom left right))
+      (set-frame-size (selected-frame) pixel-width pixel-height t)
+      (set-frame-position (selected-frame) pos-x pos-y))))
 
 ;;;###autoload
 (defun moom-cycle-line-spacing ()
@@ -384,7 +418,7 @@ Argument FRAME-HEIGHT specifies new frame height."
 
 ;;;###autoload
 (defun moom-change-frame-width (&optional frame-width)
-  "Change the frame width by the WIDTH argument.
+  "Change the frame width by the FRAME-WIDTH argument.
 If WIDTH is not provided, `moom-frame-width-single' will be used."
   (interactive)
   (let ((width (or frame-width
