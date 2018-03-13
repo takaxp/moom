@@ -129,7 +129,7 @@ Including fringes and border."
 
 (defun moom--frame-internal-height ()
   "Height of internal objects.
-Including title-bar, menu-bar, offset depends on variable `window-system', and border."
+Including title-bar, menu-bar, offset depends on window system, and border."
   (if window-system
       (+ (nthcdr 2 (assoc 'title-bar-size (frame-geometry)))
          (unless (eq window-system 'mac) ;; TODO check others {x, w32}
@@ -168,15 +168,15 @@ Including title-bar, menu-bar, offset depends on variable `window-system', and b
 
 (defun moom--make-frame-height-ring ()
   "Create ring to change frame height."
-  (let ((max-height (moom--max-frame-height)))
-    (moom-make-height-ring
-     ;; Specify Maximum, Minimum, 50%, and 75% values
-     (cons max-height
-           (sort (list
-                  (max (moom--min-frame-height) (/ max-height 4))
-                  (/ max-height 2)
-                  (* 3 (/ max-height 4)))
-                 '<)))))
+  (let ((max-height (moom--max-frame-height))
+        (min-height (moom--min-frame-height))
+        (heights nil))
+    ;; Specify Maximum, Minimum, 50%, and 75% values
+    (add-to-list 'heights (max min-height (* 3 (/ max-height 4))))
+    (add-to-list 'heights (max min-height (/ max-height 2)))
+    (add-to-list 'heights (max min-height (/ max-height 4)))
+    (add-to-list 'heights (max min-height max-height))
+    (moom-make-height-ring heights)))
 
 (defun moom--font-size (pixel-width)
   "Return an appropriate font-size based on PIXEL-WIDTH."
