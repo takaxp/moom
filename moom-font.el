@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 0.9.0
+;; Version: 0.9.5
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Twitter: @takaxp
@@ -67,11 +67,6 @@
   :type 'hook
   :group 'moom)
 
-(defcustom moom-font-size-reset-hook nil
-  "A hook called after reset of font size."
-  :type 'hook
-  :group 'moom)
-
 (defvar moom-font--size moom-font-init-size
   "Current font size.")
 
@@ -106,7 +101,8 @@ the actual pixel width will not over the WIDTH."
   (run-hooks 'moom-font-before-resize-hook)
   (moom-font--change-size
    (setq moom-font--size (or n moom-font-init-size)))
-  (when (< width (frame-pixel-width))
+  (when (and width
+             (< width (frame-pixel-width)))
     (moom-font--change-size
      (setq moom-font--size (1- moom-font--size)))) ;; adjust frame-width
   (when moom-font-verbose
@@ -122,8 +118,7 @@ the actual pixel width will not over the WIDTH."
    (setq moom-font--size moom-font-init-size))
   (when moom-font-verbose
     (message "0: %s" moom-font--size))
-  (run-hooks 'moom-font-after-resize-hook)
-  (run-hooks 'moom-font-size-reset-hook))
+  (run-hooks 'moom-font-after-resize-hook))
 
 ;;;###autoload
 (defun moom-font-increase (&optional inc)
