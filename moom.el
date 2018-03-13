@@ -193,7 +193,7 @@ in order to move the frame to specific position."
   (run-hooks 'moom-after-fullscreen-hook))
 
 ;;;###autoload
-(defun moom-fit-frame (area)
+(defun moom-fill-display (area)
   "Move the frame to AREA.
 Font size will be changed appropriately.
 AREA would be 'top, 'bottom, 'left, or 'right."
