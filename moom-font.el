@@ -92,12 +92,18 @@ If `ARG' is nil, the default size is used."
   (run-hooks 'moom-font-resize-hook))
 
 ;;;###autoload
-(defun moom-font-resize (&optional n)
+(defun moom-font-resize (&optional n width)
   "Resize font.
-Optional argument N specifies the target font size."
+`frame-width' will be updated accordingly.
+Optional argument N specifies the target font size.
+If WIDTH is non-nil, ensure an appropriate font size so that
+the actual pixel width will not over the WIDTH."
   (interactive "nSize: ")
   (moom-font--change-size
    (setq moom-font--size (or n moom-font-init-size)))
+  ;; (when (and width (> width 480)) ;; safe guard
+  (when (< width (frame-pixel-width))
+    (moom-font-decrease)) ;; adjust frame-width
   (when moom-font-verbose
     (message "0: %s" moom-font--size))
   (run-hooks 'moom-font-resize-hook))
