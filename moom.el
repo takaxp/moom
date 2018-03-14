@@ -124,6 +124,7 @@ Including fringes and border."
   (if window-system
       (+ (frame-parameter nil 'left-fringe)
          (frame-parameter nil 'right-fringe)
+         (frame-parameter nil 'scroll-bar-width)
          (* 2 (cdr (assoc 'internal-border-width (frame-geometry)))))
     0)) ;; TODO check this by terminal
 
