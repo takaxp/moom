@@ -3,18 +3,96 @@
 * Moom
 A Moom port to GNU Emacs
 
-* Commands to move the frame
+* Commands to control frame by keyboard
+** Shift
 
-- moom-move-frame-right
-- moom-move-frame-left
-- moom-move-frame-to-horizontal-center
-- moom-move-frame-to-vertical-center
-- moom-move-frame-to-edge-top
-- moom-move-frame-to-edge-bottom
-- moom-move-frame-to-center
-- moom-fit-frame-to-fullscreen
-- moom-change-frame-width-single
-- moom-change-frame-width-double 
+ - moom-move-frame-left
+ - moom-move-frame-right
+
+** Fill display
+
+ - moom-fill-display ;; ARG = {'top, 'bottom, 'left, 'right}
+ - moom-fit-frame-to-fullscreen
+
+** Move
+
+ - moom-move-frame-with-user-specify
+
+*** Edge
+
+ - moom-move-frame-to-edge-left
+ - moom-move-frame-to-edge-right
+ - moom-move-frame-to-edge-bottom
+ - moom-move-frame-to-edge-top
+
+*** Center
+ - moom-move-frame-to-center
+ - moom-move-frame-to-vertical-center
+ - moom-move-frame-to-horizontal-center
+
+** Expand
+
+ - moom-change-frame-width-single
+ - moom-change-frame-width-double
+ - moom-change-frame-width-half-again
+ - moom-change-frame-width
+ - moom-change-frame-height
+
+* Example keybindings
+
+#+BEGIN_SRC emacs-lisp
+;; Move the frame to somewhere (default: 0,0, means top-left corner)
+(global-set-key (kbd "M-0") 'moom-move-frame-with-user-specify)
+
+;; Move the frame to left side of the current position
+(global-set-key (kbd "M-1") 'moom-move-frame-left)
+
+;; Move the frame to the center of the window display
+(global-set-key (kbd "M-2") 'moom-move-frame-to-center)
+
+;; Move the frame to right side of the current position
+(global-set-key (kbd "M-3") 'moom-move-frame-right)
+
+;; Move the current frame to the top of the window display
+(global-set-key (kbd "<f1>") 'moom-move-frame-to-edge-top)
+
+;; Move the current frame to the bottom of the window display
+(global-set-key (kbd "S-<f1>") 'moom-move-frame-to-edge-bottom)
+
+;; Move the current frame to the left edge of window display
+(global-set-key (kbd "M-<f1>") 'moom-move-frame-to-edge-left)
+
+;; Move the current frame to the right edge of window display
+(global-set-key (kbd "M-<f3>") 'moom-move-frame-to-edge-right)
+
+;; Expand
+(global-set-key (kbd "C-c f s") 'moom-change-frame-width-single)
+(global-set-key (kbd "C-c f d") 'moom-change-frame-width-double)
+(global-set-key (kbd "C-c f a") 'moom-change-frame-width-half-again)
+
+;; Fill
+(defun my:moom-fill-top () (interactive) (moom-fill-display 'top))
+(defun my:moom-fill-bottom () (interactive) (moom-fill-display 'bottom))
+(defun my:moom-fill-left () (interactive) (moom-fill-display 'left))
+(defun my:moom-fill-right () (interactive) (moom-fill-display 'right))
+(global-set-key (kbd "C-c f f t") 'my:moom-fill-top)
+(global-set-key (kbd "C-c f f b") 'my:moom-fill-bottom)
+(global-set-key (kbd "C-c f f l") 'my:moom-fill-left)
+(global-set-key (kbd "C-c f f r") 'my:moom-fill-right))
+(global-set-key (kbd "<f2>") 'moom-open-height-ring)
+
+;; Fill screen
+(defvar my:fullscreen-flag nil)
+(defun my:toggle-fullscreen ()
+  (interactive)
+  (setq my:fullscreen-flag (not my:fullscreen-flag))
+  (if my:fullscreen-flag
+      (moom-fit-frame-to-fullscreen)
+    (moom-font-size-reset)
+    (moom-change-frame-width-single)
+    (moom-move-frame-to-center)))
+(global-set-key (kbd "M-<f2>") 'my:toggle-fullscreen)
+#+END_SRC
 
 * References
   - [[https://manytricks.com/moom/][Moom · Many Tricks]]
