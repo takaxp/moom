@@ -1,4 +1,4 @@
-;;; moom.el --- Commands to control frame size and position
+;;; moom.el --- Commands to control frame size and position  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2017-2018 Takaaki ISHIKAWA
 
