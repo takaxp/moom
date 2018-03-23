@@ -185,7 +185,7 @@ Including title-bar, menu-bar, offset depends on window system, and border."
                    moom-font-ja-scale
                  1.0)))
     (floor (/ (- pixel-width (moom--frame-internal-width))
-              (* (/ 80 2) scale)))))
+              (* (/ 80 2) scale))))) ;; FIXME
 
 ;;;###autoload
 (defun moom-fullscreen-font-size ()
@@ -215,23 +215,25 @@ in order to move the frame to specific position."
 Font size will be changed appropriately.
 AREA would be 'top, 'bottom, 'left, or 'right."
   (interactive)
-  (let ((pixel-width
-         (- (floor (/ (display-pixel-width) 2.0))
-            (moom--frame-internal-width)))
-        (pixel-height
-         (floor (/ (- (display-pixel-height)
-                      moom-move-frame-pixel-menubar-offset
-                      (* 2 (moom--frame-internal-height)))
-                   2.0)))
-        (pos-x 0)
-        (pos-y 0))
+  (let* ((align-width (display-pixel-width))
+         (pixel-width
+          (- (floor (/ align-width 2.0))
+             (moom--frame-internal-width)))
+         (pixel-height
+          (floor (/ (- (display-pixel-height)
+                       moom-move-frame-pixel-menubar-offset
+                       (* 2 (moom--frame-internal-height)))
+                    2.0)))
+         (pos-x 0)
+         (pos-y 0))
     (cond ((memq area '(top bottom))
            (setq pixel-width (moom--max-frame-pixel-width)))
           ((memq area '(left right))
-           (setq pixel-height (moom--max-frame-pixel-height)))
+           (setq pixel-height (moom--max-frame-pixel-height))
+           (setq align-width (floor (/ align-width 2.0))))
           (nil t))
     (when (fboundp 'moom-font-resize)
-      (moom-font-resize (moom--font-size pixel-width) pixel-width))
+      (moom-font-resize (moom--font-size align-width) align-width))
     (cond ((eq area 'bottom)
            (setq pos-y
                  (+ moom-move-frame-pixel-menubar-offset
