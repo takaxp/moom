@@ -187,6 +187,18 @@ Including title-bar, menu-bar, offset depends on window system, and border."
     (floor (/ (- pixel-width (moom--frame-internal-width))
               (* (/ 80 2) scale))))) ;; FIXME
 
+(defvar moom--last-status nil)
+(defun moom--save-last-status ()
+  "Store the last frame position, size, and font-size."
+  (setq moom--last-status
+        `(("font-size" . ,(if (boundp 'moom-font--size) moom-font--size nil))
+          ("left" . ,(frame-parameter (selected-frame) 'left))
+          ("top" . ,(frame-parameter (selected-frame) 'top))
+          ("width" . ,(frame-width))
+          ("height" . ,(frame-height))
+          ("pixel-width" . ,(frame-pixel-width))
+          ("pixel-height" . ,(frame-pixel-height)))))
+
 ;;;###autoload
 (defun moom-fullscreen-font-size ()
   "Return the maximum font-size for full screen."
@@ -491,6 +503,27 @@ If WIDTH is not provided, `moom-frame-width-single' will be used."
            (frame-height)
            (frame-pixel-width)
            (frame-pixel-height))))
+
+;;;###autoload
+(defun moom-restore-last-status ()
+  "Restore the last frame position, size, and font-size."
+  (interactive)
+  (when moom--last-status
+    (when (fboundp 'moom-font-resize)
+      (moom-font-resize (cdr (assoc "font-size" moom--last-status))))
+    (set-frame-position (selected-frame)
+                        (cdr (assoc "left" moom--last-status))
+                        (cdr (assoc "top" moom--last-status)))
+    (set-frame-size (selected-frame)
+                    (cdr (assoc "width" moom--last-status))
+                    (cdr (assoc "height" moom--last-status)))
+    (set-frame-size (selected-frame)
+                    (- (cdr (assoc "pixel-width" moom--last-status))
+                       (moom--frame-internal-width))
+                    (+ (- (cdr (assoc "pixel-height" moom--last-status))
+                          (* 2 (cdr (assoc 'internal-border-width
+                                           (frame-geometry))))))
+                    t)))
 
 ;;;###autoload
 (defun moom-version ()
