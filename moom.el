@@ -149,6 +149,13 @@ Including title-bar, menu-bar, offset depends on window system, and border."
      (moom--frame-internal-height)
      moom-move-frame-pixel-menubar-offset))
 
+(defun moom--max-half-frame-pixel-height ()
+  "Return the half of maximum height on pixel base."
+  (floor (/ (- (display-pixel-height)
+               moom-move-frame-pixel-menubar-offset
+               (* 2 (moom--frame-internal-height)))
+            2.0)))
+
 (defun moom--max-frame-width ()
   "Return the maximum width based on screen size."
   (floor (/ (moom--max-frame-pixel-width)
@@ -173,10 +180,10 @@ Including title-bar, menu-bar, offset depends on window system, and border."
         (min-height (moom--min-frame-height))
         (heights nil))
     ;; Specify Maximum, Minimum, 50%, and 75% values
-    (add-to-list 'heights (max min-height (* 3 (/ max-height 4))))
-    (add-to-list 'heights (max min-height (/ max-height 2)))
-    (add-to-list 'heights (max min-height (/ max-height 4)))
-    (add-to-list 'heights (max min-height max-height))
+    (cl-pushnew (max min-height (* 3 (/ max-height 4))) heights)
+    (cl-pushnew (max min-height (/ max-height 2)) heights)
+    (cl-pushnew (max min-height (/ max-height 4)) heights)
+    (cl-pushnew (max min-height max-height) heights)
     (moom-make-height-ring heights)))
 
 (defun moom--font-size (pixel-width)
@@ -231,11 +238,7 @@ AREA would be 'top, 'bottom, 'left, or 'right."
          (pixel-width
           (- (floor (/ align-width 2.0))
              (moom--frame-internal-width)))
-         (pixel-height
-          (floor (/ (- (display-pixel-height)
-                       moom-move-frame-pixel-menubar-offset
-                       (* 2 (moom--frame-internal-height)))
-                    2.0)))
+         (pixel-height (moom--max-half-frame-pixel-height))
          (pos-x 0)
          (pos-y 0))
     (cond ((memq area '(top bottom))
@@ -427,10 +430,13 @@ If FORCE non-nil, generate ring by with new values."
             force)
     (moom--make-frame-height-ring))
   (let ((height (car moom--height-ring)))
-    (if (equal height (moom--max-frame-height))
-        (set-frame-height (selected-frame)
-                          (moom--max-frame-pixel-height) nil t)
-      (moom-change-frame-height (car moom--height-ring))))
+    (cond ((equal height (moom--max-frame-height))
+           (set-frame-height (selected-frame)
+                             (moom--max-frame-pixel-height) nil t))
+          ((equal height (/ (moom--max-frame-height) 2))
+           (set-frame-height (selected-frame)
+                             (moom--max-half-frame-pixel-height) nil t))
+          (t (moom-change-frame-height height))))
   (setq moom--height-ring
         (append (cdr moom--height-ring)
                 (list (car moom--height-ring)))))
