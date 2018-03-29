@@ -231,6 +231,8 @@ in order to move the frame to specific position."
   (set-frame-size (selected-frame)
                   (moom--max-frame-pixel-width)
                   (moom--max-frame-pixel-height) t)
+  (when moom-verbose
+    (moom-print-status))
   (run-hooks 'moom-after-fullscreen-hook))
 
 ;;;###autoload
@@ -265,7 +267,9 @@ AREA would be 'top, 'bottom, 'left, or 'right."
           (nil t))
     (when (memq area '(top bottom left right))
       (set-frame-position (selected-frame) pos-x pos-y)
-      (set-frame-size (selected-frame) pixel-width pixel-height t))))
+      (set-frame-size (selected-frame) pixel-width pixel-height t)))
+  (when moom-verbose
+    (moom-print-status)))
 
 ;;;###autoload
 (defun moom-cycle-line-spacing ()
@@ -298,7 +302,9 @@ In Lisp code, FRAME is the frame to move."
               (nth 1 moom-horizontal-shifts))
              (t
               (error (format "%s is wrong value." moom-horizontal-shifts)))))
-   FRAME))
+   FRAME)
+  (when moom-verbose
+    (moom-print-status)))
 
 ;;;###autoload
 (defun moom-move-frame-left (&optional N FRAME)
@@ -313,7 +319,9 @@ In Lisp code, FRAME is the frame to move."
               (nth 0 moom-horizontal-shifts))
              (t
               (error (format "%s is wrong value." moom-horizontal-shifts)))))
-   FRAME))
+   FRAME)
+  (when moom-verbose
+    (moom-print-status)))
 
 ;;;###autoload
 (defun moom-toggle-auto-move-frame-to-center ()
@@ -335,7 +343,9 @@ In Lisp code, FRAME is the frame to move."
                          (/ (- (display-pixel-width)
                                (frame-pixel-width))
                             2))
-                      (frame-parameter (selected-frame) 'top)))
+                      (frame-parameter (selected-frame) 'top))
+  (when moom-verbose
+    (moom-print-status)))
 
 ;;;###autoload
 (defun moom-move-frame-to-vertical-center ()
@@ -346,7 +356,9 @@ In Lisp code, FRAME is the frame to move."
                       (+ (cdr moom-move-frame-pixel-offset)
                          (/ (- (display-pixel-height)
                                (frame-pixel-height))
-                            2))))
+                            2)))
+  (when moom-verbose
+    (moom-print-status)))
 
 ;;;###autoload
 (defun moom-move-frame-to-edge-top ()
@@ -354,7 +366,9 @@ In Lisp code, FRAME is the frame to move."
   (interactive)
   (set-frame-position (selected-frame)
                       (frame-parameter (selected-frame) 'left)
-                      0))
+                      0)
+  (when moom-verbose
+    (moom-print-status)))
 
 ;;;###autoload
 (defun moom-move-frame-to-edge-bottom ()
@@ -366,7 +380,9 @@ Please set `moom-move-frame-pixel-menubar-offset'."
                       (frame-parameter (selected-frame) 'left)
                       (- (- (display-pixel-height)
                             (frame-pixel-height))
-                         moom-move-frame-pixel-menubar-offset)))
+                         moom-move-frame-pixel-menubar-offset))
+  (when moom-verbose
+    (moom-print-status)))
 
 ;;;###autoload
 (defun moom-move-frame-to-edge-right ()
@@ -374,7 +390,9 @@ Please set `moom-move-frame-pixel-menubar-offset'."
   (interactive)
   (set-frame-position (selected-frame)
                       (- (display-pixel-width) (frame-pixel-width))
-                      (frame-parameter (selected-frame) 'top)))
+                      (frame-parameter (selected-frame) 'top))
+  (when moom-verbose
+    (moom-print-status)))
 
 ;;;###autoload
 (defun moom-move-frame-to-edge-left ()
@@ -382,7 +400,9 @@ Please set `moom-move-frame-pixel-menubar-offset'."
   (interactive)
   (set-frame-position (selected-frame)
                       0
-                      (frame-parameter (selected-frame) 'top)))
+                      (frame-parameter (selected-frame) 'top))
+  (when moom-verbose
+    (moom-print-status)))
 
 ;;;###autoload
 (defun moom-move-frame-to-center ()
@@ -445,6 +465,8 @@ If FORCE non-nil, generate ring by with new values."
   (setq moom--height-ring
         (append (cdr moom--height-ring)
                 (list (car moom--height-ring))))
+  (when moom-verbose
+    (moom-print-status))
   (run-hooks 'moom-resize-frame-height-hook))
 
 ;;;###autoload
@@ -472,7 +494,9 @@ Argument FRAME-HEIGHT specifies new frame height."
       (setq frame-height min-height)
       (when moom-verbose
         (message "Force set the height %s." frame-height)))
-    (set-frame-height (selected-frame) (floor frame-height))))
+    (set-frame-height (selected-frame) (floor frame-height)))
+  (when moom-verbose
+    (moom-print-status)))
 
 ;;;###autoload
 (defun moom-change-frame-width (&optional frame-width)
@@ -482,7 +506,9 @@ If WIDTH is not provided, `moom-frame-width-single' will be used."
   (let ((width (or frame-width
                    moom-frame-width-single)))
     (setq moom--frame-width width)
-    (set-frame-width (selected-frame) width)))
+    (set-frame-width (selected-frame) width))
+  (when moom-verbose
+    (moom-print-status)))
 
 ;;;###autoload
 (defun moom-change-frame-width-single ()
