@@ -209,7 +209,9 @@ Including title-bar, menu-bar, offset depends on window system, and border."
           ("width" . ,(frame-width))
           ("height" . ,(frame-height))
           ("pixel-width" . ,(frame-pixel-width))
-          ("pixel-height" . ,(frame-pixel-height)))))
+          ("pixel-height" . ,(frame-pixel-height))))
+  (when moom-verbose
+    (moom-print-status)))
 
 ;;;###autoload
 (defun moom-fullscreen-font-size ()
@@ -416,13 +418,9 @@ Please set `moom-move-frame-pixel-menubar-offset'."
         (center-pos-y
          (+ (cdr moom-move-frame-pixel-offset)
             (/ (- (display-pixel-height) (frame-pixel-height)) 2))))
-    (set-frame-position (selected-frame) center-pos-x center-pos-y)
-    (when moom-verbose
-      (message "Frame move: from (%s, %s) to (%s, %s)"
-               prev-pos-x
-               prev-pos-y
-               (frame-parameter (selected-frame) 'left)
-               (frame-parameter (selected-frame) 'top)))))
+    (set-frame-position (selected-frame) center-pos-x center-pos-y))
+  (when moom-verbose
+    (moom-print-status)))
 
 ;;;###autoload
 (defun moom-move-frame-with-user-specify (&optional arg)
@@ -440,11 +438,9 @@ Use prefix to specify the destination position by ARG."
                    (read-from-minibuffer
                     (format "Y: from %s to "
                             (frame-parameter (selected-frame) 'top))))))
-    (set-frame-position (selected-frame) pos-x pos-y)
-    (when moom-verbose
-      (message "Frame move: (%s, %s)"
-               (frame-parameter (selected-frame) 'left)
-               (frame-parameter (selected-frame) 'top)))))
+    (set-frame-position (selected-frame) pos-x pos-y))
+  (when moom-verbose
+    (moom-print-status)))
 
 ;;;###autoload
 (defun moom-open-height-ring (&optional force)
