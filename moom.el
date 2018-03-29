@@ -561,7 +561,9 @@ If WIDTH is not provided, `moom-frame-width-single' will be used."
                     (+ (- (cdr (assoc "pixel-height" moom--last-status))
                           (* 2 (cdr (assoc 'internal-border-width
                                            (frame-geometry))))))
-                    t)))
+                    t))
+  (when moom-verbose
+    (moom-print-status)))
 
 ;;;###autoload
 (defun moom-version ()
