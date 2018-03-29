@@ -113,6 +113,11 @@ The default height is 22 for macOS."
   :type 'hook
   :group 'moom)
 
+(defcustom moom-resize-frame-height-hook nil
+  "Hook runs after resizing the frame height."
+  :type 'hook
+  :group 'moom)
+
 (defvar moom-font-module (require 'moom-font nil t)
   "A flag to check the availability of `moom-font'.")
 (defvar moom--frame-width moom-frame-width-single)
@@ -439,7 +444,8 @@ If FORCE non-nil, generate ring by with new values."
           (t (moom-change-frame-height height))))
   (setq moom--height-ring
         (append (cdr moom--height-ring)
-                (list (car moom--height-ring)))))
+                (list (car moom--height-ring))))
+  (run-hooks 'moom-resize-frame-height-hook))
 
 ;;;###autoload
 (defun moom-make-height-ring (heights)
