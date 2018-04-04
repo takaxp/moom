@@ -445,7 +445,7 @@ Use prefix to specify the destination position by ARG."
 ;;;###autoload
 (defun moom-open-height-ring (&optional force)
   "Change frame height and update the ring.
-If FORCE non-nil, generate ring by with new values."
+If FORCE non-nil, generate ring by new values."
   (interactive)
   (when (or (not moom--height-ring)
             force)
