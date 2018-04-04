@@ -410,9 +410,7 @@ Please set `moom-move-frame-pixel-menubar-offset'."
 (defun moom-move-frame-to-center ()
   "Move the current frame to the center of the window display."
   (interactive)
-  (let ((prev-pos-x (frame-parameter (selected-frame) 'left))
-        (prev-pos-y (frame-parameter (selected-frame) 'top))
-        (center-pos-x
+  (let ((center-pos-x
          (+ (car moom-move-frame-pixel-offset)
             (/ (- (display-pixel-width) (frame-pixel-width)) 2)))
         (center-pos-y
@@ -573,7 +571,7 @@ If WIDTH is not provided, `moom-frame-width-single' will be used."
 
 ;; JP-font module
 (when moom-font-module
-  (add-hook 'moom-font-after-resize-hook #'moom--update-frame-height-ring))
+  (add-hook 'moom-font-after-resize-hook #'moom--make-frame-height-ring))
 
 (provide 'moom)
 
