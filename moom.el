@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 0.9.5
+;; Version: 0.9.6
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1") (frame-cmds "0"))
@@ -42,7 +42,7 @@
 
 (defcustom moom-move-frame-pixel-menubar-offset 23
   "Offset of the menubar.
-The default height is 22 for macOS."
+The default height is 23 for macOS."
   :type 'integer
   :group 'moom)
 
@@ -51,18 +51,8 @@ The default height is 22 for macOS."
   :type 'sexp
   :group 'moom)
 
-(defcustom moom-auto-move-frame-to-center nil
-  "Toggle status of moving frame to center."
-  :type 'boolean
-  :group 'moom)
-
 (defcustom moom-min-frame-height 16
   "The minimum height."
-  :type 'integer
-  :group 'moom)
-
-(defcustom moom-fullscreen-font-size 24
-  "Font size will be used for fullscreen."
   :type 'integer
   :group 'moom)
 
@@ -118,7 +108,7 @@ The default height is 22 for macOS."
   :type 'hook
   :group 'moom)
 
-(defvar moom-font-module (require 'moom-font nil t)
+(defvar moom--font-module (require 'moom-font nil t)
   "A flag to check the availability of `moom-font'.")
 (defvar moom--frame-width moom-frame-width-single)
 (defvar moom--height-ring nil)
@@ -199,6 +189,12 @@ Including title-bar, menu-bar, offset depends on window system, and border."
     (floor (/ (- pixel-width (moom--frame-internal-width))
               (* (/ 80 2) scale))))) ;; FIXME
 
+(defun moom--fullscreen-font-size ()
+  "Return the maximum font-size for full screen."
+  (if (window-system
+       (moom--font-size (display-pixel-width)))
+      12)) ;; FIXME, use face-attribute
+
 (defvar moom--last-status nil)
 (defun moom--save-last-status ()
   "Store the last frame position, size, and font-size."
@@ -214,13 +210,6 @@ Including title-bar, menu-bar, offset depends on window system, and border."
     (moom-print-status)))
 
 ;;;###autoload
-(defun moom-fullscreen-font-size ()
-  "Return the maximum font-size for full screen."
-  (if window-system
-      (moom--font-size (display-pixel-width))
-    moom-fullscreen-font-size))
-
-;;;###autoload
 (defun moom-fit-frame-to-fullscreen ()
   "Change font size and expand frame width and height to fit full.
 Add appropriate functions to `moom-before-fullscreen-hook'
@@ -228,7 +217,7 @@ in order to move the frame to specific position."
   (interactive)
   (run-hooks 'moom-before-fullscreen-hook)
   (when (fboundp 'moom-font-resize)
-    (moom-font-resize (moom-fullscreen-font-size)
+    (moom-font-resize (moom--fullscreen-font-size)
                       (display-pixel-width)))
   (set-frame-size (selected-frame)
                   (moom--max-frame-pixel-width)
@@ -326,17 +315,6 @@ In Lisp code, FRAME is the frame to move."
     (moom-print-status)))
 
 ;;;###autoload
-(defun moom-toggle-auto-move-frame-to-center ()
-  "Toggle auto move to the center of the display."
-  (interactive)
-  (setq moom-auto-move-frame-to-center
-        (not moom-auto-move-frame-to-center))
-  (when moom-verbose
-    (if moom-auto-move-frame-to-center
-        (message "Toggle auto move ON")
-      (message "Toggle auto move OFF"))))
-
-;;;###autoload
 (defun moom-move-frame-to-horizontal-center ()
   "Move the current frame to the horizontal center of the window display."
   (interactive)
@@ -421,7 +399,7 @@ Please set `moom-move-frame-pixel-menubar-offset'."
     (moom-print-status)))
 
 ;;;###autoload
-(defun moom-move-frame-with-user-specify (&optional arg)
+(defun moom-move-frame (&optional arg)
   "Move the frame to somewhere (default: 0,0).
 Use prefix to specify the destination position by ARG."
   (interactive "P")
@@ -563,14 +541,14 @@ If WIDTH is not provided, `moom-frame-width-single' will be used."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "0.9.5"))
+  (let ((moom-release "0.9.6"))
     (message "Moom: v%s" moom-release)))
 
 ;; init call
 (moom--make-frame-height-ring)
 
 ;; JP-font module
-(when moom-font-module
+(when moom--font-module
   (add-hook 'moom-font-after-resize-hook #'moom--make-frame-height-ring))
 
 (provide 'moom)
