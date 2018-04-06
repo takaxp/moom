@@ -191,9 +191,9 @@ Including title-bar, menu-bar, offset depends on window system, and border."
 
 (defun moom--fullscreen-font-size ()
   "Return the maximum font-size for full screen."
-  (if (window-system
-       (moom--font-size (display-pixel-width)))
-      12)) ;; FIXME, use face-attribute
+  (if window-system
+      (moom--font-size (display-pixel-width))
+    12)) ;; FIXME, use face-attribute
 
 (defvar moom--last-status nil)
 (defun moom--save-last-status ()
