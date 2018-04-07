@@ -48,6 +48,17 @@
 
 No need to load =moom-font.el= explicitly. If the package is installed in your system, then it will be activated automatically. The package is basically for the users who rely on Japanese fonts.
 
+** Setting
+
+=moom-font-ascii=, =moom-font-ja=, =moom-font-ja-scale= should be configured according to your environment. The default values are =Monaco=, =Migu 2M=, =1.2=. If you don't know your font, you can easily check by =M-x describe-char= on a character. In future, the font types will be automatically identified without any settings.
+
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load "moom-font"
+  (setq moom-font-ascii "Menlo")
+  (setq moom-font-ja "Hiragino Maru Gothic Pro")
+  (setq moom-font-ja-scale 1.4))
+#+END_SRC
+
 ** Resize font
 
  - moom-font-increase

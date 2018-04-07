@@ -88,7 +88,7 @@ If `ARG' is nil, the default size is used."
       (set-fontset-font nil '(#x0370 . #x03FF) spec)
       (set-fontset-font nil 'mule-unicode-0100-24ff spec))
     (setq face-font-rescale-alist
-          `((".*Migu.*" . ,ja-font-scale)))))
+          `(((concat ".*" ,ja-font ".*" . ,ja-font-scale))))))
 
 ;;;###autoload
 (defun moom-font-resize (&optional n width)
