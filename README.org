@@ -57,7 +57,10 @@ No need to load =moom-font.el= explicitly. If the package is installed in your s
 * Example keybindings
 ** Overview
 
- - [ ] Insert a figure to here
+In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs.app. So it is natural to concentrate all keybindings associated to control frame position and size into the left side of your keyboard with pressing =Cmd=. The following example keybindings are basically designed in that manner.
+
+#+CAPTION: Assgined keys
+[[./fig/layout.png]]
 
 ** Move
 
