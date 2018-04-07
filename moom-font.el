@@ -78,6 +78,7 @@ If `ARG' is nil, the default size is used."
   (let* ((font-size moom-font--size)
          (ja-font-scale moom-font-ja-scale)
          (ja-font moom-font-ja)
+         (ja-rescale (concat ".*" ja-font ".*"))
          (ascii-font moom-font-ascii))
     (set-fontset-font nil 'ascii (font-spec :family ascii-font :size font-size))
     (let ((spec (font-spec :family ja-font :size font-size)))
@@ -88,7 +89,7 @@ If `ARG' is nil, the default size is used."
       (set-fontset-font nil '(#x0370 . #x03FF) spec)
       (set-fontset-font nil 'mule-unicode-0100-24ff spec))
     (setq face-font-rescale-alist
-          `(((concat ".*" ,ja-font ".*" . ,ja-font-scale))))))
+          `((,ja-rescale . ,moom-font-ja-scale)))))
 
 ;;;###autoload
 (defun moom-font-resize (&optional n width)
