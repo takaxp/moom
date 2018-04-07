@@ -501,6 +501,38 @@ If WIDTH is not provided, `moom-frame-width-single' will be used."
   (moom-change-frame-width (floor (* 1.5 moom-frame-width-single))))
 
 ;;;###autoload
+(defun moom-reset ()
+  "Reset associated parameters."
+  (interactive)
+  (moom--save-last-status)
+  (moom-restore-last-status moom--init-status))
+
+;;;###autoload
+(defun moom-restore-last-status (&optional status)
+  "Restore the last frame position, size, and font-size.
+STATUS is a list storing font, position, region, and pixel-region."
+  (interactive)
+  (when status
+    (setq moom--last-status status))
+  (when (fboundp 'moom-font-resize)
+    (moom-font-resize (cdr (assoc "font-size" moom--last-status))))
+  (set-frame-position (selected-frame)
+                      (cdr (assoc "left" moom--last-status))
+                      (cdr (assoc "top" moom--last-status)))
+  (set-frame-size (selected-frame)
+                  (cdr (assoc "width" moom--last-status))
+                  (cdr (assoc "height" moom--last-status)))
+  (set-frame-size (selected-frame)
+                  (- (cdr (assoc "pixel-width" moom--last-status))
+                     (moom--frame-internal-width))
+                  (+ (- (cdr (assoc "pixel-height" moom--last-status))
+                        (* 2 (cdr (assoc 'internal-border-width
+                                         (frame-geometry))))))
+                  t)
+  (when moom-verbose
+    (moom-print-status)))
+
+;;;###autoload
 (defun moom-print-status ()
   "Print font size, frame origin, and frame size in mini buffer."
   (interactive)
@@ -515,29 +547,6 @@ If WIDTH is not provided, `moom-frame-width-single' will be used."
            (frame-pixel-height))))
 
 ;;;###autoload
-(defun moom-restore-last-status ()
-  "Restore the last frame position, size, and font-size."
-  (interactive)
-  (when moom--last-status
-    (when (fboundp 'moom-font-resize)
-      (moom-font-resize (cdr (assoc "font-size" moom--last-status))))
-    (set-frame-position (selected-frame)
-                        (cdr (assoc "left" moom--last-status))
-                        (cdr (assoc "top" moom--last-status)))
-    (set-frame-size (selected-frame)
-                    (cdr (assoc "width" moom--last-status))
-                    (cdr (assoc "height" moom--last-status)))
-    (set-frame-size (selected-frame)
-                    (- (cdr (assoc "pixel-width" moom--last-status))
-                       (moom--frame-internal-width))
-                    (+ (- (cdr (assoc "pixel-height" moom--last-status))
-                          (* 2 (cdr (assoc 'internal-border-width
-                                           (frame-geometry))))))
-                    t))
-  (when moom-verbose
-    (moom-print-status)))
-
-;;;###autoload
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
@@ -546,6 +555,8 @@ If WIDTH is not provided, `moom-frame-width-single' will be used."
 
 ;; init call
 (moom--make-frame-height-ring)
+(moom--save-last-status)
+(defvar moom--init-status moom--last-status)
 
 ;; JP-font module
 (when moom--font-module

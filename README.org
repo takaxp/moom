@@ -129,7 +129,14 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
     (moom-restore-last-status)))
 #+END_SRC
 
-** Resize and reset (moom-font.el is required)
+** Reset and resize
+*** Reset Frame size, position, and font size
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-c C-0") 'moom-reset)
+#+END_SRC
+
+*** Font size (require moom-font.el)
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C--") 'moom-font-decrease)
@@ -137,7 +144,6 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 (global-set-key (kbd "C-_") 'text-scale-decrease) ;; built-in for ascii
 (global-set-key (kbd "C-+") 'text-scale-increase) ;; built-in for ascii
 (global-set-key (kbd "C-c f f m") 'my-mid-font-size)
-(global-set-key (kbd "C-c f f 0") 'my-frame-reset)
 
 (add-hook 'moom-font-after-resize-hook #'moom-move-frame-to-edge-top)
 (defun my-mid-font-size ()
@@ -145,10 +151,6 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
   (moom-font-resize
    (floor (/ (+ moom-font-init-size (moom-fullscreen-font-size)) 2)))
   (moom-move-frame-to-center))
-(defun my-frame-reset ()
-  (interactive)
-  (moom-font-size-reset)
-  (moom-change-frame-width-single))
 #+END_SRC
 
 * Hooks
