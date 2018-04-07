@@ -234,8 +234,8 @@ in order to move the frame to specific position."
   (if (setq moom--maximized (not moom--maximized))
       (progn
         (moom--save-last-status)
-        (moom-move-frame)
-        (moom-fit-frame-to-fullscreen))
+        (moom-fit-frame-to-fullscreen)
+        (moom-move-frame))
     (moom-restore-last-status)))
 
 ;;;###autoload
