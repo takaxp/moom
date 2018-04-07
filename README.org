@@ -117,17 +117,7 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 ** Fill (screen by toggle)
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "M-<f2>") 'my-toggle-frame-maximized)
-
-(defvar my-fullscreen-flag nil)
-(add-hook 'moom-before-fullscreen-hook #'moom--save-last-status)
-(add-hook 'moom-after-fullscreen-hook #'moom-move-frame-to-center)
-(defun my-toggle-frame-maximized ()
-  (interactive)
-  (setq my-fullscreen-flag (not my-fullscreen-flag))
-  (if my-fullscreen-flag
-      (moom-fit-frame-to-fullscreen)
-    (moom-restore-last-status)))
+(global-set-key (kbd "M-<f2>") 'moom-toggle-frame-maximized)
 #+END_SRC
 
 ** Reset and resize

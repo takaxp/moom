@@ -226,6 +226,18 @@ in order to move the frame to specific position."
     (moom-print-status))
   (run-hooks 'moom-after-fullscreen-hook))
 
+(defvar moom--maximized nil)
+;;;###autoload
+(defun moom-toggle-frame-maximized ()
+  "Toggle fullscreen."
+  (interactive)
+  (if (setq moom--maximized (not moom--maximized))
+      (progn
+        (moom--save-last-status)
+        (moom-move-frame)
+        (moom-fit-frame-to-fullscreen))
+    (moom-restore-last-status)))
+
 ;;;###autoload
 (defun moom-fill-display (area)
   "Move the frame to AREA.
