@@ -263,6 +263,18 @@ AREA would be 'top, 'bottom, 'left, or 'right."
     (moom-print-status)))
 
 ;;;###autoload
+(defun moom-fill-display-band (&optional direction)
+  "Fill screen by band region.
+DIRECTION would be 'horizontal or 'vertical."
+  (interactive)
+  (when (cond ((memq direction '(vertical nil))
+               (moom-fill-display 'left) t)
+              ((eq direction 'horizontal)
+               (moom-fill-display 'top) t)
+              (t nil))
+    (moom-move-frame-to-center)))
+
+;;;###autoload
 (defun moom-cycle-line-spacing ()
   "Change ‘line-spacing’ value between a range."
   (interactive)
@@ -505,7 +517,8 @@ If WIDTH is not provided, `moom-frame-width-single' will be used."
   "Reset associated parameters."
   (interactive)
   (moom--save-last-status)
-  (moom-restore-last-status moom--init-status))
+  (moom-restore-last-status moom--init-status)
+  (moom--make-frame-height-ring))
 
 ;;;###autoload
 (defun moom-restore-last-status (&optional status)

@@ -103,6 +103,7 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 ** Fill
 
 #+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-c f f m") 'moom-fill-display-band)
 (global-set-key (kbd "C-c f f t") 'my-moom-fill-top)
 (global-set-key (kbd "C-c f f b") 'my-moom-fill-bottom)
 (global-set-key (kbd "C-c f f l") 'my-moom-fill-left)
@@ -141,16 +142,11 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C--") 'moom-font-decrease)
 (global-set-key (kbd "C-=") 'moom-font-increase)
+(global-set-key (kbd "C-0") 'moom-font-size-reset)
 (global-set-key (kbd "C-_") 'text-scale-decrease) ;; built-in for ascii
 (global-set-key (kbd "C-+") 'text-scale-increase) ;; built-in for ascii
-(global-set-key (kbd "C-c f f m") 'my-mid-font-size)
 
 (add-hook 'moom-font-after-resize-hook #'moom-move-frame-to-edge-top)
-(defun my-mid-font-size ()
-  (interactive)
-  (moom-font-resize
-   (floor (/ (+ moom-font-init-size (moom-fullscreen-font-size)) 2)))
-  (moom-move-frame-to-center))
 #+END_SRC
 
 * Hooks
