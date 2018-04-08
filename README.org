@@ -2,6 +2,10 @@
 #+STARTUP: showall
 
 * Commands to control frame by keyboard
+
+#+CAPTION: demo for moving and zooming, fullscreen
+[[./fig/demo1.gif]]
+
 ** Move
 
  - moom-move-frame
@@ -47,6 +51,9 @@
 * Extension to integrate font resizing
 
 No need to load =moom-font.el= explicitly. If the package is installed in your system, then it will be activated automatically. The package is basically for the users who rely on Japanese fonts.
+
+#+CAPTION: demo for increasing and decreasing fonts, fullscreen
+[[./fig/demo2.gif]]
 
 ** Setting
 
