@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 0.9.6
+;; Version: 0.9.7
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1") (frame-cmds "0"))
@@ -525,7 +525,7 @@ If WIDTH is not provided, `moom-frame-width-single' will be used."
 ;;;###autoload
 (defun moom-update-height-steps (arg)
   "Change number of steps of the height ring by ARG.
-The default steps is 4."
+The default step is 4."
   (when (and (integerp arg)
              (> arg 1))
     (setq moom--height-steps arg)
@@ -574,7 +574,7 @@ STATUS is a list storing font, position, region, and pixel-region."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "0.9.6"))
+  (let ((moom-release "0.9.7"))
     (message "Moom: v%s" moom-release)))
 
 ;; init call
