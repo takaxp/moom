@@ -1,7 +1,7 @@
 #+TITLE: Moom - A Moom port to GNU Emacs
 #+STARTUP: showall
 
-* Commands to control frame by keyboard
+* Commands to control frame position and size by keyboard
 
 #+CAPTION: demo for moving and zooming, fullscreen
 [[./fig/demo1.gif]]
@@ -153,6 +153,10 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
  - moom-resize-frame-height-hook
  - moom-font-before-resize-hook (in moom-font.el)
  - moom-font-after-resize-hook (in moom-font.el)
+
+* Dependency
+
+This package requires [[https://github.com/emacsmirror/frame-cmds][frame-cmds.el]].
 
 * References
   - [[https://manytricks.com/moom/][Moom · Many Tricks]]
