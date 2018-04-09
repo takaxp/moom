@@ -1,7 +1,7 @@
 #+TITLE: Moom - A Moom port to GNU Emacs
 #+STARTUP: showall
 
-https://img.shields.io/maintenance/yes/2018.svg
+[[https://img.shields.io/maintenance/yes/2018.svg]]
 
 * Commands to control frame position and size by keyboard
 
