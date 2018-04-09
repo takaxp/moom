@@ -44,8 +44,9 @@
 
 ** Other functions
 
- - moom-print-status
+ - moom-update-height-steps
  - moom-restore-last-status
+ - moom-print-status
  - moom-version
 
 * Extension to integrate font resizing

@@ -112,6 +112,7 @@ The default height is 23 for macOS."
   "A flag to check the availability of `moom-font'.")
 (defvar moom--frame-width moom-frame-width-single)
 (defvar moom--height-ring nil)
+(defvar moom--height-steps 4)
 
 (defun moom--frame-internal-width ()
   "Width of internal objects.
@@ -165,21 +166,18 @@ Including title-bar, menu-bar, offset depends on window system, and border."
   "Return the minimum height of frame."
   moom-min-frame-height)
 
-(defun moom--update-frame-height-ring ()
-  "Open ring after re-creating ring."
-  (moom-open-height-ring t))
-
 (defun moom--make-frame-height-ring ()
   "Create ring to change frame height."
   (let ((max-height (moom--max-frame-height))
         (min-height (moom--min-frame-height))
+        (steps moom--height-steps)
         (heights nil))
-    ;; Specify Maximum, Minimum, 50%, and 75% values
-    (cl-pushnew (max min-height (* 3 (/ max-height 4))) heights)
-    (cl-pushnew (max min-height (/ max-height 2)) heights)
-    (cl-pushnew (max min-height (/ max-height 4)) heights)
+    (while (> (setq steps (1- steps)) 0)
+      (cl-pushnew (max min-height
+                       (/ (* steps max-height) moom--height-steps))
+                  heights))
     (cl-pushnew (max min-height max-height) heights)
-    (moom-make-height-ring heights)))
+    (setq moom--height-ring (copy-sequence heights))))
 
 (defun moom--font-size (pixel-width)
   "Return an appropriate font-size based on PIXEL-WIDTH."
@@ -443,12 +441,10 @@ Use prefix to specify the destination position by ARG."
     (moom-print-status)))
 
 ;;;###autoload
-(defun moom-open-height-ring (&optional force)
-  "Change frame height and update the ring.
-If FORCE non-nil, generate ring by new values."
+(defun moom-open-height-ring ()
+  "Change frame height and update the ring."
   (interactive)
-  (when (or (not moom--height-ring)
-            force)
+  (unless moom--height-ring
     (moom--make-frame-height-ring))
   (let ((height (car moom--height-ring)))
     (cond ((equal height (moom--max-frame-height))
@@ -464,12 +460,6 @@ If FORCE non-nil, generate ring by new values."
   (when moom-verbose
     (moom-print-status))
   (run-hooks 'moom-resize-frame-height-hook))
-
-;;;###autoload
-(defun moom-make-height-ring (heights)
-  "Cycle change the height of the current frame.
-Argument HEIGHTS specifies a secuece of frame heights."
-  (setq moom--height-ring (copy-sequence heights)))
 
 ;;;###autoload
 (defun moom-change-frame-height (&optional frame-height)
@@ -531,6 +521,15 @@ If WIDTH is not provided, `moom-frame-width-single' will be used."
   (moom--save-last-status)
   (moom-restore-last-status moom--init-status)
   (moom--make-frame-height-ring))
+
+;;;###autoload
+(defun moom-update-height-steps (arg)
+  "Change number of steps of the height ring by ARG.
+The default steps is 4."
+  (when (and (integerp arg)
+             (> arg 1))
+    (setq moom--height-steps arg)
+    (moom--make-frame-height-ring)))
 
 ;;;###autoload
 (defun moom-restore-last-status (&optional status)
