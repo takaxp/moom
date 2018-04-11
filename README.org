@@ -43,6 +43,10 @@
  - moom-fill-bottom
  - moom-fill-left
  - moom-fill-right
+ - moom-fill-top-left
+ - moom-fill-top-right
+ - moom-fill-bottom-left
+ - moom-fill-bottom-right
  - moom-fill-band
  - moom-fit-frame-to-fullscreen
 
@@ -119,6 +123,10 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 (global-set-key (kbd "C-c f f b") 'moom-fill-bottom)
 (global-set-key (kbd "C-c f f l") 'moom-fill-left)
 (global-set-key (kbd "C-c f f r") 'moom-fill-right)
+(global-set-key (kbd "C-c f f 1") 'moom-fill-top-left)
+(global-set-key (kbd "C-c f f 2") 'moom-fill-top-right)
+(global-set-key (kbd "C-c f f 3") 'moom-fill-bottom-left)
+(global-set-key (kbd "C-c f f 4") 'moom-fill-bottom-right)
 (global-set-key (kbd "C-c f f m") 'moom-fill-band)
 #+END_SRC
 

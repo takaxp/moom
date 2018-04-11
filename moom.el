@@ -210,7 +210,7 @@ Including title-bar, menu-bar, offset depends on window system, and border."
 (defun moom--fill-display (area)
   "Move the frame to AREA.
 Font size will be changed appropriately.
-AREA would be 'top, 'bottom, 'left, or 'right."
+AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
   (interactive)
   (moom--save-last-status)
   (let* ((align-width (display-pixel-width))
@@ -220,24 +220,28 @@ AREA would be 'top, 'bottom, 'left, or 'right."
          (pixel-height (moom--max-half-frame-pixel-height))
          (pos-x 0)
          (pos-y 0))
+    ;; Region
     (cond ((memq area '(top bottom))
            (setq pixel-width (moom--max-frame-pixel-width)))
           ((memq area '(left right))
            (setq pixel-height (moom--max-frame-pixel-height))
            (setq align-width (floor (/ align-width 2.0))))
+          ((memq area '(topl topr botl botr))
+           (setq align-width (floor (/ align-width 2.0))))
           (nil t))
+    ;; Font size
     (when (fboundp 'moom-font-resize)
       (moom-font-resize (moom--font-size align-width) align-width))
-    (cond ((eq area 'bottom)
-           (setq pos-y
-                 (+ moom-move-frame-pixel-menubar-offset
-                    (ceiling (/ (- (display-pixel-height)
-                                   moom-move-frame-pixel-menubar-offset)
-                                2.0)))))
-          ((eq area 'right)
-           (setq pos-x (ceiling (/ (display-pixel-width) 2.0))))
-          (nil t))
-    (when (memq area '(top bottom left right))
+    ;; Position
+    (when (memq area '(right topr botr))
+      (setq pos-x (ceiling (/ (display-pixel-width) 2.0))))
+    (when (memq area '(bottom botl botr))
+      (setq pos-y
+            (+ moom-move-frame-pixel-menubar-offset
+               (ceiling (/ (- (display-pixel-height)
+                              moom-move-frame-pixel-menubar-offset)
+                           2.0)))))
+    (when (memq area '(top bottom left right topl topr botl botr))
       (set-frame-position (selected-frame) pos-x pos-y)
       (set-frame-size (selected-frame) pixel-width pixel-height t)))
   (when moom-verbose
@@ -295,6 +299,30 @@ in order to move the frame to specific position."
   "Fill right half of screen."
   (interactive)
   (moom--fill-display 'right))
+
+;;;###autoload
+(defun moom-fill-top-left ()
+  "Fill top left quarter of screen."
+  (interactive)
+  (moom--fill-display 'topl))
+
+;;;###autoload
+(defun moom-fill-top-right ()
+  "Fill top right quarter of screen."
+  (interactive)
+  (moom--fill-display 'topr))
+
+;;;###autoload
+(defun moom-fill-bottom-left ()
+  "Fill bottom left quarter of screen."
+  (interactive)
+  (moom--fill-display 'botl))
+
+;;;###autoload
+(defun moom-fill-bottom-right ()
+  "Fill bottom right quarter of screen."
+  (interactive)
+  (moom--fill-display 'botr))
 
 ;;;###autoload
 (defun moom-fill-band (&optional direction)
