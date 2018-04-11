@@ -207,41 +207,12 @@ Including title-bar, menu-bar, offset depends on window system, and border."
   (when moom-verbose
     (moom-print-status)))
 
-;;;###autoload
-(defun moom-fit-frame-to-fullscreen ()
-  "Change font size and expand frame width and height to fit full.
-Add appropriate functions to `moom-before-fullscreen-hook'
-in order to move the frame to specific position."
-  (interactive)
-  (run-hooks 'moom-before-fullscreen-hook)
-  (when (fboundp 'moom-font-resize)
-    (moom-font-resize (moom--fullscreen-font-size)
-                      (display-pixel-width)))
-  (set-frame-size (selected-frame)
-                  (moom--max-frame-pixel-width)
-                  (moom--max-frame-pixel-height) t)
-  (when moom-verbose
-    (moom-print-status))
-  (run-hooks 'moom-after-fullscreen-hook))
-
-(defvar moom--maximized nil)
-;;;###autoload
-(defun moom-toggle-frame-maximized ()
-  "Toggle fullscreen."
-  (interactive)
-  (if (setq moom--maximized (not moom--maximized))
-      (progn
-        (moom--save-last-status)
-        (moom-fit-frame-to-fullscreen)
-        (moom-move-frame))
-    (moom-restore-last-status)))
-
-;;;###autoload
-(defun moom-fill-display (area)
+(defun moom--fill-display (area)
   "Move the frame to AREA.
 Font size will be changed appropriately.
 AREA would be 'top, 'bottom, 'left, or 'right."
   (interactive)
+  (moom--save-last-status)
   (let* ((align-width (display-pixel-width))
          (pixel-width
           (- (floor (/ align-width 2.0))
@@ -273,14 +244,67 @@ AREA would be 'top, 'bottom, 'left, or 'right."
     (moom-print-status)))
 
 ;;;###autoload
-(defun moom-fill-display-band (&optional direction)
+(defun moom-fit-frame-to-fullscreen ()
+  "Change font size and expand frame width and height to fit full.
+Add appropriate functions to `moom-before-fullscreen-hook'
+in order to move the frame to specific position."
+  (interactive)
+  (run-hooks 'moom-before-fullscreen-hook)
+  (when (fboundp 'moom-font-resize)
+    (moom-font-resize (moom--fullscreen-font-size)
+                      (display-pixel-width)))
+  (set-frame-size (selected-frame)
+                  (moom--max-frame-pixel-width)
+                  (moom--max-frame-pixel-height) t)
+  (when moom-verbose
+    (moom-print-status))
+  (run-hooks 'moom-after-fullscreen-hook))
+
+(defvar moom--maximized nil)
+;;;###autoload
+(defun moom-toggle-frame-maximized ()
+  "Toggle fullscreen."
+  (interactive)
+  (if (setq moom--maximized (not moom--maximized))
+      (progn
+        (moom--save-last-status)
+        (moom-fit-frame-to-fullscreen)
+        (moom-move-frame))
+    (moom-restore-last-status)))
+
+;;;###autoload
+(defun moom-fill-top ()
+  "Fill upper half of screen."
+  (interactive)
+  (moom--fill-display 'top))
+
+;;;###autoload
+(defun moom-fill-bottom ()
+  "Fill lower half of screen."
+  (interactive)
+  (moom--fill-display 'bottom))
+
+;;;###autoload
+(defun moom-fill-left ()
+  "Fill left half of screen."
+  (interactive)
+  (moom--fill-display 'left))
+
+;;;###autoload
+(defun moom-fill-right ()
+  "Fill right half of screen."
+  (interactive)
+  (moom--fill-display 'right))
+
+;;;###autoload
+(defun moom-fill-band (&optional direction)
   "Fill screen by band region.
 DIRECTION would be 'horizontal or 'vertical."
   (interactive)
   (when (cond ((memq direction '(vertical nil))
-               (moom-fill-display 'left) t)
+               (moom--fill-display 'left) t)
               ((eq direction 'horizontal)
-               (moom-fill-display 'top) t)
+               (moom--fill-display 'top) t)
               (t nil))
     (moom-move-frame-to-center)))
 
