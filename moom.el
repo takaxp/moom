@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 0.9.7
+;; Version: 0.9.8
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1") (frame-cmds "0"))
@@ -88,6 +88,11 @@ The default height is 23 for macOS."
                        (integer :tag "value for right")))
   :group 'moom)
 
+(defcustom moom-font-module-p (require 'moom-font nil t)
+  "A flag to check the availability of `moom-font'."
+  :type 'sexp
+  :group 'moom)
+
 (defcustom moom-verbose nil
   "Show responses from \"moom\"."
   :type 'boolean
@@ -108,8 +113,6 @@ The default height is 23 for macOS."
   :type 'hook
   :group 'moom)
 
-(defvar moom--font-module (require 'moom-font nil t)
-  "A flag to check the availability of `moom-font'.")
 (defvar moom--frame-width moom-frame-width-single)
 (defvar moom--height-ring nil)
 (defvar moom--height-steps 4)
@@ -181,9 +184,7 @@ Including title-bar, menu-bar, offset depends on window system, and border."
 
 (defun moom--font-size (pixel-width)
   "Return an appropriate font-size based on PIXEL-WIDTH."
-  (let ((scale (if (boundp 'moom-font-ja-scale)
-                   moom-font-ja-scale
-                 1.0)))
+  (let ((scale (if moom-font-module-p moom-font-ja-scale 1.0)))
     (floor (/ (- pixel-width (moom--frame-internal-width))
               (* (/ 80 2) scale))))) ;; FIXME
 
@@ -197,7 +198,7 @@ Including title-bar, menu-bar, offset depends on window system, and border."
 (defun moom--save-last-status ()
   "Store the last frame position, size, and font-size."
   (setq moom--last-status
-        `(("font-size" . ,(if (boundp 'moom-font--size) moom-font--size nil))
+        `(("font-size" . ,(if moom-font-module-p moom-font--size nil))
           ("left" . ,(frame-parameter (selected-frame) 'left))
           ("top" . ,(frame-parameter (selected-frame) 'top))
           ("width" . ,(frame-width))
@@ -230,7 +231,7 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
            (setq align-width (floor (/ align-width 2.0))))
           (nil t))
     ;; Font size
-    (when (fboundp 'moom-font-resize)
+    (when moom-font-module-p
       (moom-font-resize (moom--font-size align-width) align-width))
     ;; Position
     (when (memq area '(right topr botr))
@@ -254,7 +255,7 @@ Add appropriate functions to `moom-before-fullscreen-hook'
 in order to move the frame to specific position."
   (interactive)
   (run-hooks 'moom-before-fullscreen-hook)
-  (when (fboundp 'moom-font-resize)
+  (when moom-font-module-p
     (moom-font-resize (moom--fullscreen-font-size)
                       (display-pixel-width)))
   (set-frame-size (selected-frame)
@@ -570,9 +571,10 @@ If WIDTH is not provided, `moom-frame-width-single' will be used."
 (defun moom-reset ()
   "Reset associated parameters."
   (interactive)
-  (moom--save-last-status)
-  (moom-restore-last-status moom--init-status)
-  (moom--make-frame-height-ring))
+  (let ((moom-font-module-p (require 'moom-font nil t)))
+    (moom--save-last-status)
+    (moom-restore-last-status moom--init-status)
+    (moom--make-frame-height-ring)))
 
 ;;;###autoload
 (defun moom-update-height-steps (arg)
@@ -590,7 +592,7 @@ STATUS is a list storing font, position, region, and pixel-region."
   (interactive)
   (when status
     (setq moom--last-status status))
-  (when (fboundp 'moom-font-resize)
+  (when moom-font-module-p
     (moom-font-resize (cdr (assoc "font-size" moom--last-status))))
   (set-frame-position (selected-frame)
                       (cdr (assoc "left" moom--last-status))
@@ -614,7 +616,7 @@ STATUS is a list storing font, position, region, and pixel-region."
   (interactive)
   (message
    (format "Font: %spt | Origin: (%d, %d) | Frame: (%d, %d) | Pix: (%d, %d)"
-           (if (boundp 'moom-font--size) moom-font--size "**")
+           (if moom-font-module-p moom-font--size "**")
            (frame-parameter (selected-frame) 'left)
            (frame-parameter (selected-frame) 'top)
            (frame-width)
@@ -626,7 +628,7 @@ STATUS is a list storing font, position, region, and pixel-region."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "0.9.7"))
+  (let ((moom-release "0.9.8"))
     (message "Moom: v%s" moom-release)))
 
 ;; init call
@@ -635,7 +637,7 @@ STATUS is a list storing font, position, region, and pixel-region."
 (defvar moom--init-status moom--last-status)
 
 ;; JP-font module
-(when moom--font-module
+(when moom-font-module-p
   (add-hook 'moom-font-after-resize-hook #'moom--make-frame-height-ring))
 
 (provide 'moom)
