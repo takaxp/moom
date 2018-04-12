@@ -611,11 +611,15 @@ STATUS is a list storing font, position, region, and pixel-region."
   "Toggle `moom--font-module-p'.
 When `moom--font-module-p' is nil, font size is fixed except for `moom-reset' even if \"moom-font.el\" is loaded."
   (interactive)
-  (setq moom--font-module-p (not moom--font-module-p))
-  (when moom-verbose
-    (message
-     (concat "Using font module ... "
-             (if moom--font-module-p "ON" "OFF")))))
+  (if (require 'moom-font nil t)
+      (progn
+        (setq moom--font-module-p (not moom--font-module-p))
+        (when moom-verbose
+          (message
+           (concat "Using font module ... "
+                   (if moom--font-module-p "ON" "OFF")))))
+    (when moom-verbose
+      (message "moom-font.el is NOT installed."))))
 
 ;;;###autoload
 (defun moom-print-status ()
