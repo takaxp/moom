@@ -7,7 +7,7 @@
 ;; Version: 0.9.8
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
-;; Package-Requires: ((emacs "25.1") (frame-cmds "0"))
+;; Package-Requires: ((emacs "25.1"))
 ;; Twitter: @takaxp
 
 ;; This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,6 @@
 
 ;;; Code:
 
-(require 'frame-cmds)
 (eval-when-compile (require 'cl-lib))
 
 (defgroup moom nil
@@ -81,7 +80,7 @@ The default height is 23 for macOS."
   :type 'integer
   :group 'moom)
 
-(defcustom moom-horizontal-shifts '(40 40)
+(defcustom moom-horizontal-shifts '(200 200)
   "Distance to move the frame horizontally."
   :type '(choice (integer :tag "common value for left and right")
                  (list (integer :tag "value for left")
@@ -190,12 +189,18 @@ Including title-bar, menu-bar, offset depends on window system, and border."
       (moom--font-size (display-pixel-width))
     12)) ;; FIXME, use face-attribute
 
+(defun moom--pos-x (posx)
+  "Extract value form POSX."
+  (if (listp posx)
+      (nth 1 posx)
+    posx))
+
 (defvar moom--last-status nil)
 (defun moom--save-last-status ()
   "Store the last frame position, size, and font-size."
   (setq moom--last-status
         `(("font-size" . ,(if moom--font-module-p moom-font--size nil))
-          ("left" . ,(frame-parameter (selected-frame) 'left))
+          ("left" . ,(moom--pos-x (frame-parameter (selected-frame) 'left)))
           ("top" . ,(frame-parameter (selected-frame) 'top))
           ("width" . ,(frame-width))
           ("height" . ,(frame-height))
@@ -243,6 +248,18 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
       (set-frame-size (selected-frame) pixel-width pixel-height t)))
   (when moom-verbose
     (moom-print-status)))
+
+(defun moom--shift-amount (direction)
+  "Extract shift amount from `moom-horizontal-shifts' based on DIRECTION."
+  (let ((index (cond ((eq direction 'left) 0)
+                     ((eq direction 'right) 1)
+                     (t 0))))
+    (cond ((integerp moom-horizontal-shifts)
+           moom-horizontal-shifts)
+          ((listp moom-horizontal-shifts)
+           (nth index moom-horizontal-shifts))
+          (t
+           (error (format "%s is wrong value." moom-horizontal-shifts))))))
 
 ;;;###autoload
 (defun moom-fit-frame-to-fullscreen ()
@@ -352,36 +369,34 @@ DIRECTION would be 'horizontal or 'vertical."
     (message "%.1f" line-spacing)))
 
 ;;;###autoload
-(defun moom-move-frame-right (&optional N FRAME)
-  "Move it N times `frame-char-width', where N is the prefix arg.
-In Lisp code, FRAME is the frame to move."
+(defun moom-move-frame-right (&optional pixel)
+  "PIXEL move the current frame to the right."
   (interactive)
-  (move-frame-right
-   (or N
-       (cond ((integerp moom-horizontal-shifts)
-              moom-horizontal-shifts)
-             ((listp moom-horizontal-shifts)
-              (nth 1 moom-horizontal-shifts))
-             (t
-              (error (format "%s is wrong value." moom-horizontal-shifts)))))
-   FRAME)
+  (let* ((pos-x (moom--pos-x (frame-parameter (selected-frame) 'left)))
+         (pos-y (frame-parameter (selected-frame) 'top))
+         (new-pos-x (+ pos-x (or pixel
+                                 (moom--shift-amount 'right)))))
+    (when (>= new-pos-x (display-pixel-width))
+      (setq new-pos-x (- new-pos-x
+                         (display-pixel-width)
+                         (frame-pixel-width))))
+    (set-frame-position (selected-frame) new-pos-x pos-y))
   (when moom-verbose
     (moom-print-status)))
 
 ;;;###autoload
-(defun moom-move-frame-left (&optional N FRAME)
-  "Move it N times `frame-char-width', where N is the prefix arg.
-In Lisp code, FRAME is the frame to move."
+(defun moom-move-frame-left (&optional pixel)
+  "PIXEL move the current frame to the left."
   (interactive)
-  (move-frame-left
-   (or N
-       (cond ((integerp moom-horizontal-shifts)
-              moom-horizontal-shifts)
-             ((listp moom-horizontal-shifts)
-              (nth 0 moom-horizontal-shifts))
-             (t
-              (error (format "%s is wrong value." moom-horizontal-shifts)))))
-   FRAME)
+  (let* ((pos-x (moom--pos-x (frame-parameter (selected-frame) 'left)))
+         (pos-y (frame-parameter (selected-frame) 'top))
+         (new-pos-x (- pos-x (or pixel
+                                 (moom--shift-amount 'left)))))
+    (when (<= new-pos-x (* -1 (frame-pixel-width)))
+      (setq new-pos-x (+ new-pos-x
+                         (display-pixel-width)
+                         (frame-pixel-width))))
+    (set-frame-position (selected-frame) new-pos-x pos-y))
   (when moom-verbose
     (moom-print-status)))
 
@@ -403,7 +418,7 @@ In Lisp code, FRAME is the frame to move."
   "Move the current frame to the vertical center of the window display."
   (interactive)
   (set-frame-position (selected-frame)
-                      (frame-parameter (selected-frame) 'left)
+                      (moom--pos-x (frame-parameter (selected-frame) 'left))
                       (+ (cdr moom-move-frame-pixel-offset)
                          (/ (- (display-pixel-height)
                                (frame-pixel-height))
@@ -416,7 +431,7 @@ In Lisp code, FRAME is the frame to move."
   "Move the current frame to the top of the window display."
   (interactive)
   (set-frame-position (selected-frame)
-                      (frame-parameter (selected-frame) 'left)
+                      (moom--pos-x (frame-parameter (selected-frame) 'left))
                       0)
   (when moom-verbose
     (moom-print-status)))
@@ -428,7 +443,7 @@ If you find the frame is NOT moved to the bottom exactly,
 Please set `moom-move-frame-pixel-menubar-offset'."
   (interactive)
   (set-frame-position (selected-frame)
-                      (frame-parameter (selected-frame) 'left)
+                      (moom--pos-x (frame-parameter (selected-frame) 'left))
                       (- (- (display-pixel-height)
                             (frame-pixel-height))
                          moom-move-frame-pixel-menubar-offset))
@@ -477,10 +492,11 @@ Use prefix to specify the destination position by ARG."
   (let ((pos-x 0)
         (pos-y moom-move-frame-pixel-menubar-offset))
     (when arg
-      (setq pos-x (string-to-number
-                   (read-from-minibuffer
-                    (format "X: from %s to "
-                            (frame-parameter (selected-frame) 'left)))))
+      (setq pos-x (moom--pos-x
+                   (string-to-number
+                    (read-from-minibuffer
+                     (format "X: from %s to "
+                             (frame-parameter (selected-frame) 'left))))))
       (setq pos-y (string-to-number
                    (read-from-minibuffer
                     (format "Y: from %s to "
@@ -628,7 +644,7 @@ When `moom--font-module-p' is nil, font size is fixed except for `moom-reset' ev
   (message
    (format "Font: %spt | Origin: (%d, %d) | Frame: (%d, %d) | Pix: (%d, %d)"
            (if moom--font-module-p moom-font--size "**")
-           (frame-parameter (selected-frame) 'left)
+           (moom--pos-x (frame-parameter (selected-frame) 'left))
            (frame-parameter (selected-frame) 'top)
            (frame-width)
            (frame-height)
