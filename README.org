@@ -54,6 +54,7 @@
 
  - moom-update-height-steps
  - moom-restore-last-status
+ - moom-toggle-font-module
  - moom-print-status
  - moom-version
 
@@ -84,22 +85,19 @@ No need to load =moom-font.el= explicitly. If the package is installed in your s
 * User variables
 ** moom.el
 
-Note: When =moom-font-module-p= is =nil=, font size is fixed except for =moom-reset= even if ~moom-font.el~ is loaded.
-
 #+CAPTION: User variables in moom.el
-|                                      |                    default | type    |
-|--------------------------------------+----------------------------+---------|
-| moom-move-frame-pixel-menubar-offset |                         23 | integer |
-| moom-move-frame-pixel-offset         |                   '(0 . 0) | sexp    |
-| moom-min-frame-height                |                         16 | integer |
-| moom-init-line-spacing               |               line-spacing | float   |
-| moom-min-line-spacing                |                        0.1 | float   |
-| moom-max-line-spacing                |                        0.8 | float   |
-| moom-frame-width-single              |                         80 | integer |
-| moom-frame-width-double              |                        163 | integer |
-| moom-horizontal-shifts               |                   '(40 40) | choice  |
-| moom-font-module-p                   | (require 'moom-font nil t) | sexp    |
-| moom-verbose                         |                        nil | boolean |
+|                                      |      default | type    |
+|--------------------------------------+--------------+---------|
+| moom-move-frame-pixel-menubar-offset |           23 | integer |
+| moom-move-frame-pixel-offset         |     '(0 . 0) | sexp    |
+| moom-min-frame-height                |           16 | integer |
+| moom-init-line-spacing               | line-spacing | float   |
+| moom-min-line-spacing                |          0.1 | float   |
+| moom-max-line-spacing                |          0.8 | float   |
+| moom-frame-width-single              |           80 | integer |
+| moom-frame-width-double              |          163 | integer |
+| moom-horizontal-shifts               |     '(40 40) | choice  |
+| moom-verbose                         |          nil | boolean |
 
 ** moom-font.el
 
