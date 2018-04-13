@@ -240,8 +240,12 @@ Entering quickly to the full screen presentation with [[https://github.com/takax
  - moom-font-before-resize-hook (in moom-font.el)
  - moom-font-after-resize-hook (in moom-font.el)
 
-* References
+* Acknowledgment
 
 This package is highly inspired from [[https://manytricks.com/moom/]["Moom"]] released by [[https://manytricks.com/][Many Tricks]]. Moom stands for "Mo"ve and zo"om". Cool!
 
 If you like and need the capabilities of changing window position and size by keyboard at the OS level, buy [[https://manytricks.com/moom/][Moom]] now!
+
+** Keycastr
+
+[[https://github.com/keycastr/keycastr][keycastr]] is utilized to capture keystrokes. Thanks! but Shift+F1 is assigned to ~?~ Haha... :p
