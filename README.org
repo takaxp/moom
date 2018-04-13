@@ -107,7 +107,7 @@ No need to load =moom-font.el= explicitly. If the package is installed in your s
 | moom-frame-width-single              |           80 | integer |
 | moom-frame-width-double              |          163 | integer |
 | moom-horizontal-shifts               |   '(200 200) | choice  |
-| moom-verbose                         |            t | boolean |
+| moom-verbose                         |          nil | boolean |
 
 ** moom-font.el
 
@@ -130,6 +130,8 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 
 ** Move
 
+[[./fig/shifts.gif]] [[./fig/move-right.gif]] [[./fig/center.gif]]
+
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "M-0") 'moom-move-frame) ;; to top-left corner
 (global-set-key (kbd "M-1") 'moom-move-frame-left)
@@ -138,6 +140,8 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 #+END_SRC
 
 ** Fit
+
+[[./fig/edges.gif]] [[./fig/corners.gif]]
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "M-<f1>") 'moom-move-frame-to-edge-left)
@@ -148,6 +152,8 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 
 ** Expand
 
+[[./fig/expand.gif ]][[./fig/cycle-height.gif]]
+
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-c f s") 'moom-change-frame-width-single)
 (global-set-key (kbd "C-c f d") 'moom-change-frame-width-double)
@@ -156,6 +162,9 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 #+END_SRC
 
 ** Fill
+
+
+[[./fig/fill.gif]] [[./fig/quarters.gif]]
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-c f f t") 'moom-fill-top)
@@ -170,6 +179,8 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 #+END_SRC
 
 ** Fill (screen by toggle)
+
+[[./fig/fill-screen.gif]]
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "M-<f2>") 'moom-toggle-frame-maximized)
