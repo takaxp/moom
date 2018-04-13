@@ -3,10 +3,13 @@
 
 /Make your dominant hand FREE from your mouse :)/
 
-* Commands to control frame position and size by keyboard
+* A set of commands to control frame position and size by keyboard
 
 #+CAPTION: demo for moving and zooming, fullscreen
 [[./fig/demo1.gif]]
+
+
+Note - This module has basically been tested on [[https://www.apple.com/macos/high-sierra/][macOS High Sierra]] with a Full HD (1920x1080) single display.
 
 ** Move
 
@@ -43,7 +46,7 @@ These functions will not change font size.
 
 ** Fill display
 
-These functions basically change font size. But the behavior can be changed by =M-x moom-toggle-font-module=.
+These functions normally change font size. But the behavior can be changed by =M-x moom-toggle-font-module=.
 
  - moom-fill-screen
  - moom-fill-top
@@ -70,16 +73,17 @@ These functions basically change font size. But the behavior can be changed by =
 
 * Extension to integrate font resizing
 
-No need to load =moom-font.el= explicitly. If the package is installed in your system, then it will be activated automatically. The package is basically for the users who rely on Japanese fonts.
+No need to load =moom-font.el= explicitly. If the package is installed in your system, then it will be activated automatically. The package is basically provided for the users who rely on Japanese fonts.
 
 #+CAPTION: demo for increasing and decreasing fonts, fullscreen
 [[./fig/demo2.gif]]
 
 ** Setting
 
-=moom-font-ascii=, =moom-font-ja=, =moom-font-ja-scale= should be configured manually according to your environment. The default values are =Monaco=, =Migu 2M=, =1.2=. If you don't know your font, you can easily check by =M-x describe-char= on a character. In future, the font types will be automatically identified without any settings.
+=moom-font-ascii=, =moom-font-ja=, =moom-font-ja-scale= should be configured manually according to your environment. The default values are =Monaco=, =Migu 2M=, =1.2=. If you don't know your font, you can easily check by =M-x describe-char= on a character. In future, the font types will be automatically identified without user settings.
 
 #+BEGIN_SRC emacs-lisp
+;; An example setting
 (with-eval-after-load "moom-font"
   (setq moom-font-ascii "Menlo")
   (setq moom-font-ja "Osaka") ;; Hiragino Maru Gothic Pro
@@ -152,7 +156,7 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 
 ** Expand
 
-[[./fig/expand.gif ]][[./fig/cycle-height.gif]]
+[[./fig/expand.gif]] [[./fig/cycle-height.gif]]
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-c f s") 'moom-change-frame-width-single)
@@ -202,8 +206,31 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 (global-set-key (kbd "C-_") 'text-scale-decrease) ;; built-in for ascii
 (global-set-key (kbd "C-+") 'text-scale-increase) ;; built-in for ascii
 
+;; Recommended for stable presentation during font size increasing
 (add-hook 'moom-font-after-resize-hook #'moom-move-frame-to-edge-top)
 #+END_SRC
+
+* Collaboration with other packages
+
+** Org mode (org-agenda)
+
+Expand the frame width temporarily during org-agenda is active.
+
+[[./fig/org-agenda.gif]]
+
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load "moom"
+  (add-hook 'org-agenda-mode-hook 'moom-change-frame-width-half-again)
+  (defun advice:org-agenda--quit (&optional _bury)
+    (moom-change-frame-width))
+  (advice-add 'org-agenda--quit :after #'advice:org-agenda--quit))
+#+END_SRC
+
+** Org mode (org-tree-slide)
+
+Entering quickly to the full screen presentation with [[https://github.com/takaxp/org-tree-slide][org-tree-slide.el]]. No additional settings are required. Just =M-x moom-toggle-frame-maximized=.
+
+[[./fig/org-tree-slide.gif]]
 
 * Hooks
 
@@ -214,5 +241,7 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
  - moom-font-after-resize-hook (in moom-font.el)
 
 * References
-  - [[https://manytricks.com/moom/][Moom · Many Tricks]]
-    - "Mo"ve and zo"om"
+
+This package is highly inspired from [[https://manytricks.com/moom/]["Moom"]] released by [[https://manytricks.com/][Many Tricks]]. Moom stands for "Mo"ve and zo"om". Cool!
+
+If you like and need the capabilities of changing window position and size by keyboard at the OS level, buy [[https://manytricks.com/moom/][Moom]] now!
