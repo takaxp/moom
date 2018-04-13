@@ -87,7 +87,7 @@ The default height is 23 for macOS."
                        (integer :tag "value for right")))
   :group 'moom)
 
-(defcustom moom-verbose t
+(defcustom moom-verbose nil
   "Show responses from \"moom\"."
   :type 'boolean
   :group 'moom)
@@ -647,7 +647,7 @@ When `moom--font-module-p' is nil, font size is fixed except for `moom-reset' ev
   (interactive)
   (message
    (format
-    "[Moom] Font: %spt | Frame: c(%d, %d) p(%d, %d) | Origin: (%d, %d)"
+    "[Moom] Font: %spt | Frame: c(%d, %d) p(%d, %d) | Origin: (%s, %s)"
     (if moom--font-module-p moom-font--size "**")
     (frame-width)
     (frame-height)
