@@ -211,7 +211,6 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 #+END_SRC
 
 * Collaboration with other packages
-
 ** Org mode (org-agenda)
 
 Expand the frame width temporarily during org-agenda is active.
@@ -220,17 +219,29 @@ Expand the frame width temporarily during org-agenda is active.
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "moom"
-  (add-hook 'org-agenda-mode-hook 'moom-change-frame-width-half-again)
-  (defun advice:org-agenda--quit (&optional _bury)
-    (moom-change-frame-width))
-  (advice-add 'org-agenda--quit :after #'advice:org-agenda--quit))
+  (with-eval-after-load "org"
+    (add-hook 'org-agenda-mode-hook #'moom-change-frame-width-half-again)
+    (defun advice:org-agenda--quit (&optional _bury)
+      (moom-change-frame-width))
+    (advice-add 'org-agenda--quit :after #'advice:org-agenda--quit)))
 #+END_SRC
-
 ** Org mode (org-tree-slide)
 
 Entering quickly to the full screen presentation with [[https://github.com/takaxp/org-tree-slide][org-tree-slide.el]]. No additional settings are required. Just =M-x moom-toggle-frame-maximized=.
 
 [[./fig/org-tree-slide.gif]]
+
+** Org mode
+
+NOTE - /under consideration, but you can try./
+
+Run =org-redisplay-inline-images= after font resizing to synchronize the image width and font size automatically.
+
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load "moom"
+  (with-eval-after-load "org"
+    (add-hook 'moom-font-after-resize-hook #'org-redisplay-inline-images)))
+#+END_SRC
 
 * Hooks
 
@@ -248,4 +259,4 @@ If you like and need the capabilities of changing window position and size by ke
 
 ** Keycastr
 
-[[https://github.com/keycastr/keycastr][keycastr]] is utilized to capture keystrokes. Thanks! but Shift+F1 is assigned to ~?~ Haha... :p
+[[https://github.com/keycastr/keycastr][keycastr]] is utilized to capture keystrokes. Thanks! but ~Shift+F1~ is assigned to ~?~. Haha... :p
