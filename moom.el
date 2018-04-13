@@ -87,7 +87,7 @@ The default height is 23 for macOS."
                        (integer :tag "value for right")))
   :group 'moom)
 
-(defcustom moom-verbose nil
+(defcustom moom-verbose t
   "Show responses from \"moom\"."
   :type 'boolean
   :group 'moom)
@@ -358,7 +358,7 @@ DIRECTION would be 'horizontal or 'vertical."
       (setq line-spacing (+ line-spacing 0.1))
     (setq line-spacing moom-min-line-spacing))
   (when moom-verbose
-    (message "%.1f" line-spacing)))
+    (message "[Moom] %.1f" line-spacing)))
 
 ;;;###autoload
 (defun moom-reset-line-spacing ()
@@ -366,7 +366,7 @@ DIRECTION would be 'horizontal or 'vertical."
   (interactive)
   (setq line-spacing moom-init-line-spacing)
   (when moom-verbose
-    (message "%.1f" line-spacing)))
+    (message "[Moom] %.1f" line-spacing)))
 
 ;;;###autoload
 (defun moom-move-frame-right (&optional pixel)
@@ -540,11 +540,11 @@ Argument FRAME-HEIGHT specifies new frame height."
     (when (> frame-height max-height)
       (setq frame-height max-height)
       (when moom-verbose
-        (message "Force set the height %s." frame-height)))
+        (message "[Moom] Force set the height %s." frame-height)))
     (when (< frame-height min-height)
       (setq frame-height min-height)
       (when moom-verbose
-        (message "Force set the height %s." frame-height)))
+        (message "[Moom] Force set the height %s." frame-height)))
     (set-frame-height (selected-frame) (floor frame-height)))
   (when moom-verbose
     (moom-print-status)))
@@ -632,31 +632,32 @@ When `moom--font-module-p' is nil, font size is fixed except for `moom-reset' ev
         (setq moom--font-module-p (not moom--font-module-p))
         (when moom-verbose
           (message
-           (concat "Using font module ... "
+           (concat "[Moom] Using font module ... "
                    (if moom--font-module-p "ON" "OFF")))))
     (when moom-verbose
-      (message "moom-font.el is NOT installed."))))
+      (message "[Moom] moom-font.el is NOT installed."))))
 
 ;;;###autoload
 (defun moom-print-status ()
   "Print font size, frame origin, and frame size in mini buffer."
   (interactive)
   (message
-   (format "Font: %spt | Origin: (%d, %d) | Frame: (%d, %d) | Pix: (%d, %d)"
-           (if moom--font-module-p moom-font--size "**")
-           (moom--pos-x (frame-parameter (selected-frame) 'left))
-           (frame-parameter (selected-frame) 'top)
-           (frame-width)
-           (frame-height)
-           (frame-pixel-width)
-           (frame-pixel-height))))
+   (format
+    "[Moom] Font: %spt | Frame: c(%d, %d) p(%d, %d) | Origin: (%d, %d)"
+    (if moom--font-module-p moom-font--size "**")
+    (frame-width)
+    (frame-height)
+    (frame-pixel-width)
+    (frame-pixel-height)
+    (moom--pos-x (frame-parameter (selected-frame) 'left))
+    (frame-parameter (selected-frame) 'top))))
 
 ;;;###autoload
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
   (let ((moom-release "0.9.8"))
-    (message "Moom: v%s" moom-release)))
+    (message "[Moom] v%s" moom-release)))
 
 ;; init call
 (moom--make-frame-height-ring)
