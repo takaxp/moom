@@ -1,6 +1,8 @@
 #+TITLE: Moom - A Moom port to GNU Emacs
 #+STARTUP: showall
 
+/Make your dominant hand FREE from your mouse :)/
+
 * Commands to control frame position and size by keyboard
 
 #+CAPTION: demo for moving and zooming, fullscreen
@@ -30,15 +32,20 @@
 
 ** Expand
 
+These functions will not change font size.
+
  - moom-change-frame-width-single
  - moom-change-frame-width-double
  - moom-change-frame-width-half-again
  - moom-change-frame-width
  - moom-change-frame-height
- - moom-open-height-ring
+ - moom-cycle-frame-height
 
 ** Fill display
 
+These functions basically change font size. But the behavior can be changed by =M-x moom-toggle-font-module=.
+
+ - moom-fill-screen
  - moom-fill-top
  - moom-fill-bottom
  - moom-fill-left
@@ -48,13 +55,16 @@
  - moom-fill-bottom-left
  - moom-fill-bottom-right
  - moom-fill-band
- - moom-fit-frame-to-fullscreen
 
 ** Other functions
 
+ - moom-reset
  - moom-update-height-steps
  - moom-restore-last-status
  - moom-toggle-font-module
+ - moom-toggle-frame-maximized
+ - moom-cycle-line-spacing
+ - moom-reset-line-spacing
  - moom-print-status
  - moom-version
 
@@ -142,7 +152,7 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 (global-set-key (kbd "C-c f s") 'moom-change-frame-width-single)
 (global-set-key (kbd "C-c f d") 'moom-change-frame-width-double)
 (global-set-key (kbd "C-c f a") 'moom-change-frame-width-half-again)
-(global-set-key (kbd "<f2>") 'moom-open-height-ring) ;; cycle heights on a list
+(global-set-key (kbd "<f2>") 'moom-cycle-frame-height)
 #+END_SRC
 
 ** Fill
@@ -186,8 +196,8 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 
 * Hooks
 
- - moom-before-fullscreen-hook
- - moom-after-fullscreen-hook
+ - moom-before-fill-screen-hook
+ - moom-after-fill-screen-hook
  - moom-resize-frame-height-hook
  - moom-font-before-resize-hook (in moom-font.el)
  - moom-font-after-resize-hook (in moom-font.el)

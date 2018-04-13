@@ -92,12 +92,12 @@ The default height is 23 for macOS."
   :type 'boolean
   :group 'moom)
 
-(defcustom moom-before-fullscreen-hook nil
+(defcustom moom-before-fill-screen-hook nil
   "Hook runs before changing to fullscreen."
   :type 'hook
   :group 'moom)
 
-(defcustom moom-after-fullscreen-hook nil
+(defcustom moom-after-fill-screen-hook nil
   "Hook runs after changing to fullscreen."
   :type 'hook
   :group 'moom)
@@ -108,8 +108,6 @@ The default height is 23 for macOS."
   :group 'moom)
 
 (defvar moom--frame-width moom-frame-width-single)
-(defvar moom--height-ring nil)
-(defvar moom--height-steps 4)
 (defvar moom--font-module-p (require 'moom-font nil t))
 
 (defun moom--frame-internal-width ()
@@ -164,6 +162,8 @@ Including title-bar, menu-bar, offset depends on window system, and border."
   "Return the minimum height of frame."
   moom-min-frame-height)
 
+(defvar moom--height-ring nil)
+(defvar moom--height-steps 4)
 (defun moom--make-frame-height-ring ()
   "Create ring to change frame height."
   (let ((max-height (moom--max-frame-height))
@@ -262,12 +262,12 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
            (error (format "%s is wrong value." moom-horizontal-shifts))))))
 
 ;;;###autoload
-(defun moom-fit-frame-to-fullscreen ()
+(defun moom-fill-screen ()
   "Change font size and expand frame width and height to fit full.
-Add appropriate functions to `moom-before-fullscreen-hook'
+Add appropriate functions to `moom-before-fill-screen-hook'
 in order to move the frame to specific position."
   (interactive)
-  (run-hooks 'moom-before-fullscreen-hook)
+  (run-hooks 'moom-before-fill-screen-hook)
   (when moom--font-module-p
     (moom-font-resize (moom--fullscreen-font-size)
                       (display-pixel-width)))
@@ -276,17 +276,17 @@ in order to move the frame to specific position."
                   (moom--max-frame-pixel-height) t)
   (when moom-verbose
     (moom-print-status))
-  (run-hooks 'moom-after-fullscreen-hook))
+  (run-hooks 'moom-after-fill-screen-hook))
 
 (defvar moom--maximized nil)
 ;;;###autoload
 (defun moom-toggle-frame-maximized ()
-  "Toggle fullscreen."
+  "Toggle frame maximized."
   (interactive)
   (if (setq moom--maximized (not moom--maximized))
       (progn
         (moom--save-last-status)
-        (moom-fit-frame-to-fullscreen)
+        (moom-fill-screen)
         (moom-move-frame))
     (moom-restore-last-status)))
 
@@ -506,7 +506,7 @@ Use prefix to specify the destination position by ARG."
     (moom-print-status)))
 
 ;;;###autoload
-(defun moom-open-height-ring ()
+(defun moom-cycle-frame-height ()
   "Change frame height and update the ring."
   (interactive)
   (unless moom--height-ring
@@ -552,7 +552,8 @@ Argument FRAME-HEIGHT specifies new frame height."
 ;;;###autoload
 (defun moom-change-frame-width (&optional frame-width)
   "Change the frame width by the FRAME-WIDTH argument.
-If WIDTH is not provided, `moom-frame-width-single' will be used."
+This function does not effect font size.
+If FRAME-WIDTH is nil, `moom-frame-width-single' will be used."
   (interactive)
   (let ((width (or frame-width
                    moom-frame-width-single)))
@@ -563,19 +564,22 @@ If WIDTH is not provided, `moom-frame-width-single' will be used."
 
 ;;;###autoload
 (defun moom-change-frame-width-single ()
-  "Change the frame width to single."
+  "Change the frame width to single.
+This function does not effect font size."
   (interactive)
   (moom-change-frame-width))
 
 ;;;###autoload
 (defun moom-change-frame-width-double ()
-  "Change the frame width to double."
+  "Change the frame width to double.
+This function does not effect font size."
   (interactive)
   (moom-change-frame-width moom-frame-width-double))
 
 ;;;###autoload
 (defun moom-change-frame-width-half-again ()
-  "Change the frame width to half as large again as single width."
+  "Change the frame width to half as large again as single width.
+This function does not effect font size."
   (interactive)
   (moom-change-frame-width (floor (* 1.5 moom-frame-width-single))))
 
