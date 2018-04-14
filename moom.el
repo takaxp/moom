@@ -121,12 +121,12 @@ The default height is 23 for macOS."
 (defvar moom--init-status nil)
 (defun moom--setup ()
   "Init function."
-  (moom--make-frame-height-ring)
+  (moom--make-frame-height-list)
   (moom--save-last-status)
   (setq moom--init-status moom--last-status)
   ;; JP-font module
   (when moom--font-module-p
-    (add-hook 'moom-font-after-resize-hook #'moom--make-frame-height-ring)))
+    (add-hook 'moom-font-after-resize-hook #'moom--make-frame-height-list)))
 
 (defun moom--abort ()
   "Abort."
@@ -193,9 +193,9 @@ Including title-bar, menu-bar, offset depends on window system, and border."
   "Return the minimum height of frame."
   moom-min-frame-height)
 
-(defvar moom--height-ring nil)
+(defvar moom--height-list nil)
 (defvar moom--height-steps 4)
-(defun moom--make-frame-height-ring ()
+(defun moom--make-frame-height-list ()
   "Create ring to change frame height."
   (let ((max-height (moom--max-frame-height))
         (min-height (moom--min-frame-height))
@@ -206,7 +206,7 @@ Including title-bar, menu-bar, offset depends on window system, and border."
                        (/ (* steps max-height) moom--height-steps))
                   heights))
     (cl-pushnew (max min-height max-height) heights)
-    (setq moom--height-ring (copy-sequence heights))))
+    (setq moom--height-list (copy-sequence heights))))
 
 (defun moom--font-size (pixel-width)
   "Return an appropriate font-size based on PIXEL-WIDTH."
@@ -540,9 +540,9 @@ Use prefix to specify the destination position by ARG."
 (defun moom-cycle-frame-height ()
   "Change frame height and update the ring."
   (interactive)
-  (unless moom--height-ring
-    (moom--make-frame-height-ring))
-  (let ((height (car moom--height-ring)))
+  (unless moom--height-list
+    (moom--make-frame-height-list))
+  (let ((height (car moom--height-list)))
     (cond ((equal height (moom--max-frame-height))
            (set-frame-height (selected-frame)
                              (moom--max-frame-pixel-height) nil t))
@@ -550,9 +550,9 @@ Use prefix to specify the destination position by ARG."
            (set-frame-height (selected-frame)
                              (moom--max-half-frame-pixel-height) nil t))
           (t (moom-change-frame-height height))))
-  (setq moom--height-ring
-        (append (cdr moom--height-ring)
-                (list (car moom--height-ring))))
+  (setq moom--height-list
+        (append (cdr moom--height-list)
+                (list (car moom--height-list))))
   (when moom-verbose
     (moom-print-status))
   (run-hooks 'moom-resize-frame-height-hook))
@@ -621,7 +621,7 @@ This function does not effect font size."
   (let ((moom--font-module-p (require 'moom-font nil t)))
     (moom--save-last-status)
     (moom-restore-last-status moom--init-status)
-    (moom--make-frame-height-ring)))
+    (moom--make-frame-height-list)))
 
 ;;;###autoload
 (defun moom-update-height-steps (arg)
@@ -630,7 +630,7 @@ The default step is 4."
   (when (and (integerp arg)
              (> arg 1))
     (setq moom--height-steps arg)
-    (moom--make-frame-height-ring)))
+    (moom--make-frame-height-list)))
 
 ;;;###autoload
 (defun moom-restore-last-status (&optional status)
