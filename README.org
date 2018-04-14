@@ -5,12 +5,20 @@
 
 * Setup
 
-After installing =moom.el= and =moom-font.el= (optional), make =moom-mode= active.
+After installing =moom.el= and =moom-font.el= (optional), activate =moom-mode= by =(moom-mode 1)=.
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "moom"
   (moom-mode 1))
 #+END_SRC
+
+or
+
+#+BEGIN_SRC emacs-lisp
+(when (require 'moom nil t)
+  (moom-mode 1))
+#+END_SRC
+
 
 * A set of commands to control frame position and size by keyboard
 

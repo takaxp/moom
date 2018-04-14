@@ -223,7 +223,7 @@ Including title-bar, menu-bar, offset depends on window system, and border."
     12)) ;; FIXME, use face-attribute
 
 (defun moom--pos-x (posx)
-  "Extract value form POSX."
+  "Extract a value from POSX."
   (if (listp posx)
       (nth 1 posx)
     posx))
@@ -401,7 +401,7 @@ DIRECTION would be 'horizontal or 'vertical."
 
 ;;;###autoload
 (defun moom-move-frame-right (&optional pixel)
-  "PIXEL move the current frame to the right."
+  "PIXEL move the current frame to right."
   (interactive)
   (let* ((pos-x (moom--pos-x (frame-parameter (selected-frame) 'left)))
          (pos-y (frame-parameter (selected-frame) 'top))
@@ -417,7 +417,7 @@ DIRECTION would be 'horizontal or 'vertical."
 
 ;;;###autoload
 (defun moom-move-frame-left (&optional pixel)
-  "PIXEL move the current frame to the left."
+  "PIXEL move the current frame to left."
   (interactive)
   (let* ((pos-x (moom--pos-x (frame-parameter (selected-frame) 'left)))
          (pos-y (frame-parameter (selected-frame) 'top))
@@ -517,21 +517,20 @@ Please set `moom-move-frame-pixel-menubar-offset'."
 
 ;;;###autoload
 (defun moom-move-frame (&optional arg)
-  "Move the frame to somewhere (default: 0,0).
-Use prefix to specify the destination position by ARG."
-  (interactive "P")
+  "Move the frame to somewhere (default: '(0 0)).
+When ARG is a list like '(10 10), move the frame to the position.
+When ARG is a single number like 10, shift the frame horizontally +10 pixel.
+When ARG is nil, then move to the default position '(0 0)."
+  (interactive)
   (let ((pos-x 0)
         (pos-y moom-move-frame-pixel-menubar-offset))
-    (when arg
-      (setq pos-x (moom--pos-x
-                   (string-to-number
-                    (read-from-minibuffer
-                     (format "X: from %s to "
-                             (frame-parameter (selected-frame) 'left))))))
-      (setq pos-y (string-to-number
-                   (read-from-minibuffer
-                    (format "Y: from %s to "
-                            (frame-parameter (selected-frame) 'top))))))
+    (cond ((not arg) t) ;; (0, 0)
+          ((numberp arg) ;; horizontal shift
+           (setq pos-x arg)
+           (setq pos-y (frame-parameter (selected-frame) 'top)))
+          ((listp arg) ;; move to '(x, y)
+           (setq pos-x (nth 0 arg))
+           (setq pos-y (+ pos-y (nth 1 arg)))))
     (set-frame-position (selected-frame) pos-x pos-y))
   (when moom-verbose
     (moom-print-status)))
