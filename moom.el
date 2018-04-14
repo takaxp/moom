@@ -108,7 +108,7 @@ The default height is 23 for macOS."
   :group 'moom)
 
 (defcustom moom-lighter "Moom"
-  "The name in mode line."
+  "Package name in mode line."
   :type 'string
   :group 'moom)
 
@@ -119,6 +119,13 @@ The default height is 23 for macOS."
   "The keymap for `moom'.")
 
 (defvar moom--init-status nil)
+(defvar moom--font-module-p (require 'moom-font nil t))
+(defvar moom--frame-width moom-frame-width-single)
+(defvar moom--height-list nil)
+(defvar moom--height-steps 4)
+(defvar moom--last-status nil)
+(defvar moom--maximized nil)
+
 (defun moom--setup ()
   "Init function."
   (moom--make-frame-height-list)
@@ -137,9 +144,6 @@ The default height is 23 for macOS."
   "Lighter."
   (when moom-lighter
     (concat " " moom-lighter)))
-
-(defvar moom--frame-width moom-frame-width-single)
-(defvar moom--font-module-p (require 'moom-font nil t))
 
 (defun moom--frame-internal-width ()
   "Width of internal objects.
@@ -193,8 +197,6 @@ Including title-bar, menu-bar, offset depends on window system, and border."
   "Return the minimum height of frame."
   moom-min-frame-height)
 
-(defvar moom--height-list nil)
-(defvar moom--height-steps 4)
 (defun moom--make-frame-height-list ()
   "Create ring to change frame height."
   (let ((max-height (moom--max-frame-height))
@@ -226,7 +228,6 @@ Including title-bar, menu-bar, offset depends on window system, and border."
       (nth 1 posx)
     posx))
 
-(defvar moom--last-status nil)
 (defun moom--save-last-status ()
   "Store the last frame position, size, and font-size."
   (setq moom--last-status
@@ -309,7 +310,6 @@ in order to move the frame to specific position."
     (moom-print-status))
   (run-hooks 'moom-after-fill-screen-hook))
 
-(defvar moom--maximized nil)
 ;;;###autoload
 (defun moom-toggle-frame-maximized ()
   "Toggle frame maximized."
@@ -704,6 +704,7 @@ Make your dominant hand FREE from your mouse!
   :lighter (:eval (moom--lighter))
   :keymap moom-mode-map
   :global t
+  :require 'moom
   :group 'moom
   (if moom-mode
       (moom--setup)

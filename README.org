@@ -3,6 +3,15 @@
 
 /Make your dominant hand FREE from your mouse :)/
 
+* Setup
+
+After installing =moom.el= and =moom-font.el= (optional), make =moom-mode= active.
+
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load "moom"
+  (moom-mode 1))
+#+END_SRC
+
 * A set of commands to control frame position and size by keyboard
 
 #+CAPTION: demo for moving and zooming, fullscreen
@@ -155,14 +164,14 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 #+END_SRC
 
 ** Expand
-
-[[./fig/expand.gif]] [[./fig/cycle-height.gif]]
+[[./fig/cycle-height.gif]] [[./fig/expand.gif]]
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C-c f s") 'moom-change-frame-width-single)
-(global-set-key (kbd "C-c f d") 'moom-change-frame-width-double)
-(global-set-key (kbd "C-c f a") 'moom-change-frame-width-half-again)
 (global-set-key (kbd "<f2>") 'moom-cycle-frame-height)
+(with-eval-after-load "moom"
+  (define-key moom-mode-map (kbd "C-c f s") 'moom-change-frame-width-single)
+  (define-key moom-mode-map (kbd "C-c f d") 'moom-change-frame-width-double)
+  (define-key moom-mode-map (kbd "C-c f a") 'moom-change-frame-width-half-again))
 #+END_SRC
 
 ** Fill
@@ -171,15 +180,16 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 [[./fig/fill.gif]] [[./fig/quarters.gif]]
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C-c f f t") 'moom-fill-top)
-(global-set-key (kbd "C-c f f b") 'moom-fill-bottom)
-(global-set-key (kbd "C-c f f l") 'moom-fill-left)
-(global-set-key (kbd "C-c f f r") 'moom-fill-right)
-(global-set-key (kbd "C-c f f 1") 'moom-fill-top-left)
-(global-set-key (kbd "C-c f f 2") 'moom-fill-top-right)
-(global-set-key (kbd "C-c f f 3") 'moom-fill-bottom-left)
-(global-set-key (kbd "C-c f f 4") 'moom-fill-bottom-right)
-(global-set-key (kbd "C-c f f m") 'moom-fill-band)
+(with-eval-after-load "moom"
+  (define-key moom-mode-map (kbd "C-c f f t") 'moom-fill-top)
+  (define-key moom-mode-map (kbd "C-c f f b") 'moom-fill-bottom)
+  (define-key moom-mode-map (kbd "C-c f f l") 'moom-fill-left)
+  (define-key moom-mode-map (kbd "C-c f f r") 'moom-fill-right)
+  (define-key moom-mode-map (kbd "C-c f f 1") 'moom-fill-top-left)
+  (define-key moom-mode-map (kbd "C-c f f 2") 'moom-fill-top-right)
+  (define-key moom-mode-map (kbd "C-c f f 3") 'moom-fill-bottom-left)
+  (define-key moom-mode-map (kbd "C-c f f 4") 'moom-fill-bottom-right)
+  (define-key moom-mode-map (kbd "C-c f f m") 'moom-fill-band))
 #+END_SRC
 
 ** Fill (screen by toggle)
@@ -194,7 +204,8 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 *** Reset Frame size, position, and font size
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C-c C-0") 'moom-reset)
+(with-eval-after-load "moom"
+  (define-key moom-mode-map (kbd "C-c C-0") 'moom-reset))
 #+END_SRC
 
 *** Font size (require moom-font.el)
