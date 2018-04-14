@@ -233,7 +233,7 @@ Entering quickly to the full screen presentation with [[https://github.com/takax
 
 ** Org mode
 
-NOTE - /under consideration, but you can try./
+Note - /Under consideration, but you can try./
 
 Run =org-redisplay-inline-images= after font resizing to synchronize the image width and font size automatically.
 
@@ -259,4 +259,4 @@ If you like and need the capabilities of changing window position and size by ke
 
 ** Keycastr
 
-[[https://github.com/keycastr/keycastr][keycastr]] is utilized to capture keystrokes. Thanks! but ~Shift+F1~ is assigned to ~?~. Haha... :p
+For writing README, [[https://github.com/keycastr/keycastr][keycastr]] was utilized to capture keystrokes of each command. Thanks! but ~Shift+F1~ was recorded as ~?~. Haha... :p

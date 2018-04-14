@@ -107,6 +107,37 @@ The default height is 23 for macOS."
   :type 'hook
   :group 'moom)
 
+(defcustom moom-lighter "Moom"
+  "The name in mode line."
+  :type 'string
+  :group 'moom)
+
+(defvar moom-mode-map
+  (let ((map (make-sparse-keymap)))
+    ;; (define-key map (kbd "M-<f2>") 'moom-toggle-frame-maximized)
+    map)
+  "The keymap for `moom'.")
+
+(defvar moom--init-status nil)
+(defun moom--setup ()
+  "Init function."
+  (moom--make-frame-height-ring)
+  (moom--save-last-status)
+  (setq moom--init-status moom--last-status)
+  ;; JP-font module
+  (when moom--font-module-p
+    (add-hook 'moom-font-after-resize-hook #'moom--make-frame-height-ring)))
+
+(defun moom--abort ()
+  "Abort."
+  ;; skeleton
+  )
+
+(defun moom--lighter ()
+  "Lighter."
+  (when moom-lighter
+    (concat " " moom-lighter)))
+
 (defvar moom--frame-width moom-frame-width-single)
 (defvar moom--font-module-p (require 'moom-font nil t))
 
@@ -663,14 +694,20 @@ When `moom--font-module-p' is nil, font size is fixed except for `moom-reset' ev
   (let ((moom-release "0.9.8"))
     (message "[Moom] v%s" moom-release)))
 
-;; init call
-(moom--make-frame-height-ring)
-(moom--save-last-status)
-(defvar moom--init-status moom--last-status)
+;;;###autoload
+(define-minor-mode moom-mode
+  "A Moom port to GNU Emacs.
 
-;; JP-font module
-(when moom--font-module-p
-  (add-hook 'moom-font-after-resize-hook #'moom--make-frame-height-ring))
+Make your dominant hand FREE from your mouse!
+"
+  :init-value nil
+  :lighter (:eval (moom--lighter))
+  :keymap moom-mode-map
+  :global t
+  :group 'moom
+  (if moom-mode
+      (moom--setup)
+    (moom--abort)))
 
 (provide 'moom)
 
