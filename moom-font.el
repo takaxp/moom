@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 0.9.5
+;; Version: 0.9.9
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Twitter: @takaxp
@@ -97,7 +97,7 @@ If `ARG' is nil, the default size is used."
 `frame-width' will be updated accordingly.
 Optional argument N specifies the target font size.
 If WIDTH is non-nil, ensure an appropriate font size so that
-the actual pixel width will not over the WIDTH."
+the actual pixel width will not exceed the WIDTH."
   (interactive "nSize: ")
   (run-hooks 'moom-font-before-resize-hook)
   (moom-font--change-size
@@ -139,7 +139,7 @@ Optional argument INC specifies an increasing step."
 ;;;###autoload
 (defun moom-font-decrease (&optional dec)
   "Decrease font size.
-Optional argument DEC specifies an decreasing step."
+Optional argument DEC specifies a decreasing step."
   (interactive)
   (run-hooks 'moom-font-before-resize-hook)
   (setq moom-font--size

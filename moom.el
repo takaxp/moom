@@ -1,10 +1,10 @@
-;;; moom.el --- Commands to control frame size and position  -*- lexical-binding: t; -*-
+;;; moom.el --- Commands to control frame position and size -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2017-2018 Takaaki ISHIKAWA
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 0.9.8
+;; Version: 0.9.9
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -27,16 +27,25 @@
 
 ;;; Commentary:
 
-;; This package provides a set of tools to control frame size, position, and font size.
+;; This package provides a set of commands to control frame position and size.
+;; The font size in buffers changes with synchronization of the frame size
+;; so that the frame size could be maintained at 80 as default.
+;;
+;; Now make your dominant hand FREE from your mouse by Moom.
+;;
+;; The concept is highly inspired from "Moom" released by Many Tricks.
+;; Moom stands for \"Mo\"ve and zo\"om\".
 
 ;;; Change Log:
+
+;; Version 1.0.0: initial release (2018-04-20)
 
 ;;; Code:
 
 (eval-when-compile (require 'cl-lib))
 
 (defgroup moom nil
-  "A tool to control frame size, position, and font size."
+  "Commands to control frame position and size."
   :group 'convenience)
 
 (defcustom moom-move-frame-pixel-menubar-offset 23
@@ -114,7 +123,7 @@ The default height is 23 for macOS."
 
 (defvar moom-mode-map
   (let ((map (make-sparse-keymap)))
-    ;; (define-key map (kbd "M-<f2>") 'moom-toggle-frame-maximized)
+    ;; No keybindings are configured as default. It's open for users.
     map)
   "The keymap for `moom'.")
 
@@ -137,8 +146,8 @@ The default height is 23 for macOS."
 
 (defun moom--abort ()
   "Abort."
-  ;; skeleton
-  )
+  (moom-reset-line-spacing)
+  (moom-reset))
 
 (defun moom--lighter ()
   "Lighter."
@@ -198,7 +207,7 @@ Including title-bar, menu-bar, offset depends on window system, and border."
   moom-min-frame-height)
 
 (defun moom--make-frame-height-list ()
-  "Create ring to change frame height."
+  "Create an internal ring to change frame height."
   (let ((max-height (moom--max-frame-height))
         (min-height (moom--min-frame-height))
         (steps moom--height-steps)
@@ -295,8 +304,9 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
 
 ;;;###autoload
 (defun moom-fill-screen ()
-  "Change font size and expand frame width and height to fit full.
-Add appropriate functions to `moom-before-fill-screen-hook'
+  "Expand frame width and height to fill the screen.
+The font size in buffers will be increased so that the frame width could be
+maintained at 80. Add appropriate functions to `moom-before-fill-screen-hook'
 in order to move the frame to specific position."
   (interactive)
   (run-hooks 'moom-before-fill-screen-hook)
@@ -383,7 +393,7 @@ DIRECTION would be 'horizontal or 'vertical."
 
 ;;;###autoload
 (defun moom-cycle-line-spacing ()
-  "Change ‘line-spacing’ value between a range."
+  "Change `line-spacing’ value between a range."
   (interactive)
   (if (< line-spacing moom-max-line-spacing)
       (setq line-spacing (+ line-spacing 0.1))
@@ -393,7 +403,7 @@ DIRECTION would be 'horizontal or 'vertical."
 
 ;;;###autoload
 (defun moom-reset-line-spacing ()
-  "Reset the defaut value for line spacing."
+  "Reset to the defaut value for line spacing."
   (interactive)
   (setq line-spacing moom-init-line-spacing)
   (when moom-verbose
@@ -433,7 +443,7 @@ DIRECTION would be 'horizontal or 'vertical."
 
 ;;;###autoload
 (defun moom-move-frame-to-horizontal-center ()
-  "Move the current frame to the horizontal center of the window display."
+  "Move the current frame to the horizontal center of the screen."
   (interactive)
   (set-frame-position (selected-frame)
                       (+ (car moom-move-frame-pixel-offset)
@@ -446,7 +456,7 @@ DIRECTION would be 'horizontal or 'vertical."
 
 ;;;###autoload
 (defun moom-move-frame-to-vertical-center ()
-  "Move the current frame to the vertical center of the window display."
+  "Move the current frame to the vertical center of the screen."
   (interactive)
   (set-frame-position (selected-frame)
                       (moom--pos-x (frame-parameter (selected-frame) 'left))
@@ -459,19 +469,21 @@ DIRECTION would be 'horizontal or 'vertical."
 
 ;;;###autoload
 (defun moom-move-frame-to-edge-top ()
-  "Move the current frame to the top of the window display."
+  "Move the current frame to the top of the screen.
+If you find the frame is NOT moved to the top exactly,
+please configure `moom-move-frame-pixel-menubar-offset'."
   (interactive)
   (set-frame-position (selected-frame)
                       (moom--pos-x (frame-parameter (selected-frame) 'left))
-                      0)
+                      moom-move-frame-pixel-menubar-offset)
   (when moom-verbose
     (moom-print-status)))
 
 ;;;###autoload
 (defun moom-move-frame-to-edge-bottom ()
-  "Move the current frame to the top of the window display.
+  "Move the current frame to the top of the screen.
 If you find the frame is NOT moved to the bottom exactly,
-Please set `moom-move-frame-pixel-menubar-offset'."
+please configure `moom-move-frame-pixel-menubar-offset'."
   (interactive)
   (set-frame-position (selected-frame)
                       (moom--pos-x (frame-parameter (selected-frame) 'left))
@@ -483,7 +495,7 @@ Please set `moom-move-frame-pixel-menubar-offset'."
 
 ;;;###autoload
 (defun moom-move-frame-to-edge-right ()
-  "Move the current frame to the right edge of the window display."
+  "Move the current frame to the right edge of the screen."
   (interactive)
   (set-frame-position (selected-frame)
                       (- (display-pixel-width) (frame-pixel-width))
@@ -493,7 +505,7 @@ Please set `moom-move-frame-pixel-menubar-offset'."
 
 ;;;###autoload
 (defun moom-move-frame-to-edge-left ()
-  "Move the current frame to the left edge of the window display."
+  "Move the current frame to the left edge of the screen."
   (interactive)
   (set-frame-position (selected-frame)
                       0
@@ -503,7 +515,7 @@ Please set `moom-move-frame-pixel-menubar-offset'."
 
 ;;;###autoload
 (defun moom-move-frame-to-center ()
-  "Move the current frame to the center of the window display."
+  "Move the current frame to the center of the screen."
   (interactive)
   (let ((center-pos-x
          (+ (car moom-move-frame-pixel-offset)
@@ -537,7 +549,9 @@ When ARG is nil, then move to the default position '(0 0)."
 
 ;;;###autoload
 (defun moom-cycle-frame-height ()
-  "Change frame height and update the ring."
+  "Change frame height and update the internal ring.
+If you find the frame is NOT changed as expected,
+please configure `moom-move-frame-pixel-menubar-offset'."
   (interactive)
   (unless moom--height-list
     (moom--make-frame-height-list))
@@ -584,7 +598,9 @@ Argument FRAME-HEIGHT specifies new frame height."
   "Change the frame width by the FRAME-WIDTH argument.
 This function does not effect font size.
 If FRAME-WIDTH is nil, `moom-frame-width-single' will be used."
-  (interactive)
+  (interactive
+   (list (string-to-number
+          (read-string "New Width: " (number-to-string (frame-width))))))
   (let ((width (or frame-width
                    moom-frame-width-single)))
     (setq moom--frame-width width)
@@ -634,7 +650,7 @@ The default step is 4."
 ;;;###autoload
 (defun moom-restore-last-status (&optional status)
   "Restore the last frame position, size, and font-size.
-STATUS is a list storing font, position, region, and pixel-region."
+STATUS is a list consists of font size, frame position, frame region, and pixel-region."
   (interactive)
   (when status
     (setq moom--last-status status))
@@ -673,7 +689,7 @@ When `moom--font-module-p' is nil, font size is fixed except for `moom-reset' ev
 
 ;;;###autoload
 (defun moom-print-status ()
-  "Print font size, frame origin, and frame size in mini buffer."
+  "Print font size, frame size and origin in mini buffer."
   (interactive)
   (message
    (format
@@ -690,14 +706,30 @@ When `moom--font-module-p' is nil, font size is fixed except for `moom-reset' ev
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "0.9.8"))
+  (let ((moom-release "0.9.9"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
 (define-minor-mode moom-mode
-  "A Moom port to GNU Emacs.
+  "Toggle the minor mode `moom-mode'.
+This mode provides a set of commands to control frame position and size.
+The font size in buffers changes with synchronization of the frame size
+so that the frame size could be maintained at 80.
 
-Make your dominant hand FREE from your mouse!
+No keybindings are configured as default but recommended as follows:
+
+(global-set-key (kbd \"M-0\") 'moom-move-frame) ;; to top-left corner
+(global-set-key (kbd \"M-1\") 'moom-move-frame-left)
+(global-set-key (kbd \"M-2\") 'moom-move-frame-to-center)
+(global-set-key (kbd \"M-3\") 'moom-move-frame-right)
+(global-set-key (kbd \"<f2>\") 'moom-cycle-frame-height)
+(global-set-key (kbd \"M-<f2>\") 'moom-toggle-frame-maximized)
+
+(with-eval-after-load \"moom\"
+  (define-key moom-mode-map (kbd \"C-c f s\") 'moom-change-frame-width-single)
+  (define-key moom-mode-map (kbd \"C-c f d\") 'moom-change-frame-width-double))
+
+To see more details and examples, please visit https://github.com/takaxp/moom.
 "
   :init-value nil
   :lighter (:eval (moom--lighter))
