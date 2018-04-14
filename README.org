@@ -1,11 +1,11 @@
 #+TITLE: Moom - A Moom port to GNU Emacs
 #+STARTUP: showall
 
-/Make your dominant hand FREE from your mouse :)/
+/Make your dominant hand FREE from your mouse/ :)
 
 * Setup
 
-After installing =moom.el= and =moom-font.el= (optional), activate =moom-mode= by =(moom-mode 1)=.
+After installing =moom.el= and =moom-font.el= (optional), activate =moom= by =(moom-mode 1)=.
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "moom"
@@ -129,6 +129,7 @@ No need to load =moom-font.el= explicitly. If the package is installed in your s
 | moom-frame-width-double              |          163 | integer |
 | moom-horizontal-shifts               |   '(200 200) | choice  |
 | moom-verbose                         |          nil | boolean |
+| moom-lighter                         |         Moom | string  |
 
 ** moom-font.el
 

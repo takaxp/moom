@@ -92,6 +92,11 @@ The default height is 23 for macOS."
   :type 'boolean
   :group 'moom)
 
+(defcustom moom-lighter "Moom"
+  "Package name in mode line."
+  :type 'string
+  :group 'moom)
+
 (defcustom moom-before-fill-screen-hook nil
   "Hook runs before changing to fullscreen."
   :type 'hook
@@ -105,11 +110,6 @@ The default height is 23 for macOS."
 (defcustom moom-resize-frame-height-hook nil
   "Hook runs after resizing the frame height."
   :type 'hook
-  :group 'moom)
-
-(defcustom moom-lighter "Moom"
-  "Package name in mode line."
-  :type 'string
   :group 'moom)
 
 (defvar moom-mode-map
