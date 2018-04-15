@@ -28,8 +28,8 @@
 ;;; Commentary:
 
 ;; This package provides a set of commands to control frame position and size.
-;; The font size in buffers will be changed with synchronization of the frame
-;; size so that the frame size could be maintained at 80 as default.
+;; The font size in buffers will be changed with synchronization of the updated
+;; frame geometry so that the frame width could be maintained at 80 as default.
 ;;
 ;; Now make your dominant hand FREE from your mouse by Moom.
 ;;
@@ -46,11 +46,11 @@
 
 ;;; Change Log:
 
-;; Version 1.0.0: initial release (2018-04-20)
-
 ;;; Code:
 
-(eval-when-compile (require 'cl-lib))
+(eval-when-compile
+  (require 'cl-lib)
+  (require 'moom-font nil t))
 
 (defgroup moom nil
   "Commands to control frame position and size."
@@ -721,8 +721,8 @@ When `moom--font-module-p' is nil, font size is fixed except for `moom-reset' ev
 (define-minor-mode moom-mode
   "Toggle the minor mode `moom-mode'.
 This mode provides a set of commands to control frame position and size.
-The font size in buffers changes with synchronization of the frame size
-so that the frame size could be maintained at 80.
+The font size in buffers will be changed with synchronization of the updated
+frame geometry so that the frame width could be maintained at 80.
 
 No keybindings are configured as default but recommended as follows:
 
