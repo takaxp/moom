@@ -5,7 +5,7 @@
 
 * Setup
 
-After installing =moom.el= and =moom-font.el= (optional), activate =moom= by =(moom-mode 1)=.
+After installing =moom.el= and =moom-font.el= (optional), activate =moom= by =(moom-mode 1)= in your =init.el=.
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "moom"
@@ -245,6 +245,7 @@ Expand the frame width temporarily during org-agenda is active.
       (moom-change-frame-width))
     (advice-add 'org-agenda--quit :after #'advice:org-agenda--quit)))
 #+END_SRC
+
 ** Org mode (org-tree-slide)
 
 Entering quickly to the full screen presentation with [[https://github.com/takaxp/org-tree-slide][org-tree-slide.el]]. No additional settings are required. Just =M-x moom-toggle-frame-maximized=.

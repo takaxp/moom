@@ -28,13 +28,21 @@
 ;;; Commentary:
 
 ;; This package provides a set of commands to control frame position and size.
-;; The font size in buffers changes with synchronization of the frame size
-;; so that the frame size could be maintained at 80 as default.
+;; The font size in buffers will be changed with synchronization of the frame
+;; size so that the frame size could be maintained at 80 as default.
 ;;
 ;; Now make your dominant hand FREE from your mouse by Moom.
 ;;
-;; The concept is highly inspired from "Moom" released by Many Tricks.
-;; Moom stands for \"Mo\"ve and zo\"om\".
+;; Install:
+;;  - Get moom.el and moom-font.el from MELPA or Github.
+;;
+;; Setup:
+;;  - After installing, activate Moom by (moom-mode 1) in your init.el.
+;;
+;; Keybindings:
+;;  - The moom-mode-map is available.
+;;  - To see more details and examples, go https://github.com/takaxp/moom.
+;;
 
 ;;; Change Log:
 
