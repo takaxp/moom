@@ -24,7 +24,7 @@ or
 * A set of commands to control frame position and size by keyboard
 
 #+CAPTION: demo for moving and zooming, fullscreen
-[[./fig/demo1.gif][file:https://pxaka.tokyo/public/github.com/moom/demo1.gif]]
+[[./fig/demo1.gif]]
 
 Note - This module has basically been tested on [[https://www.apple.com/macos/high-sierra/][macOS High Sierra]] with a Full HD (1920x1080) single display.
 
