@@ -23,7 +23,7 @@ or
 * A set of commands to control frame position and size by keyboard
 
 #+CAPTION: demo for moving and zooming, fullscreen
-[[https://pxaka.tokyo/public/github.com/moom/demo1.gif]]
+[[./fig/demo1.gif]]
 
 
 Note - This module has basically been tested on [[https://www.apple.com/macos/high-sierra/][macOS High Sierra]] with a Full HD (1920x1080) single display.
@@ -93,8 +93,7 @@ These functions normally change font size. But the behavior can be changed by =M
 No need to load =moom-font.el= explicitly. If the package is installed in your system, then it will be activated automatically. The package is basically provided for the users who rely on Japanese fonts.
 
 #+CAPTION: demo for increasing and decreasing fonts, fullscreen
-
-[[https://pxaka.tokyo/public/github.com/moom/demo2.gif]]
+[[./fig/demo2.gif]]
 
 ** Setting
 
