@@ -119,19 +119,19 @@ No need to load =moom-font.el= explicitly. If the package is installed in your s
 ** moom.el
 
 #+CAPTION: User variables in moom.el
-|                              |      default | type    |
+|                              | default      | type    |
 |------------------------------+--------------+---------|
-| moom-screen-top-margin       |           23 | integer |
-| moom-move-frame-pixel-offset |     '(0 . 0) | sexp    |
-| moom-min-frame-height        |           16 | integer |
+| moom-screen-margin           | '(23 0 0 0)  | list    |
+| moom-move-frame-pixel-offset | '(0 . 0)     | sexp    |
+| moom-min-frame-height        | 16           | integer |
 | moom-init-line-spacing       | line-spacing | float   |
-| moom-min-line-spacing        |          0.1 | float   |
-| moom-max-line-spacing        |          0.8 | float   |
-| moom-frame-width-single      |           80 | integer |
-| moom-frame-width-double      |          163 | integer |
-| moom-horizontal-shifts       |   '(200 200) | choice  |
-| moom-verbose                 |          nil | boolean |
-| moom-lighter                 |         Moom | string  |
+| moom-min-line-spacing        | 0.1          | float   |
+| moom-max-line-spacing        | 0.8          | float   |
+| moom-frame-width-single      | 80           | integer |
+| moom-frame-width-double      | 163          | integer |
+| moom-horizontal-shifts       | '(200 200)   | choice  |
+| moom-verbose                 | nil          | boolean |
+| moom-lighter                 | Moom         | string  |
 
 ** moom-font.el
 
