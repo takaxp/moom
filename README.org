@@ -5,6 +5,8 @@
 
 /Make your dominant hand FREE from your mouse/ :)
 
+[[./fig/demo1.gif]]
+
 * Introduction
 
 This package provides a set of commands to control frame position and size. The font size in buffers will be changed with synchronization of the updated frame geometry so that the frame width could be maintained at 80 as default.
