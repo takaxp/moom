@@ -26,7 +26,7 @@ or
 * A set of commands to control frame position and size by keyboard
 
 #+CAPTION: demo for moving and zooming, fullscreen
-[[submodule:demo1.gif]]
+[[https://github.com/takaxp/moom-images/blob/master/demo1.gif]]
 
 Note - This module has basically been tested on [[https://www.apple.com/macos/high-sierra/][macOS High Sierra]] with a Full HD (1920x1080) single display.
 
@@ -95,7 +95,7 @@ These functions normally change font size. But the behavior can be changed by =M
 No need to load =moom-font.el= explicitly. If the package is installed in your system, then it will be activated automatically. The package is basically provided for the users who rely on Japanese fonts.
 
 #+CAPTION: demo for increasing and decreasing fonts, fullscreen
-[[submodule:demo2.gif]]
+[[https://github.com/takaxp/moom-images/blob/master/demo2.gif]]
 
 ** Setting
 
@@ -150,11 +150,11 @@ No need to load =moom-font.el= explicitly. If the package is installed in your s
 In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs.app. So it is natural to concentrate all keybindings associated to control frame position and size into the left side of your keyboard with pressing =Cmd=. The following example keybindings are basically designed in that manner.
 
 #+CAPTION: Assgined keys
-[[submodule:layout.png]]
+[[https://github.com/takaxp/moom-images/blob/master/layout.png]]
 
 ** Move
 
-[[submodule:shifts.gif]] [[submodule:move-right.gif]] [[submodule:center.gif]]
+[[https://github.com/takaxp/moom-images/blob/master/shifts.gif]] [[https://github.com/takaxp/moom-images/blob/master/move-right.gif]] [[https://github.com/takaxp/moom-images/blob/master/center.gif]]
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "M-0") 'moom-move-frame) ;; to top-left corner
@@ -165,7 +165,7 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 
 ** Fit
 
-[[submodule:edges.gif]] [[submodule:corners.gif]]
+[[https://github.com/takaxp/moom-images/blob/master/edges.gif]] [[https://github.com/takaxp/moom-images/blob/master/corners.gif]]
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "M-<f1>") 'moom-move-frame-to-edge-left)
@@ -175,7 +175,7 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 #+END_SRC
 
 ** Expand
-[[submodule:cycle-height.gif]] [[submodule:expand.gif]]
+[[https://github.com/takaxp/moom-images/blob/master/cycle-height.gif]] [[https://github.com/takaxp/moom-images/blob/master/expand.gif]]
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "<f2>") 'moom-cycle-frame-height)
@@ -188,7 +188,7 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 ** Fill
 
 
-[[submodule:fill.gif]] [[submodule:quarters.gif]]
+[[https://github.com/takaxp/moom-images/blob/master/fill.gif]] [[https://github.com/takaxp/moom-images/blob/master/quarters.gif]]
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "moom"
@@ -205,7 +205,7 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 
 ** Fill (screen by toggle)
 
-[[submodule:fill-screen.gif]]
+[[https://github.com/takaxp/moom-images/blob/master/fill-screen.gif]]
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "M-<f2>") 'moom-toggle-frame-maximized)
@@ -237,7 +237,7 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 
 Expand the frame width temporarily during org-agenda is active.
 
-[[submodule:org-agenda.gif]]
+[[https://github.com/takaxp/moom-images/blob/master/org-agenda.gif]]
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "moom"
@@ -252,7 +252,7 @@ Expand the frame width temporarily during org-agenda is active.
 
 Entering quickly to the full screen presentation with [[https://github.com/takaxp/org-tree-slide][org-tree-slide.el]]. No additional settings are required. Just =M-x moom-toggle-frame-maximized=.
 
-[[submodule:org-tree-slide.gif]]
+[[https://github.com/takaxp/moom-images/blob/master/org-tree-slide.gif]]
 
 ** Org mode
 
