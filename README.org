@@ -6,6 +6,7 @@
 /Make your dominant hand FREE from your mouse/ :)
 
 [[./fig/demo1.gif]]
+[[[[https://github.com/takaxp/moom-images/blob/master/demo1.gif]]
 
 * Introduction
 
