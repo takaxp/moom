@@ -249,7 +249,7 @@ Including title-bar, menu-bar, offset depends on window system, and border."
 
 (defun moom--pos-x (posx &optional bounds)
   "Extract a value from POSX.
-If bounds is t, the frame will be controlled not to run over the screen."
+If BOUNDS is t, the frame will be controlled not to run over the screen."
   (when (listp posx)
     (setq posx (nth 1 posx)))
   (if (and bounds
@@ -261,6 +261,14 @@ If bounds is t, the frame will be controlled not to run over the screen."
               ((> posx bounds-right) bounds-right)
               (t posx)))
     posx))
+
+(defun moom--vertical-center ()
+  "Vertical center position."
+  (+ (nth 0 moom-screen-margin)
+     (floor (/ (- (display-pixel-height)
+                  (nth 0 moom-screen-margin)
+                  (nth 1 moom-screen-margin))
+               2.0))))
 
 (defun moom--save-last-status ()
   "Store the last frame position, size, and font-size."
@@ -304,12 +312,7 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
     (when (memq area '(right topr botr))
       (setq pos-x (ceiling (/ (display-pixel-width) 2.0))))
     (when (memq area '(bottom botl botr))
-      (setq pos-y
-            (+ (nth 0 moom-screen-margin)
-               (ceiling (/ (- (display-pixel-height)
-                              (nth 0 moom-screen-margin)
-                              (nth 1 moom-screen-margin))
-                           2.0)))))
+      (setq pos-y (moom--vertical-center)))
     (when (memq area '(top bottom left right topl topr botl botr))
       (set-frame-position (selected-frame) pos-x pos-y)
       (set-frame-size (selected-frame) pixel-width pixel-height t)))
@@ -489,9 +492,10 @@ DIRECTION would be 'horizontal or 'vertical."
   (set-frame-position (selected-frame)
                       (moom--pos-x (frame-parameter (selected-frame) 'left))
                       (+ (cdr moom-move-frame-pixel-offset)
-                         (/ (- (display-pixel-height)
-                               (frame-pixel-height))
-                            2)))
+                         (moom--vertical-center)
+                         (- (/ (+ (frame-pixel-height)
+                                  (moom--frame-internal-height))
+                               2))))
   (when moom-verbose
     (moom-print-status)))
 
@@ -551,7 +555,10 @@ please configure `moom-screen-margin'."
             (/ (- (display-pixel-width) (frame-pixel-width)) 2)))
         (center-pos-y
          (+ (cdr moom-move-frame-pixel-offset)
-            (/ (- (display-pixel-height) (frame-pixel-height)) 2))))
+            (moom--vertical-center)
+            (- (/ (+ (frame-pixel-height)
+                     (moom--frame-internal-height))
+                  2)))))
     (set-frame-position (selected-frame) center-pos-x center-pos-y))
   (when moom-verbose
     (moom-print-status)))
