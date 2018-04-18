@@ -189,18 +189,22 @@ Including title-bar, menu-bar, offset depends on window system, and border."
 (defun moom--max-frame-pixel-width ()
   "Return the maximum width on pixel base."
   (- (display-pixel-width)
-     (moom--frame-internal-width)))
+     (moom--frame-internal-width)
+     (nth 2 moom-screen-margin)
+     (nth 3 moom-screen-margin)))
 
 (defun moom--max-frame-pixel-height ()
   "Return the maximum height on pixel base."
   (- (display-pixel-height)
      (moom--frame-internal-height)
-     (nth 0 moom-screen-margin)))
+     (nth 0 moom-screen-margin)
+     (nth 1 moom-screen-margin)))
 
 (defun moom--max-half-frame-pixel-height ()
   "Return the half of maximum height on pixel base."
   (floor (/ (- (display-pixel-height)
                (nth 0 moom-screen-margin)
+               (nth 1 moom-screen-margin)
                (* 2 (moom--frame-internal-height)))
             2.0)))
 
@@ -303,7 +307,8 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
       (setq pos-y
             (+ (nth 0 moom-screen-margin)
                (ceiling (/ (- (display-pixel-height)
-                              (nth 0 moom-screen-margin))
+                              (nth 0 moom-screen-margin)
+                              (nth 1 moom-screen-margin))
                            2.0)))))
     (when (memq area '(top bottom left right topl topr botl botr))
       (set-frame-position (selected-frame) pos-x pos-y)
@@ -510,9 +515,10 @@ please configure `moom-screen-margin'."
   (interactive)
   (set-frame-position (selected-frame)
                       (moom--pos-x (frame-parameter (selected-frame) 'left))
-                      (- (- (display-pixel-height)
-                            (frame-pixel-height))
-                         (nth 0 moom-screen-margin)))
+                      (- (display-pixel-height)
+                         (frame-pixel-height)
+                         (nth 0 moom-screen-margin)
+                         (nth 1 moom-screen-margin)))
   (when moom-verbose
     (moom-print-status)))
 
