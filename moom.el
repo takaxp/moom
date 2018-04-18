@@ -180,6 +180,7 @@ Including fringes and border."
 Including title-bar, menu-bar, offset depends on window system, and border."
   (if window-system
       (+ (nthcdr 2 (assoc 'title-bar-size (frame-geometry)))
+         (nthcdr 2 (assoc 'tool-bar-size (frame-geometry)))
          (unless (eq window-system 'mac) ;; TODO check others {x, w32}
            (nthcdr 2 (assoc 'menu-bar-size (frame-geometry))))
          (* 2 (cdr (assoc 'internal-border-width (frame-geometry)))))
