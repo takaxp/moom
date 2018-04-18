@@ -242,10 +242,19 @@ Including title-bar, menu-bar, offset depends on window system, and border."
       (moom--font-size (display-pixel-width))
     12)) ;; FIXME, use face-attribute
 
-(defun moom--pos-x (posx)
-  "Extract a value from POSX."
-  (if (listp posx)
-      (nth 1 posx)
+(defun moom--pos-x (posx &optional bounds)
+  "Extract a value from POSX.
+If bounds is t, the frame will be controlled not to run over the screen."
+  (when (listp posx)
+    (setq posx (nth 1 posx)))
+  (if (and bounds
+           (not (eq system-type 'darwin)))
+      (let ((bounds-left 0)
+            (bounds-right (- (display-pixel-width)
+                             (frame-pixel-width))))
+        (cond ((< posx bounds-left) bounds-left)
+              ((> posx bounds-right) bounds-right)
+              (t posx)))
     posx))
 
 (defun moom--save-last-status ()
@@ -426,12 +435,13 @@ DIRECTION would be 'horizontal or 'vertical."
   (interactive)
   (let* ((pos-x (moom--pos-x (frame-parameter (selected-frame) 'left)))
          (pos-y (frame-parameter (selected-frame) 'top))
-         (new-pos-x (+ pos-x (or pixel
-                                 (moom--shift-amount 'right)))))
+         (new-pos-x (moom--pos-x (+ pos-x (or pixel
+                                              (moom--shift-amount 'right))) t)))
     (when (>= new-pos-x (display-pixel-width))
       (setq new-pos-x (- new-pos-x
                          (display-pixel-width)
-                         (frame-pixel-width))))
+                         (frame-pixel-width)
+                         (- (moom--shift-amount 'right)))))
     (set-frame-position (selected-frame) new-pos-x pos-y))
   (when moom-verbose
     (moom-print-status)))
@@ -442,12 +452,13 @@ DIRECTION would be 'horizontal or 'vertical."
   (interactive)
   (let* ((pos-x (moom--pos-x (frame-parameter (selected-frame) 'left)))
          (pos-y (frame-parameter (selected-frame) 'top))
-         (new-pos-x (- pos-x (or pixel
-                                 (moom--shift-amount 'left)))))
-    (when (<= new-pos-x (* -1 (frame-pixel-width)))
+         (new-pos-x (moom--pos-x (- pos-x (or pixel
+                                              (moom--shift-amount 'left))) t)))
+    (when (<= new-pos-x (- (frame-pixel-width)))
       (setq new-pos-x (+ new-pos-x
                          (display-pixel-width)
-                         (frame-pixel-width))))
+                         (frame-pixel-width)
+                         (- (moom--shift-amount 'left)))))
     (set-frame-position (selected-frame) new-pos-x pos-y))
   (when moom-verbose
     (moom-print-status)))
