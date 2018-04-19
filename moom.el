@@ -287,7 +287,7 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
              (moom--frame-internal-width)))
          (pixel-height (moom--max-half-frame-pixel-height))
          (pos-x 0)
-         (pos-y 0))
+         (pos-y (nth 0 moom--screen-margin)))
     ;; Region
     (cond ((memq area '(top bottom))
            (setq pixel-width (moom--max-frame-pixel-width)))
