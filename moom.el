@@ -56,15 +56,6 @@
   "Commands to control frame position and size."
   :group 'convenience)
 
-(defcustom moom-screen-margin (list (if (eq system-type 'darwin) 23 0) 0 0 0)
-  "Screen margin.
-A list consists of 4 integer variables for top, bottom, left, and right margin."
-  :type '(list (integer :tag "top margin")
-               (integer :tag "bottom margin")
-               (integer :tag "left margin")
-               (integer :tag "right margin"))
-  :group 'moom)
-
 (defcustom moom-move-frame-pixel-offset '(0 . 0)
   "Offset of the center position."
   :type 'sexp
@@ -145,6 +136,7 @@ A list consists of 4 integer variables for top, bottom, left, and right margin."
 (defvar moom--height-steps 4)
 (defvar moom--last-status nil)
 (defvar moom--maximized nil)
+(defvar moom--screen-margin (list (if (eq system-type 'darwin) 23 0) 0 0 0))
 
 (defun moom--setup ()
   "Init function."
@@ -190,21 +182,21 @@ Including title-bar, menu-bar, offset depends on window system, and border."
   "Return the maximum width on pixel base."
   (- (display-pixel-width)
      (moom--frame-internal-width)
-     (nth 2 moom-screen-margin)
-     (nth 3 moom-screen-margin)))
+     (nth 2 moom--screen-margin)
+     (nth 3 moom--screen-margin)))
 
 (defun moom--max-frame-pixel-height ()
   "Return the maximum height on pixel base."
   (- (display-pixel-height)
      (moom--frame-internal-height)
-     (nth 0 moom-screen-margin)
-     (nth 1 moom-screen-margin)))
+     (nth 0 moom--screen-margin)
+     (nth 1 moom--screen-margin)))
 
 (defun moom--max-half-frame-pixel-height ()
   "Return the half of maximum height on pixel base."
   (floor (/ (- (display-pixel-height)
-               (nth 0 moom-screen-margin)
-               (nth 1 moom-screen-margin)
+               (nth 0 moom--screen-margin)
+               (nth 1 moom--screen-margin)
                (* 2 (moom--frame-internal-height)))
             2.0)))
 
@@ -264,10 +256,10 @@ If BOUNDS is t, the frame will be controlled not to run over the screen."
 
 (defun moom--vertical-center ()
   "Vertical center position."
-  (+ (nth 0 moom-screen-margin)
+  (+ (nth 0 moom--screen-margin)
      (floor (/ (- (display-pixel-height)
-                  (nth 0 moom-screen-margin)
-                  (nth 1 moom-screen-margin))
+                  (nth 0 moom--screen-margin)
+                  (nth 1 moom--screen-margin))
                2.0))))
 
 (defun moom--save-last-status ()
@@ -503,11 +495,11 @@ DIRECTION would be 'horizontal or 'vertical."
 (defun moom-move-frame-to-edge-top ()
   "Move the current frame to the top of the screen.
 If you find the frame is NOT moved to the top exactly,
-please configure `moom-screen-margin'."
+please configure the margins by `moom-screen-margin'."
   (interactive)
   (set-frame-position (selected-frame)
                       (moom--pos-x (frame-parameter (selected-frame) 'left))
-                      (nth 0 moom-screen-margin))
+                      (nth 0 moom--screen-margin))
   (when moom-verbose
     (moom-print-status)))
 
@@ -515,14 +507,14 @@ please configure `moom-screen-margin'."
 (defun moom-move-frame-to-edge-bottom ()
   "Move the current frame to the top of the screen.
 If you find the frame is NOT moved to the bottom exactly,
-please configure `moom-screen-margin'."
+please configure the margins by `moom-screen-margin'."
   (interactive)
   (set-frame-position (selected-frame)
                       (moom--pos-x (frame-parameter (selected-frame) 'left))
                       (- (display-pixel-height)
                          (frame-pixel-height)
-                         (nth 0 moom-screen-margin)
-                         (nth 1 moom-screen-margin)))
+                         (nth 0 moom--screen-margin)
+                         (nth 1 moom--screen-margin)))
   (when moom-verbose
     (moom-print-status)))
 
@@ -571,7 +563,7 @@ When ARG is a single number like 10, shift the frame horizontally +10 pixel.
 When ARG is nil, then move to the default position '(0 0)."
   (interactive)
   (let ((pos-x 0)
-        (pos-y (nth 0 moom-screen-margin)))
+        (pos-y (nth 0 moom--screen-margin)))
     (cond ((not arg) t) ;; (0, 0)
           ((numberp arg) ;; horizontal shift
            (setq pos-x arg)
@@ -587,7 +579,7 @@ When ARG is nil, then move to the default position '(0 0)."
 (defun moom-cycle-frame-height ()
   "Change frame height and update the internal ring.
 If you find the frame is NOT changed as expected,
-please configure `moom-screen-margin'."
+please configure the margins by `moom-screen-margin'."
   (interactive)
   (unless moom--height-list
     (moom--make-frame-height-list))
@@ -670,6 +662,7 @@ This function does not effect font size."
   "Reset associated parameters."
   (interactive)
   (let ((moom--font-module-p (require 'moom-font nil t)))
+    (setq moom--maximized nil)
     (moom--save-last-status)
     (moom-restore-last-status moom--init-status)
     (moom--make-frame-height-list)))
@@ -682,6 +675,18 @@ The default step is 4."
              (> arg 1))
     (setq moom--height-steps arg)
     (moom--make-frame-height-list)))
+
+;;;###autoload
+(defun moom-screen-margin (margins &optional fill)
+  "Change top, bottom, left, and right margin by provided MARGINS.
+MARGINS shall be a list consists of 4 integer variables like '(23 0 0 0).
+If FILL is non-nil, the frame will cover the screen with given margins."
+  (when (and (listp margins)
+             (eq (length margins) 4))
+    (setq moom--screen-margin margins)
+    (moom-reset)
+    (when fill
+      (moom-toggle-frame-maximized))))
 
 ;;;###autoload
 (defun moom-restore-last-status (&optional status)

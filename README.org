@@ -13,6 +13,7 @@ After installing =moom.el= and =moom-font.el= (optional), activate =moom= by =(m
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "moom"
+  ;; add settings here ...
   (moom-mode 1))
 #+END_SRC
 
@@ -20,6 +21,7 @@ or
 
 #+BEGIN_SRC emacs-lisp
 (when (require 'moom nil t)
+  ;; add settings here ...
   (moom-mode 1))
 #+END_SRC
 
@@ -82,6 +84,7 @@ These functions normally change font size. But the behavior can be changed by =M
 
  - moom-reset
  - moom-update-height-steps
+ - moom-screen-margin
  - moom-restore-last-status
  - moom-toggle-font-module
  - moom-toggle-frame-maximized
@@ -121,7 +124,6 @@ No need to load =moom-font.el= explicitly. If the package is installed in your s
 #+CAPTION: User variables in moom.el
 |                              | default      | type    |
 |------------------------------+--------------+---------|
-| moom-screen-margin           | '(23 0 0 0)  | list    |
 | moom-move-frame-pixel-offset | '(0 . 0)     | sexp    |
 | moom-min-frame-height        | 16           | integer |
 | moom-init-line-spacing       | line-spacing | float   |
