@@ -9,7 +9,7 @@
 
 * Setup
 
-After installing =moom.el= and =moom-font.el= (optional), activate =moom= by =(moom-mode 1)= in your =init.el=.
+After installing =moom.el= and =moom-font.el= (optional), activate =moom= by =(moom-mode 1)= in your =init.el=. This module requires [[https://www.gnu.org/software/emacs/][GNU Emacs]] *25.1 or later*.
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "moom"
@@ -84,7 +84,7 @@ These functions normally change font size. But the behavior can be changed by =M
 
  - moom-reset
  - moom-update-height-steps
- - moom-screen-margin
+ - moom-screen-margin ~;; currently supports top or bottom margins.~
  - moom-restore-last-status
  - moom-toggle-font-module
  - moom-toggle-frame-maximized
@@ -92,6 +92,17 @@ These functions normally change font size. But the behavior can be changed by =M
  - moom-reset-line-spacing
  - moom-print-status
  - moom-version
+
+*** How to setup Top and Bottom margin
+
+Just provide a list to setup Top and/or Bottom margin of screen. Currently, it supports Top and Bottom margins. If you set the optional 2nd argument as =t=, then the frame will be automatically resized for full screen with given margins.
+
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load "moom"
+  (moom-screen-margin '(100 200 0 0))) ;; {top, bottom, left, right}
+#+END_SRC
+
+For macOS users, the default margin is ='(23 0 0 0)=, but for other system types, it is not configured when you activate =moom-mode=.
 
 * Extension to integrate font resizing
 
