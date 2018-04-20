@@ -109,12 +109,12 @@
   :group 'moom)
 
 (defcustom moom-before-fill-screen-hook nil
-  "Hook runs before changing to fullscreen."
+  "Hook runs before changing to frame maximized."
   :type 'hook
   :group 'moom)
 
 (defcustom moom-after-fill-screen-hook nil
-  "Hook runs after changing to fullscreen."
+  "Hook runs after changing to frame maximized."
   :type 'hook
   :group 'moom)
 
@@ -173,8 +173,8 @@ Including title-bar, menu-bar, offset depends on window system, and border."
   (if window-system
       (+ (nthcdr 2 (assoc 'title-bar-size (frame-geometry)))
          (nthcdr 2 (assoc 'tool-bar-size (frame-geometry)))
-         (unless (eq window-system 'mac) ;; TODO check others {x, w32}
-           (nthcdr 2 (assoc 'menu-bar-size (frame-geometry))))
+         (if (eq window-system 'w32) ;; TODO check in all window systems
+             (nthcdr 2 (assoc 'menu-bar-size (frame-geometry))) 0)
          (* 2 (cdr (assoc 'internal-border-width (frame-geometry)))))
     0)) ;; TODO check this by terminal
 
@@ -245,7 +245,7 @@ If BOUNDS is t, the frame will be controlled not to run over the screen."
   (when (listp posx)
     (setq posx (nth 1 posx)))
   (if (and bounds
-           (not (eq system-type 'darwin)))
+           (not (eq window-system 'ns)) ;; TODO: support others if possible
       (let ((bounds-left 0)
             (bounds-right (- (display-pixel-width)
                              (frame-pixel-width))))
