@@ -136,10 +136,11 @@
 (defvar moom--height-steps 4)
 (defvar moom--last-status nil)
 (defvar moom--maximized nil)
-(defvar moom--screen-margin (list (if (eq system-type 'darwin) 23 0) 0 0 0))
+(defvar moom--screen-margin (list 23 0 0 0))
 
 (defun moom--setup ()
   "Init function."
+  (setq moom--screen-margin (moom--default-screen-margin))
   (moom--make-frame-height-list)
   (moom--save-last-status)
   (setq moom--init-status moom--last-status)
@@ -322,6 +323,17 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
            (nth index moom-horizontal-shifts))
           (t
            (error (format "%s is wrong value." moom-horizontal-shifts))))))
+
+(defun moom--default-screen-margin ()
+  "Calculate screen margins."
+  (let ((geometry (frame-monitor-geometry))
+        (workarea (frame-monitor-workarea)))
+    (list (- (nth 1 workarea) (nth 1 geometry))
+          (- (+ (nth 1 geometry) (nth 3 geometry))
+             (+ (nth 1 workarea) (nth 3 workarea)))
+          (- (nth 2 geometry) (nth 2 workarea))
+          (- (+ (nth 0 geometry) (nth 2 geometry))
+             (+ (nth 0 workarea) (nth 2 workarea))))))
 
 ;;;###autoload
 (defun moom-fill-screen ()
@@ -664,6 +676,7 @@ This function does not effect font size."
   (let ((moom--font-module-p (require 'moom-font nil t)))
     (setq moom--maximized nil)
     (moom--save-last-status)
+    (setq moom--screen-margin (moom--default-screen-margin))
     (moom-restore-last-status moom--init-status)
     (moom--make-frame-height-list)))
 
