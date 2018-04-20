@@ -27,7 +27,7 @@ or
 
 * A set of commands to control frame position and size by keyboard
 
-#+CAPTION: demo for moving and zooming, fullscreen
+#+CAPTION: demo for moving and zooming, frame maximized
 [[https://github.com/takaxp/moom-images/blob/master/demo1.gif]]
 
 Note - This module has basically been tested on [[https://www.apple.com/macos/high-sierra/][macOS High Sierra]] with a Full HD (1920x1080) single display.
@@ -95,20 +95,20 @@ These functions normally change font size. But the behavior can be changed by =M
 
 *** How to setup Top and Bottom margin
 
-Just provide a list to setup Top and/or Bottom margin of screen. Currently, it supports Top and Bottom margins. If you set the optional 2nd argument as =t=, then the frame will be automatically resized for full screen with given margins.
+Just provide a list to setup Top and/or Bottom margin of screen. Currently, it supports Top and Bottom margins. If you set the optional 2nd argument as =t=, then the frame will be automatically resized for filling screen with given margins.
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "moom"
   (moom-screen-margin '(100 200 0 0))) ;; {top, bottom, left, right}
 #+END_SRC
 
-For macOS users, the default margin is ='(23 0 0 0)=, but for other system types, it is not configured when you activate =moom-mode=.
+For macOS users, the default margin is =(23 0 0 0)=, but for other system types, it is not configured when you activate =moom-mode=. So please call =moom-screen-margin= with an appropriate list for your environment.
 
 * Extension to integrate font resizing
 
 No need to load =moom-font.el= explicitly. If the package is installed in your system, then it will be activated automatically. The package is basically provided for the users who rely on Japanese fonts.
 
-#+CAPTION: demo for increasing and decreasing fonts, fullscreen
+#+CAPTION: demo for increasing and decreasing fonts, frame maximized
 [[https://github.com/takaxp/moom-images/blob/master/demo2.gif]]
 
 ** Setting
@@ -263,7 +263,7 @@ Expand the frame width temporarily during org-agenda is active.
 
 ** Org mode (org-tree-slide)
 
-Entering quickly to the full screen presentation with [[https://github.com/takaxp/org-tree-slide][org-tree-slide.el]]. No additional settings are required. Just =M-x moom-toggle-frame-maximized=.
+Entering quickly to the frame maximized presentation with [[https://github.com/takaxp/org-tree-slide][org-tree-slide.el]]. No additional settings are required. Just =M-x moom-toggle-frame-maximized=.
 
 [[https://github.com/takaxp/moom-images/blob/master/org-tree-slide.gif]]
 
