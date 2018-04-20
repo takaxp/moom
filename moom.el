@@ -245,7 +245,7 @@ If BOUNDS is t, the frame will be controlled not to run over the screen."
   (when (listp posx)
     (setq posx (nth 1 posx)))
   (if (and bounds
-           (not (eq window-system 'ns)) ;; TODO: support others if possible
+           (not (eq window-system 'ns))) ;; TODO: support others if possible
       (let ((bounds-left 0)
             (bounds-right (- (display-pixel-width)
                              (frame-pixel-width))))
