@@ -173,7 +173,7 @@ Including title-bar, menu-bar, offset depends on window system, and border."
   (if window-system
       (+ (nthcdr 2 (assoc 'title-bar-size (frame-geometry)))
          (nthcdr 2 (assoc 'tool-bar-size (frame-geometry)))
-         (if (eq window-system 'w32) ;; TODO check in all window systems
+         (if (memq window-system '(x w32))
              (nthcdr 2 (assoc 'menu-bar-size (frame-geometry))) 0)
          (* 2 (cdr (assoc 'internal-border-width (frame-geometry)))))
     0)) ;; TODO check this by terminal
