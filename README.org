@@ -170,10 +170,11 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 [[https://github.com/takaxp/moom-images/blob/master/shifts.gif]] [[https://github.com/takaxp/moom-images/blob/master/move-right.gif]] [[https://github.com/takaxp/moom-images/blob/master/center.gif]]
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "M-0") 'moom-move-frame) ;; to top-left corner
-(global-set-key (kbd "M-1") 'moom-move-frame-left)
-(global-set-key (kbd "M-2") 'moom-move-frame-to-center)
-(global-set-key (kbd "M-3") 'moom-move-frame-right)
+(with-eval-after-load "moom"
+  (define-key moom-mode-map (kbd "M-0") 'moom-move-frame) ;; to top-left corner
+  (define-key moom-mode-map (kbd "M-1") 'moom-move-frame-left)
+  (define-key moom-mode-map (kbd "M-2") 'moom-move-frame-to-center)
+  (define-key moom-mode-map (kbd "M-3") 'moom-move-frame-right))
 #+END_SRC
 
 ** Fit
@@ -181,18 +182,19 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 [[https://github.com/takaxp/moom-images/blob/master/edges.gif]] [[https://github.com/takaxp/moom-images/blob/master/corners.gif]]
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "M-<f1>") 'moom-move-frame-to-edge-left)
-(global-set-key (kbd "M-<f3>") 'moom-move-frame-to-edge-right)
-(global-set-key (kbd "<f1>") 'moom-move-frame-to-edge-top)
-(global-set-key (kbd "S-<f1>") 'moom-move-frame-to-edge-bottom)
+(with-eval-after-load "moom"
+  (define-key moom-mode-map (kbd "M-<f1>") 'moom-move-frame-to-edge-left)
+  (define-key moom-mode-map (kbd "M-<f3>") 'moom-move-frame-to-edge-right)
+  (define-key moom-mode-map (kbd "<f1>") 'moom-move-frame-to-edge-top)
+  (define-key moom-mode-map (kbd "S-<f1>") 'moom-move-frame-to-edge-bottom))
 #+END_SRC
 
 ** Expand
 [[https://github.com/takaxp/moom-images/blob/master/cycle-height.gif]] [[https://github.com/takaxp/moom-images/blob/master/expand.gif]]
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "<f2>") 'moom-cycle-frame-height)
 (with-eval-after-load "moom"
+  (define-key moom-mode-map (kbd "<f2>") 'moom-cycle-frame-height)
   (define-key moom-mode-map (kbd "C-c f s") 'moom-change-frame-width-single)
   (define-key moom-mode-map (kbd "C-c f d") 'moom-change-frame-width-double)
   (define-key moom-mode-map (kbd "C-c f a") 'moom-change-frame-width-half-again))
@@ -221,7 +223,8 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 [[https://github.com/takaxp/moom-images/blob/master/fill-screen.gif]]
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "M-<f2>") 'moom-toggle-frame-maximized)
+(with-eval-after-load "moom"
+  (define-key moom-mode-map (kbd "M-<f2>") 'moom-toggle-frame-maximized))
 #+END_SRC
 
 ** Reset and resize
@@ -235,14 +238,15 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 *** Font size (require moom-font.el)
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C--") 'moom-font-decrease)
-(global-set-key (kbd "C-=") 'moom-font-increase)
-(global-set-key (kbd "C-0") 'moom-font-size-reset)
-(global-set-key (kbd "C-_") 'text-scale-decrease) ;; built-in for ascii
-(global-set-key (kbd "C-+") 'text-scale-increase) ;; built-in for ascii
+(with-eval-after-load "moom"
+  (define-key moom-mode-map (kbd "C--") 'moom-font-decrease)
+  (define-key moom-mode-map (kbd "C-=") 'moom-font-increase)
+  (define-key moom-mode-map (kbd "C-0") 'moom-font-size-reset)
+  (define-key moom-mode-map (kbd "C-_") 'text-scale-decrease) ;; built-in for ascii
+  (define-key moom-mode-map (kbd "C-+") 'text-scale-increase) ;; built-in for ascii
 
-;; Recommended for stable presentation during font size increasing
-(add-hook 'moom-font-after-resize-hook #'moom-move-frame-to-edge-top)
+  ;; Recommended for stable presentation during font size increasing
+  (add-hook 'moom-font-after-resize-hook #'moom-move-frame-to-edge-top))
 #+END_SRC
 
 * Collaboration with other packages
