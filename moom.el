@@ -136,11 +136,12 @@
 (defvar moom--height-steps 4)
 (defvar moom--last-status nil)
 (defvar moom--maximized nil)
-(defvar moom--screen-margin (list 23 0 0 0))
+(defvar moom--screen-margin nil)
 
 (defun moom--setup ()
   "Init function."
-  (setq moom--screen-margin (moom--default-screen-margin))
+  (unless moom--screen-margin
+    (setq moom--screen-margin (moom--default-screen-margin)))
   (moom--make-frame-height-list)
   (moom--save-last-status)
   (setq moom--init-status moom--last-status)
@@ -676,7 +677,6 @@ This function does not effect font size."
   (let ((moom--font-module-p (require 'moom-font nil t)))
     (setq moom--maximized nil)
     (moom--save-last-status)
-    (setq moom--screen-margin (moom--default-screen-margin))
     (moom-restore-last-status moom--init-status)
     (moom--make-frame-height-list)))
 
