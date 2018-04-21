@@ -616,8 +616,7 @@ please configure the margins by `moom-screen-margin'."
   "Change the hight of the current frame.
 Argument FRAME-HEIGHT specifies new frame height."
   (interactive
-   (list (string-to-number
-          (read-string "New Height: " (number-to-string (frame-height))))))
+   (list (read-number "New Height: " (frame-height))))
   (when (not frame-height)
     (setq frame-height moom-min-frame-height))
   (let ((min-height (moom--min-frame-height))
@@ -640,8 +639,7 @@ Argument FRAME-HEIGHT specifies new frame height."
 This function does not effect font size.
 If FRAME-WIDTH is nil, `moom-frame-width-single' will be used."
   (interactive
-   (list (string-to-number
-          (read-string "New Width: " (number-to-string (frame-width))))))
+   (list (read-number "New Width: " (frame-width))))
   (let ((width (or frame-width
                    moom-frame-width-single)))
     (setq moom--frame-width width)
