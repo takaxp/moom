@@ -273,9 +273,7 @@ If BOUNDS is t, the frame will be controlled not to run over the screen."
           ("width" . ,(frame-width))
           ("height" . ,(frame-height))
           ("pixel-width" . ,(frame-pixel-width))
-          ("pixel-height" . ,(frame-pixel-height))))
-  (when moom-verbose
-    (moom-print-status)))
+          ("pixel-height" . ,(frame-pixel-height)))))
 
 (defun moom--fill-display (area)
   "Move the frame to AREA.
@@ -598,38 +596,37 @@ please configure the margins by `moom-screen-margin'."
     (moom--make-frame-height-list))
   (let ((height (car moom--height-list)))
     (cond ((equal height (moom--max-frame-height))
-           (set-frame-height (selected-frame)
-                             (moom--max-frame-pixel-height) nil t))
+           (moom-change-frame-height (moom--max-frame-pixel-height) t))
           ((equal height (/ (moom--max-frame-height) 2))
-           (set-frame-height (selected-frame)
-                             (moom--max-half-frame-pixel-height) nil t))
+           (moom-change-frame-height (moom--max-half-frame-pixel-height) t))
           (t (moom-change-frame-height height))))
   (setq moom--height-list
         (append (cdr moom--height-list)
                 (list (car moom--height-list))))
-  (when moom-verbose
-    (moom-print-status))
   (run-hooks 'moom-resize-frame-height-hook))
 
 ;;;###autoload
-(defun moom-change-frame-height (&optional frame-height)
+(defun moom-change-frame-height (&optional frame-height pixelwise)
   "Change the hight of the current frame.
-Argument FRAME-HEIGHT specifies new frame height."
+Argument FRAME-HEIGHT specifies new frame height.
+If PIXELWISE is non-nil, the frame height will be changed by pixel value."
   (interactive
    (list (read-number "New Height: " (frame-height))))
   (when (not frame-height)
     (setq frame-height moom-min-frame-height))
-  (let ((min-height (moom--min-frame-height))
-        (max-height (moom--max-frame-height)))
-    (when (> frame-height max-height)
-      (setq frame-height max-height)
-      (when moom-verbose
-        (message "[Moom] Force set the height %s." frame-height)))
-    (when (< frame-height min-height)
-      (setq frame-height min-height)
-      (when moom-verbose
-        (message "[Moom] Force set the height %s." frame-height)))
-    (set-frame-height (selected-frame) (floor frame-height)))
+  (if pixelwise
+      (set-frame-height (selected-frame) frame-height nil pixelwise)
+    (let ((min-height (moom--min-frame-height))
+          (max-height (moom--max-frame-height)))
+      (when (> frame-height max-height)
+        (setq frame-height max-height)
+        (when moom-verbose
+          (message "[Moom] Force set the height %s." frame-height)))
+      (when (< frame-height min-height)
+        (setq frame-height min-height)
+        (when moom-verbose
+          (message "[Moom] Force set the height %s." frame-height)))
+      (set-frame-height (selected-frame) (floor frame-height))))
   (when moom-verbose
     (moom-print-status)))
 
