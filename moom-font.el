@@ -52,6 +52,11 @@
   :type 'float
   :group 'moom)
 
+(defcustom moom-font-ascii-scale 1.0
+  "The default value to scale ASCII fonts."
+  :type 'float
+  :group 'moom)
+
 (defcustom moom-font-verbose nil
   "Show responses from `moom`."
   :type 'boolean
@@ -79,7 +84,11 @@ If `ARG' is nil, the default size is used."
          (ja-font-scale moom-font-ja-scale)
          (ja-font moom-font-ja)
          (ja-rescale (concat ".*" ja-font ".*"))
-         (ascii-font moom-font-ascii))
+         (ascii-font moom-font-ascii)
+         (ascii-rescale (concat ".*" ascii-font ".*")))
+    (setq face-font-rescale-alist
+          `((,ja-rescale . ,moom-font-ja-scale)
+            (,ascii-rescale . ,moom-font-ascii-scale)))
     (set-fontset-font nil 'ascii (font-spec :family ascii-font :size font-size))
     (let ((spec (font-spec :family ja-font :size font-size)))
       (set-fontset-font nil 'japanese-jisx0208 spec)
@@ -87,9 +96,7 @@ If `ARG' is nil, the default size is used."
       (set-fontset-font nil 'japanese-jisx0212 spec)
       (set-fontset-font nil '(#x0080 . #x024F) spec)
       (set-fontset-font nil '(#x0370 . #x03FF) spec)
-      (set-fontset-font nil 'mule-unicode-0100-24ff spec))
-    (setq face-font-rescale-alist
-          `((,ja-rescale . ,moom-font-ja-scale)))))
+      (set-fontset-font nil 'mule-unicode-0100-24ff spec))))
 
 ;;;###autoload
 (defun moom-font-resize (&optional n width)
