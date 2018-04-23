@@ -3,7 +3,7 @@
 #+SETUPFILE: theme-readtheorg.setup
 #+LINK: submodule https://github.com/takaxp/moom-images/blob/master/
 
-[[https://pxaka.tokyo/#/moom][file:https://pxaka.tokyo/packages/moom-badge.svg]]
+[[https://melpa.org/#/moom][file:https://melpa.org/packages/moom-badge.svg]]
 
 /Make your dominant hand FREE from your mouse/ :)
 

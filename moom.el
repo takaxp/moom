@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 0.9.9
+;; Version: 1.0.0
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -755,7 +755,7 @@ When `moom--font-module-p' is nil, font size is fixed except for `moom-reset' ev
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "0.9.9"))
+  (let ((moom-release "1.0.0"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
