@@ -102,7 +102,7 @@ Just provide a list to setup Top and/or Bottom margin of screen. Currently, it s
   (moom-screen-margin '(100 200 0 0))) ;; {top, bottom, left, right}
 #+END_SRC
 
-For macOS users, the default margin is =(23 0 0 0)=, but for other system types, it is not configured when you activate =moom-mode=. So please call =moom-screen-margin= with an appropriate list for your environment.
+For macOS users, the default margin is =(23 0 0 0)=, and for other system types, it is also configured using combination of =frame-monitor-geometry= and =frame-monitor-workarea= when you activate =moom-mode=. But the actual work area is probably depends on user environment. So please call =moom-screen-margin= with an appropriate list to configure the margins if needed.
 
 * Extension to integrate font resizing
 
@@ -267,7 +267,7 @@ Expand the frame width temporarily during org-agenda is active.
 
 ** Org mode (org-tree-slide)
 
-Entering quickly to the frame maximized presentation with [[https://github.com/takaxp/org-tree-slide][org-tree-slide.el]]. No additional settings are required. Just =M-x moom-toggle-frame-maximized=.
+Entering quickly to the frame maximized presentation with [[https://github.com/takaxp/org-tree-slide][org-tree-slide.el]]. No additional settings are required. Just =M-x moom-toggle-frame-maximized=. The font is automatically scaled to be maintained the frame width at 80 even if you use Japanese font.
 
 [[https://github.com/takaxp/moom-images/blob/master/org-tree-slide.gif]]
 
@@ -300,3 +300,10 @@ If you like and need the capabilities of changing window position and size by ke
 ** Keycastr
 
 For writing README, [[https://github.com/keycastr/keycastr][keycastr]] was utilized to capture keystrokes of each command. Thanks! but ~Shift+F1~ was recorded as ~?~. Haha... :p
+
+* Related packages
+
+ 1) [[https://www.emacswiki.org/emacs/frame-cmds.el][frame-cmds.el]]
+    - This package provides many fundamental APIs to control frame and window. If you want to control them more specifically and precisely, you may want to try this nice package. But the license is not open and not distributed through MELPA.
+ 2) [[https://github.com/zonuexe/emacs-presentation-mode][presentation.el]]
+    - It is highly recommended to try this vital package to scale and restore text size easily for nice viewing when you present your source code rendered in the Emacs buffers. Find more details at the above repository.
