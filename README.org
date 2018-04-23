@@ -84,7 +84,7 @@ These functions normally change font size. But the behavior can be changed by =M
 
  - moom-reset
  - moom-update-height-steps
- - moom-screen-margin ~;; currently supports top or bottom margins.~
+ - moom-screen-margin ~;; currently supports top and bottom margins.~
  - moom-restore-last-status
  - moom-toggle-font-module
  - moom-toggle-frame-maximized
@@ -113,13 +113,14 @@ No need to load =moom-font.el= explicitly. If the package is installed in your s
 
 ** Setting
 
-=moom-font-ascii=, =moom-font-ja=, =moom-font-ja-scale= should be configured manually according to your environment. The default values are =Monaco=, =Migu 2M=, =1.2=. If you don't know your font, you can easily check by =M-x describe-char= on a character. In future, the font types will be automatically identified without user settings.
+=moom-font-ascii=, =moom-font-ja=, =moom-font-ascii-scale=, =moom-font-ja-scale= should be configured manually according to your environment. The default values are =Monaco=, =Osaka=, =1.0=, and =1.2=. The scaling factors for each font are integrated into =face-font-rescale-alist= properly. If you don't know which fonts are used in Emacs frame, you can easily check them by =M-x describe-char= on a character. In future, the font types will be automatically identified without user action.
 
 #+BEGIN_SRC emacs-lisp
 ;; An example setting
 (with-eval-after-load "moom-font"
-  (setq moom-font-ascii "Menlo")
-  (setq moom-font-ja "Osaka") ;; Hiragino Maru Gothic Pro
+  (setq moom-font-ascii "Menlo") ;; Ricty Diminished
+  (setq moom-font-ja "Migu 2M") ;; Hiragino Maru Gothic Pro
+  (setq moom-font-ascii-scale 1.0)
   (setq moom-font-ja-scale 1.2))
 #+END_SRC
 
@@ -149,13 +150,14 @@ No need to load =moom-font.el= explicitly. If the package is installed in your s
 ** moom-font.el
 
 #+CAPTION: User variables in moom-font.el
-|                     | default | type    |
-|---------------------+---------+---------|
-| moom-font-ja        | Migu 2M | string  |
-| moom-font-ascii     | Monaco  | string  |
-| moom-font-init-size | 12      | integer |
-| moom-font-ja-scale  | 1.2     | float   |
-| moom-font-verbose   | nil     | boolean |
+|                       | default | type    |
+|-----------------------+---------+---------|
+| moom-font-ascii       | Monaco  | string  |
+| moom-font-ja          | Osaka   | string  |
+| moom-font-init-size   | 12      | integer |
+| moom-font-ascii-scale | 1.0     | float   |
+| moom-font-ja-scale    | 1.2     | float   |
+| moom-font-verbose     | nil     | boolean |
 
 * Example keybindings
 ** Overview

@@ -32,7 +32,7 @@
 
 ;;; Code:
 
-(defcustom moom-font-ja "Migu 2M"
+(defcustom moom-font-ja "Osaka"
   "Font name for Japanese font."
   :type 'string
   :group 'moom)
