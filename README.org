@@ -113,16 +113,24 @@ No need to load =moom-font.el= explicitly. If the package is installed in your s
 
 ** Setting
 
-=moom-font-ascii=, =moom-font-ja=, =moom-font-ascii-scale=, =moom-font-ja-scale= should be configured manually according to your environment. The default values are =Monaco=, =Osaka=, =1.0=, and =1.2=. The scaling factors for each font are integrated into =face-font-rescale-alist= properly. If you don't know which fonts are used in Emacs frame, you can easily check them by =M-x describe-char= on a character. In future, the font types will be automatically identified without user action.
+=moom-font-ascii=, =moom-font-ja=, =moom-font-ascii-scale=, =moom-font-ja-scale= should be configured manually according to your environment. The default values are =Monaco=, =Osaka=, =1.0=, and =1.2=. The scaling factors for each font are integrated into =face-font-rescale-alist= properly. If you don't know which fonts are used in Emacs frame, you can easily check them by ~M-x moom-font-print-name-at-point~ or ~M-x describe-char~ on a character.
+
+The following text is an example message when you type ~M-x moom-font-print-name-at-point~.
+#+BEGIN_SRC txt
+[moom-font] Set "Menlo" to ‘moom-font-ja’ or ‘moom-font-ascii.’
+#+END_SRC
+
+After you identify the font names in a buffer, then please configure them as follows:
 
 #+BEGIN_SRC emacs-lisp
-;; An example setting
 (with-eval-after-load "moom-font"
   (setq moom-font-ascii "Menlo") ;; Ricty Diminished
   (setq moom-font-ja "Migu 2M") ;; Hiragino Maru Gothic Pro
   (setq moom-font-ascii-scale 1.0)
   (setq moom-font-ja-scale 1.2))
 #+END_SRC
+
+In future, these font names will be automatically identified without user action. I hope... :/
 
 ** Resize font
 
