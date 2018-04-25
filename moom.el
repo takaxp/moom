@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.0.0
+;; Version: 1.0.1
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -96,6 +96,18 @@
   :type '(choice (integer :tag "common value for left and right")
                  (list (integer :tag "value for left")
                        (integer :tag "value for right")))
+  :group 'moom)
+
+
+(defcustom moom-scaling-gradient 1.66
+  "Gradient factor between font size and actual font pixel width.
+This parameter is used to calculate the font pixel width when resizing
+the frame width to keep the column 80. It depends on Font.
+For instance,
+1.66 : Menlo, Monaco
+2.00 : Inconsolata
+."
+  :type 'float
   :group 'moom)
 
 (defcustom moom-verbose nil
@@ -231,9 +243,10 @@ Including title-bar, menu-bar, offset depends on window system, and border."
 
 (defun moom--font-size (pixel-width)
   "Return an appropriate font-size based on PIXEL-WIDTH."
-  (let ((scale (if moom--font-module-p moom-font-ja-scale 1.0)))
-    (floor (/ (- pixel-width (moom--frame-internal-width))
-              (* (/ 80 2) scale))))) ;; FIXME
+  (let ((font-width (/ (float (- pixel-width (moom--frame-internal-width)))
+                       moom-frame-width-single)))
+    (floor (/ (* font-width moom-scaling-gradient)
+              (if moom--font-module-p moom-font-ascii-scale 1.0)))))
 
 (defun moom--fullscreen-font-size ()
   "Return the maximum font-size for full screen."

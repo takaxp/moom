@@ -124,11 +124,13 @@ After you identify the font names in a buffer, then please configure them as fol
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "moom-font"
-  (setq moom-font-ascii "Menlo") ;; Ricty Diminished
+  (setq moom-font-ascii "Menlo") ;; Ricty Diminished, Inconsolata
   (setq moom-font-ja "Migu 2M") ;; Hiragino Maru Gothic Pro
   (setq moom-font-ascii-scale 1.0)
   (setq moom-font-ja-scale 1.2))
 #+END_SRC
+
+If you find the column exceeds 80 when the frame is maximized, then configure =moom-scaling-gradient= properly. It depends on ASCII font type. For instance, ~1.66~ (default) for Menlo, Monaco, ~2.0~ for Inconsolata.
 
 In future, these font names will be automatically identified without user action. I hope... :/
 
