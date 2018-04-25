@@ -774,7 +774,7 @@ When `moom--font-module-p' is nil, font size is fixed except for `moom-reset' ev
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.0.0"))
+  (let ((moom-release "1.0.2"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
