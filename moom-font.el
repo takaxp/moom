@@ -98,13 +98,13 @@ If `ARG' is nil, the default size is used."
       (set-fontset-font nil '(#x0370 . #x03FF) spec)
       (set-fontset-font nil 'mule-unicode-0100-24ff spec))))
 
-(defun moom-font--font-name-at-point ()
-  "Try to identify the font name at point.
-Return a font name if worked out, otherwise return nil."
-  (let* ((spec (font-xlfd-name (font-at (point))))
-         (name (when (string-match "^-\\*-\\([a-zA-Z0-9\s]+\\)-.*$" spec)
-                 (match-string 1 spec))))
-    (if (and name (x-list-fonts name)) name nil)))
+(defun moom-font--extract-font (xlfd)
+  "Try to identify the font name.
+Return a font name extracted from XLFD if possible, otherwise return nil."
+  (when (stringp xlfd)
+    (let* ((name (when (string-match "^-[^-]+-\\([^-]+\\)-.*$" xlfd)
+                   (match-string 1 xlfd))))
+      (if (and name (x-list-fonts name)) name nil))))
 
 ;;;###autoload
 (defun moom-font-resize (&optional n width)
@@ -175,13 +175,24 @@ Optional argument DEC specifies a decreasing step."
   (interactive)
   (if (eq (point) (point-max))
       (message "[moom-font] Not on a character. Move cursor, and try again.")
-    (let ((font (moom-font--font-name-at-point)))
+    (let* ((xlfd-name (font-xlfd-name (font-at (point))))
+           (font (moom-font--extract-font xlfd-name)))
       (if font
           (message
            "[moom-font] Set \"%s\" to `moom-font-ja' or `moom-font-ascii.'"
            font)
-        (message "[moom-font] Failed to detect the font name from \"%s\"."
-                 (font-xlfd-name (font-at (point))))))))
+        (message
+         "[moom-font] Failed to detect the font name from \"%s\"."
+         xlfd-name)))))
+
+;; init
+(when window-system
+  (let ((font (moom-font--extract-font
+               (cdr (assoc 'font (frame-parameters))))))
+    (when font
+      (setq moom-font-ascii font)
+      (unless (eq system-type 'darwin)
+        (setq moom-font-ja font))))) ;; TODO Refine this
 
 (provide 'moom-font)
 
