@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.0.2
+;; Version: 1.0.3
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Twitter: @takaxp
@@ -75,6 +75,8 @@
 (defvar moom-font--size moom-font-init-size
   "Current font size.")
 
+(defvar moom-font--pause nil)
+
 (defun moom-font--change-size (&optional arg)
   "Core function to change font size.
 If `ARG' is nil, the default size is used."
@@ -89,14 +91,15 @@ If `ARG' is nil, the default size is used."
     (setq face-font-rescale-alist
           `((,ja-rescale . ,moom-font-ja-scale)
             (,ascii-rescale . ,moom-font-ascii-scale)))
-    (set-fontset-font nil 'ascii (font-spec :family ascii-font :size font-size))
-    (let ((spec (font-spec :family ja-font :size font-size)))
-      (set-fontset-font nil 'japanese-jisx0208 spec)
-      (set-fontset-font nil 'katakana-jisx0201 spec)
-      (set-fontset-font nil 'japanese-jisx0212 spec)
-      (set-fontset-font nil '(#x0080 . #x024F) spec)
-      (set-fontset-font nil '(#x0370 . #x03FF) spec)
-      (set-fontset-font nil 'mule-unicode-0100-24ff spec))))
+    (unless moom-font--pause
+      (set-fontset-font nil 'ascii (font-spec :family ascii-font :size font-size))
+      (let ((spec (font-spec :family ja-font :size font-size)))
+        (set-fontset-font nil 'japanese-jisx0208 spec)
+        (set-fontset-font nil 'katakana-jisx0201 spec)
+        (set-fontset-font nil 'japanese-jisx0212 spec)
+        (set-fontset-font nil '(#x0080 . #x024F) spec)
+        (set-fontset-font nil '(#x0370 . #x03FF) spec)
+        (set-fontset-font nil 'mule-unicode-0100-24ff spec)))))
 
 (defun moom-font--extract-font (xlfd)
   "Try to identify the font name.
@@ -115,14 +118,15 @@ If WIDTH is non-nil, ensure an appropriate font size so that
 the actual pixel width will not exceed the WIDTH."
   (interactive "nSize: ")
   (run-hooks 'moom-font-before-resize-hook)
-  (moom-font--change-size
-   (setq moom-font--size (or n moom-font-init-size)))
-  (when (and width
-             (< width (frame-pixel-width)))
+  (unless moom-font--pause
     (moom-font--change-size
-     (setq moom-font--size (1- moom-font--size)))) ;; adjust frame-width
-  (when moom-font-verbose
-    (message "0: %s" moom-font--size))
+     (setq moom-font--size (or n moom-font-init-size)))
+    (when (and width
+               (< width (frame-pixel-width)))
+      (moom-font--change-size
+       (setq moom-font--size (1- moom-font--size)))) ;; adjust frame-width
+    (when moom-font-verbose
+      (message "0: %s" moom-font--size)))
   (run-hooks 'moom-font-after-resize-hook))
 
 ;;;###autoload
@@ -142,13 +146,14 @@ the actual pixel width will not exceed the WIDTH."
 Optional argument INC specifies an increasing step."
   (interactive)
   (run-hooks 'moom-font-before-resize-hook)
-  (setq moom-font--size
-        (+ moom-font--size
-           (if (and (integerp inc) (> inc 0))
-               inc 1)))
-  (moom-font--change-size moom-font--size)
-  (when moom-font-verbose
-    (message "+%d: %s" inc moom-font--size))
+  (unless moom-font--pause
+    (setq moom-font--size
+          (+ moom-font--size
+             (if (and (integerp inc) (> inc 0))
+                 inc 1)))
+    (moom-font--change-size moom-font--size)
+    (when moom-font-verbose
+      (message "+%d: %s" inc moom-font--size)))
   (run-hooks 'moom-font-after-resize-hook))
 
 ;;;###autoload
@@ -157,16 +162,17 @@ Optional argument INC specifies an increasing step."
 Optional argument DEC specifies a decreasing step."
   (interactive)
   (run-hooks 'moom-font-before-resize-hook)
-  (setq moom-font--size
-        (- moom-font--size
-           (if (and (integerp dec)
-                    (> dec 0)
-                    (> moom-font--size dec))
-               dec 1)))
-  (when (and moom-font-verbose
-             (> moom-font--size 0))
-    (message "-%d: %s" dec moom-font--size))
-  (moom-font--change-size moom-font--size)
+  (unless moom-font--pause
+    (setq moom-font--size
+          (- moom-font--size
+             (if (and (integerp dec)
+                      (> dec 0)
+                      (> moom-font--size dec))
+                 dec 1)))
+    (when (and moom-font-verbose
+               (> moom-font--size 0))
+      (message "-%d: %s" dec moom-font--size))
+    (moom-font--change-size moom-font--size))
   (run-hooks 'moom-font-after-resize-hook))
 
 ;;;###autoload

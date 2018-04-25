@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.0.1
+;; Version: 1.0.2
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -742,6 +742,12 @@ When `moom--font-module-p' is nil, font size is fixed except for `moom-reset' ev
   (if (require 'moom-font nil t)
       (progn
         (setq moom--font-module-p (not moom--font-module-p))
+        (setq moom-font--pause (not moom--font-module-p))
+        (if moom--font-module-p
+            (add-hook 'moom-font-after-resize-hook
+                      #'moom--make-frame-height-list)
+          (remove-hook 'moom-font-after-resize-hook
+                       #'moom--make-frame-height-list))
         (when moom-verbose
           (message
            (concat "[Moom] Using font module ... "
