@@ -144,18 +144,19 @@ In future, these font names will be automatically identified without user action
 ** moom.el
 
 #+CAPTION: User variables in moom.el
-|                              | default      | type    |
+|                              |      default | type    |
 |------------------------------+--------------+---------|
-| moom-move-frame-pixel-offset | '(0 . 0)     | sexp    |
-| moom-min-frame-height        | 16           | integer |
+| moom-move-frame-pixel-offset |     '(0 . 0) | sexp    |
+| moom-min-frame-height        |           16 | integer |
 | moom-init-line-spacing       | line-spacing | float   |
-| moom-min-line-spacing        | 0.1          | float   |
-| moom-max-line-spacing        | 0.8          | float   |
-| moom-frame-width-single      | 80           | integer |
-| moom-frame-width-double      | 163          | integer |
-| moom-horizontal-shifts       | '(200 200)   | choice  |
-| moom-verbose                 | nil          | boolean |
-| moom-lighter                 | Moom         | string  |
+| moom-min-line-spacing        |          0.1 | float   |
+| moom-max-line-spacing        |          0.8 | float   |
+| moom-frame-width-single      |           80 | integer |
+| moom-frame-width-double      |          163 | integer |
+| moom-horizontal-shifts       |   '(200 200) | choice  |
+| moom-scaling-gradient        |         1.66 | float   |
+| moom-verbose                 |          nil | boolean |
+| moom-lighter                 |         Moom | string  |
 
 ** moom-font.el
 
