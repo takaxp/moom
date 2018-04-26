@@ -243,10 +243,15 @@ Including title-bar, menu-bar, offset depends on window system, and border."
 
 (defun moom--font-size (pixel-width)
   "Return an appropriate font-size based on PIXEL-WIDTH."
-  (let ((font-width (/ (float (- pixel-width (moom--frame-internal-width)))
-                       moom-frame-width-single)))
-    (floor (/ (* font-width moom-scaling-gradient)
-              (if moom--font-module-p moom-font-ascii-scale 1.0)))))
+  (let* ((font-width (/ (float (- pixel-width (moom--frame-internal-width)))
+                        moom-frame-width-single))
+         (scaled (floor (/ font-width
+                           (if moom--font-module-p
+                               moom-font-ascii-scale 1.0))))
+         (font-size (when moom--font-module-p
+                      (moom-font--find-size scaled moom-font-table))))
+    (if font-size font-size
+      (floor (* (if (< scaled 1) 1 scaled) moom-scaling-gradient)))))
 
 (defun moom--fullscreen-font-size ()
   "Return the maximum font-size for full screen."

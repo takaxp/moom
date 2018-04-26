@@ -74,8 +74,15 @@
 
 (defvar moom-font--size moom-font-init-size
   "Current font size.")
-
 (defvar moom-font--pause nil)
+(defvar moom-font--default-font-table
+  '((50 30) (49 29) (48 29) (47 28) (46 28) (45 27) (44 26) (43 26)
+    (42 25) (41 25) (40 24) (39 23) (38 23) (37 22) (36 22) (35 21)
+    (34 20) (33 20) (32 19) (31 19) (30 18) (29 17) (28 17) (27 16)
+    (26 16) (25 15) (24 14) (23 14) (22 13) (21 12) (20 12) (19 11)
+    (18 11) (17 10) (16 10) (15 9)  (14 8)  (13 8)  (12 7)  (11 7)
+    (10 6)  (9 5)   (8 5)   (7 4)   (6 4)   (5 3)))
+(defvar moom-font-table moom-font--default-font-table)
 
 (defun moom-font--change-size (&optional arg)
   "Core function to change font size.
@@ -92,7 +99,8 @@ If `ARG' is nil, the default size is used."
           `((,ja-rescale . ,moom-font-ja-scale)
             (,ascii-rescale . ,moom-font-ascii-scale)))
     (unless moom-font--pause
-      (set-fontset-font nil 'ascii (font-spec :family ascii-font :size font-size))
+      (set-fontset-font nil 'ascii
+                        (font-spec :family ascii-font :size font-size))
       (let ((spec (font-spec :family ja-font :size font-size)))
         (set-fontset-font nil 'japanese-jisx0208 spec)
         (set-fontset-font nil 'katakana-jisx0201 spec)
@@ -101,13 +109,21 @@ If `ARG' is nil, the default size is used."
         (set-fontset-font nil '(#x0370 . #x03FF) spec)
         (set-fontset-font nil 'mule-unicode-0100-24ff spec)))))
 
-(defun moom-font--extract-font (xlfd)
+(defun moom-font--extract-family-name (xlfd)
   "Try to identify the font name.
 Return a font name extracted from XLFD if possible, otherwise return nil."
   (when (stringp xlfd)
     (let* ((name (when (string-match "^-[^-]+-\\([^-]+\\)-.*$" xlfd)
                    (match-string 1 xlfd))))
       (if (and name (x-list-fonts name)) name nil))))
+
+(defun moom-font--find-size (width table)
+  "Return font size associated with WIDTH by looking up the TABLE."
+  (car (rassoc (list width) table)))
+
+(defun moom-font--find-width (size table)
+  "Return font width associated with SIZE by looking up the TABLE."
+  (cdr (assoc size table)))
 
 ;;;###autoload
 (defun moom-font-resize (&optional n width)
@@ -177,23 +193,23 @@ Optional argument DEC specifies a decreasing step."
 
 ;;;###autoload
 (defun moom-font-print-name-at-point ()
-  "Print font name at point."
+  "Print font family name at point."
   (interactive)
   (if (eq (point) (point-max))
       (message "[moom-font] Not on a character. Move cursor, and try again.")
     (let* ((xlfd-name (font-xlfd-name (font-at (point))))
-           (font (moom-font--extract-font xlfd-name)))
-      (if font
+           (family-name (moom-font--extract-family-name xlfd-name)))
+      (if family-name
           (message
            "[moom-font] Set \"%s\" to `moom-font-ja' or `moom-font-ascii.'"
-           font)
+           family-name)
         (message
-         "[moom-font] Failed to detect the font name from \"%s\"."
+         "[moom-font] Failed to detect the font family name from \"%s\"."
          xlfd-name)))))
 
 ;; init
 (when window-system
-  (let ((font (moom-font--extract-font
+  (let ((font (moom-font--extract-family-name
                (cdr (assoc 'font (frame-parameters))))))
     (when font
       (setq moom-font-ascii font)
