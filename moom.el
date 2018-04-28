@@ -98,7 +98,7 @@
                        (integer :tag "value for right")))
   :group 'moom)
 
-(defcustom moom-fill-band-options '(:direction vertical :range 70.0)
+(defcustom moom-fill-band-options '(:direction vertical :range 50.0)
   "Band direction and range to fill screen.
 If DIRECTION is horizontal, the frame height is limited based on RANGE.
 If it is vertical, then the frame width will be limited based on RANGE.

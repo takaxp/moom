@@ -154,7 +154,7 @@ In future, these font names will be automatically identified without user action
 | moom-frame-width-single      | 80                                 | integer |
 | moom-frame-width-double      | 163                                | integer |
 | moom-horizontal-shifts       | '(200 200)                         | choice  |
-| moom-fill-band-options       | '(:direction vertical :range 66.0) | plist   |
+| moom-fill-band-options       | '(:direction vertical :range 50.0) | plist   |
 | moom-scaling-gradient        | 1.66                               | float   |
 | moom-verbose                 | nil                                | boolean |
 | moom-lighter                 | Moom                               | string  |
