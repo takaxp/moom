@@ -99,13 +99,13 @@
   :group 'moom)
 
 
-(defcustom moom-scaling-gradient 1.66
+(defcustom moom-scaling-gradient (/ 5.0 3)
   "Gradient factor between font size and actual font pixel width.
 This parameter is used to calculate the font pixel width when resizing
 the frame width to keep the column 80. It depends on Font.
 For instance,
-1.66 : Menlo, Monaco
-2.00 : Inconsolata
+1.66(50/30) : Menlo, Monaco
+2.00(50/25) : Inconsolata
 ."
   :type 'float
   :group 'moom)
@@ -317,7 +317,7 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
           (nil t))
     ;; Font size
     (when moom--font-module-p
-      (moom-font-resize (moom--font-size align-width) align-width))
+      (moom-font-resize (moom--font-size align-width))) ;;  align-width
     ;; Position
     (when (memq area '(right topr botr))
       (setq pos-x (ceiling (/ (display-pixel-width) 2.0))))
@@ -361,8 +361,7 @@ in order to move the frame to specific position."
   (interactive)
   (run-hooks 'moom-before-fill-screen-hook)
   (when moom--font-module-p
-    (moom-font-resize (moom--fullscreen-font-size)
-                      (display-pixel-width)))
+    (moom-font-resize (moom--fullscreen-font-size))) ;; (display-pixel-width)))
   (set-frame-size (selected-frame)
                   (moom--max-frame-pixel-width)
                   (moom--max-frame-pixel-height) t)
@@ -766,8 +765,9 @@ When `moom--font-module-p' is nil, font size is fixed except for `moom-reset' ev
   (interactive)
   (message
    (format
-    "[Moom] Font: %spt | Frame: c(%d, %d) p(%d, %d) | Origin: (%s, %s)"
+    "[Moom] Font: %spt(%dpx) | Frame: c(%d, %d) p(%d, %d) | Origin: (%s, %s)"
     (if moom--font-module-p moom-font--size "**")
+    (frame-char-width)
     (frame-width)
     (frame-height)
     (frame-pixel-width)
