@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.0.2
+;; Version: 1.0.3
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -98,6 +98,19 @@
                        (integer :tag "value for right")))
   :group 'moom)
 
+(defcustom moom-fill-band-options '(:direction vertical :range 70.0)
+  "Band direction and range to fill screen.
+If DIRECTION is horizontal, the frame height is limited based on RANGE.
+If it is vertical, then the frame width will be limited based on RANGE.
+If the type of RANGE is float, range is calculated in percent.
+Note that even if DIRECTION is vertical and RANGE is 100.0, the screen
+may not be covered entirely because this package prioritize keeping
+the column at `moom-frame-width-single'.  Instead, if the value is integer,
+the screen will be covered precisely by the specified value in pixels.
+  :direction    symbol, horizontal or vertical
+  :range        float(%) or integer(px)."
+  :type 'plist
+  :group 'moom)
 
 (defcustom moom-scaling-gradient (/ 5.0 3)
   "Gradient factor between font size and actual font pixel width.
@@ -149,6 +162,7 @@ For instance,
 (defvar moom--last-status nil)
 (defvar moom--maximized nil)
 (defvar moom--screen-margin nil)
+(defvar moom--fill-minimum-range 256)
 
 (defun moom--setup ()
   "Init function."
@@ -429,16 +443,59 @@ in order to move the frame to specific position."
   (moom--fill-display 'botr))
 
 ;;;###autoload
-(defun moom-fill-band (&optional direction)
+(defun moom-fill-band (&optional plist)
   "Fill screen by band region.
-DIRECTION would be 'horizontal or 'vertical."
+If PLIST is nil, `moom-fill-band-options' is used."
   (interactive)
-  (when (cond ((memq direction '(vertical nil))
-               (moom--fill-display 'left) t)
-              ((eq direction 'horizontal)
-               (moom--fill-display 'top) t)
-              (t nil))
-    (moom-move-frame-to-center)))
+  (let* ((values (or plist moom-fill-band-options))
+         (direction (plist-get values :direction))
+         (range (plist-get values :range))
+         (band-pixel-width nil)
+         (band-pixel-height nil))
+    (cond ((memq direction '(vertical nil))
+           (setq band-pixel-width
+                 (- (if (floatp range)
+                        (floor (/ (* (display-pixel-width) range) 100.0))
+                      range)
+                    (moom--frame-internal-width)))
+           (when (< band-pixel-width moom--fill-minimum-range)
+             (setq band-pixel-width moom--fill-minimum-range)
+             (warn "Range was changed since given value is too small."))
+           (when moom--font-module-p
+             (moom-font-resize
+              (moom--font-size band-pixel-width)))
+           (set-frame-width (selected-frame) moom-frame-width-single)
+           (setq band-pixel-width
+                 (if (and moom--font-module-p
+                          (floatp range))
+                     (- (frame-pixel-width)
+                        (moom--frame-internal-width))
+                   band-pixel-width))
+           (setq band-pixel-height (moom--max-frame-pixel-height)))
+          ((eq direction 'horizontal)
+           (setq band-pixel-width (moom--max-frame-pixel-width))
+           (setq band-pixel-height
+                 (- (if (floatp range)
+                        (floor (/ (* (- (display-pixel-height)
+                                        (nth 0 moom--screen-margin)
+                                        (nth 1 moom--screen-margin))
+                                     range)
+                                  100.0))
+                      range)
+                    (moom--frame-internal-height)))
+           (when moom--font-module-p
+             (moom-font-resize
+              (moom--font-size band-pixel-width)))
+           ;; (set-frame-width (selected-frame) moom-frame-width-single)
+           ;; (when (and moom--font-module-p
+           ;;            (floatp range))
+           ;;   (setq band-pixel-width (- (frame-pixel-width)
+           ;;                             (moom--frame-internal-width))))
+           ))
+    (when (and band-pixel-width
+               band-pixel-height)
+      (set-frame-size (selected-frame) band-pixel-width band-pixel-height t)
+      (moom-move-frame-to-center))))
 
 ;;;###autoload
 (defun moom-cycle-line-spacing ()
@@ -779,7 +836,7 @@ When `moom--font-module-p' is nil, font size is fixed except for `moom-reset' ev
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.0.2"))
+  (let ((moom-release "1.0.3"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
