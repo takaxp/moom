@@ -31,6 +31,8 @@
 ;;; Change Log:
 
 ;;; Code:
+(eval-when-compile
+  (require 'cl-lib))
 
 (defcustom moom-font-ja "Osaka"
   "Font name for Japanese font."
@@ -72,17 +74,14 @@
   :type 'hook
   :group 'moom)
 
+(defcustom moom-font-table nil
+  "Font table."
+  :type 'alist
+  :group 'moom)
+
 (defvar moom-font--size moom-font-init-size
   "Current font size.")
 (defvar moom-font--pause nil)
-(defvar moom-font--default-font-table
-  '((50 30) (49 29) (48 29) (47 28) (46 28) (45 27) (44 26) (43 26)
-    (42 25) (41 25) (40 24) (39 23) (38 23) (37 22) (36 22) (35 21)
-    (34 20) (33 20) (32 19) (31 19) (30 18) (29 17) (28 17) (27 16)
-    (26 16) (25 15) (24 14) (23 14) (22 13) (21 12) (20 12) (19 11)
-    (18 11) (17 10) (16 10) (15 9)  (14 8)  (13 8)  (12 7)  (11 7)
-    (10 6)  (9 5)   (8 5)   (7 4)   (6 4)   (5 3))) ;; 1.66
-(defvar moom-font-table moom-font--default-font-table)
 
 (defun moom-font--change-size (&optional arg)
   "Core function to change font size.
@@ -119,11 +118,13 @@ Return a font name extracted from XLFD if possible, otherwise return nil."
 
 (defun moom-font--find-size (width table)
   "Return font size associated with WIDTH by looking up the TABLE."
-  (car (rassoc (list width) table)))
+  (when table
+    (car (rassoc (list width) table))))
 
 (defun moom-font--find-width (size table)
   "Return font width associated with SIZE by looking up the TABLE."
-  (cdr (assoc size table)))
+  (when table
+    (cdr (assoc size table))))
 
 ;;;###autoload
 (defun moom-font-resize (&optional n width)
@@ -206,6 +207,35 @@ Optional argument DEC specifies a decreasing step."
         (message
          "[moom-font] Failed to detect the font family name from \"%s\"."
          xlfd-name)))))
+
+;;;###autoload
+(defun moom-font-generate-font-table ()
+  "Generate a font table."
+  (interactive)
+  (let ((moom-font-table nil)
+        (last-font-size moom-font--size)
+        (left (frame-parameter (selected-frame) 'left))
+        (top (frame-parameter (selected-frame) 'top))
+        (pixel-width (frame-pixel-width))
+        (pixel-height (frame-pixel-height)))
+    (cl-loop
+     for pt from 5 to 50
+     do
+     (moom-font-resize pt)
+     (push (list moom-font--size (frame-char-width)) moom-font-table))
+    (moom-font-resize last-font-size)
+    (set-frame-position (selected-frame) left top)
+    (set-frame-size (selected-frame) pixel-width pixel-height t)
+    (with-current-buffer (get-buffer-create "*moom-font*")
+      (erase-buffer)
+      (insert ";; 1. M-x eval-buffer\n")
+      (insert ";; 2. Copy and paste following configurations into your init.el.\n")
+      (insert "(with-eval-after-load \"moom-font\"\n")
+      (insert (format "(setq moom-scaling-gradient (/ (float %d) %d))\n"
+                      (nth 0 (car moom-font-table))
+                      (nth 1 (car moom-font-table))))
+      (insert (format "(setq moom-font-table '%s))" moom-font-table))
+      (goto-char 0))))
 
 ;; init
 (when window-system
