@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.0.3
+;; Version: 1.1.0
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -93,9 +93,9 @@
 
 (defcustom moom-horizontal-shifts '(200 200)
   "Distance to move the frame horizontally."
-  :type '(choice (integer :tag "common value for left and right")
-                 (list (integer :tag "value for left")
-                       (integer :tag "value for right")))
+  :type '(choice (integer :tag "Common value for left and right")
+                 (list (integer :tag "Value for left")
+                       (integer :tag "Value for right")))
   :group 'moom)
 
 (defcustom moom-fill-band-options '(:direction vertical :range 50.0)
@@ -117,8 +117,8 @@ the screen will be covered precisely by the specified value in pixels.
 This parameter is used to calculate the font pixel width when resizing
 the frame width to keep the column 80. It depends on Font.
 For instance,
-1.66(50/30) : Menlo, Monaco
-2.00(50/25) : Inconsolata
+1.66(5.0/3.0) : Menlo, Monaco
+2.00(5.0/2.5) : Inconsolata
 ."
   :type 'float
   :group 'moom)
@@ -256,14 +256,16 @@ Including title-bar, menu-bar, offset depends on window system, and border."
     (setq moom--height-list (copy-sequence heights))))
 
 (defun moom--font-size (pixel-width)
-  "Return an appropriate font-size based on PIXEL-WIDTH."
+  "Return an appropriate font-size based on PIXEL-WIDTH.
+If `moom-font-table' is non-nil, the returned value will be more precisely
+calculated."
   (let* ((font-width (/ (float (- pixel-width (moom--frame-internal-width)))
                         moom-frame-width-single))
-         (scaled (floor (/ font-width
-                           (if moom--font-module-p
-                               moom-font-ascii-scale 1.0))))
+         (scaled (/ font-width
+                    (if moom--font-module-p
+                        moom-font-ascii-scale 1.0)))
          (font-size (when moom--font-module-p
-                      (moom-font--find-size scaled moom-font-table))))
+                      (moom-font--find-size (floor scaled) moom-font-table))))
     (if font-size font-size
       (floor (* (if (< scaled 1) 1 scaled) moom-scaling-gradient)))))
 
@@ -331,7 +333,7 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
           (nil t))
     ;; Font size
     (when moom--font-module-p
-      (moom-font-resize (moom--font-size align-width))) ;;  align-width
+      (moom-font-resize (moom--font-size align-width) align-width))
     ;; Position
     (when (memq area '(right topr botr))
       (setq pos-x (ceiling (/ (display-pixel-width) 2.0))))
@@ -375,7 +377,7 @@ in order to move the frame to specific position."
   (interactive)
   (run-hooks 'moom-before-fill-screen-hook)
   (when moom--font-module-p
-    (moom-font-resize (moom--fullscreen-font-size))) ;; (display-pixel-width)))
+    (moom-font-resize (moom--fullscreen-font-size) (display-pixel-width)))
   (set-frame-size (selected-frame)
                   (moom--max-frame-pixel-width)
                   (moom--max-frame-pixel-height) t)
@@ -454,26 +456,25 @@ If PLIST is nil, `moom-fill-band-options' is used."
          (band-pixel-height nil))
     (cond ((memq direction '(vertical nil))
            (setq band-pixel-width
-                 (- (if (floatp range)
-                        (floor (/ (* (display-pixel-width) range) 100.0))
-                      range)
-                    (moom--frame-internal-width)))
+                 (if (floatp range)
+                     (floor (/ (* (display-pixel-width) range) 100.0))
+                   range))
            (when (< band-pixel-width moom--fill-minimum-range)
              (setq band-pixel-width moom--fill-minimum-range)
              (warn "Range was changed since given value is too small."))
+           (set-frame-width (selected-frame) moom-frame-width-single)
            (when moom--font-module-p
              (moom-font-resize
-              (moom--font-size band-pixel-width)))
-           (set-frame-width (selected-frame) moom-frame-width-single)
+              (moom--font-size band-pixel-width) band-pixel-width))
+           ;; Update band-pixel-width for `set-frame-size'
            (setq band-pixel-width
-                 (if (and moom--font-module-p
-                          (floatp range))
-                     (- (frame-pixel-width)
-                        (moom--frame-internal-width))
-                   band-pixel-width))
+                 (- (if (and moom--font-module-p
+                             (floatp range))
+                        (frame-pixel-width)
+                      band-pixel-width)
+                    (moom--frame-internal-width)))
            (setq band-pixel-height (moom--max-frame-pixel-height)))
           ((eq direction 'horizontal)
-           (setq band-pixel-width (moom--max-frame-pixel-width))
            (setq band-pixel-height
                  (- (if (floatp range)
                         (floor (/ (* (- (display-pixel-height)
@@ -485,13 +486,13 @@ If PLIST is nil, `moom-fill-band-options' is used."
                     (moom--frame-internal-height)))
            (when moom--font-module-p
              (moom-font-resize
-              (moom--font-size band-pixel-width)))
+              (moom--font-size (display-pixel-width)) (display-pixel-width)))
            ;; (set-frame-width (selected-frame) moom-frame-width-single)
            ;; (when (and moom--font-module-p
            ;;            (floatp range))
            ;;   (setq band-pixel-width (- (frame-pixel-width)
            ;;                             (moom--frame-internal-width))))
-           ))
+           (setq band-pixel-width (moom--max-frame-pixel-width))))
     (when (and band-pixel-width
                band-pixel-height)
       (set-frame-size (selected-frame) band-pixel-width band-pixel-height t)
@@ -836,7 +837,7 @@ When `moom--font-module-p' is nil, font size is fixed except for `moom-reset' ev
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.0.3"))
+  (let ((moom-release "1.1.0"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload

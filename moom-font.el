@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.0.3
+;; Version: 1.1.0
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Twitter: @takaxp
@@ -59,6 +59,12 @@
   :type 'float
   :group 'moom)
 
+(defcustom moom-font-table nil
+  "Font table."
+  :type '(repeat (list (integer :tag "Font size in point")
+                       (integer :tag "Font width in pixels")))
+  :group 'moom)
+
 (defcustom moom-font-verbose nil
   "Show responses from `moom`."
   :type 'boolean
@@ -72,11 +78,6 @@
 (defcustom moom-font-after-resize-hook nil
   "Hook runs after resizing font size."
   :type 'hook
-  :group 'moom)
-
-(defcustom moom-font-table nil
-  "Font table."
-  :type 'alist
   :group 'moom)
 
 (defvar moom-font--size moom-font-init-size
@@ -140,8 +141,11 @@ the actual pixel width will not exceed the WIDTH."
      (setq moom-font--size (or n moom-font-init-size)))
     (when (and width
                (< width (frame-pixel-width)))
+      (when moom-font-verbose
+        (message "[moom-font] Font size is changed from %s to %s."
+                 moom-font--size (1- moom-font--size)))
       (moom-font--change-size
-       (setq moom-font--size (1- moom-font--size)))) ;; adjust frame-width
+       (setq moom-font--size (1- moom-font--size))))
     (when moom-font-verbose
       (message "0: %s" moom-font--size)))
   (run-hooks 'moom-font-after-resize-hook))
@@ -226,16 +230,18 @@ Optional argument DEC specifies a decreasing step."
     (moom-font-resize last-font-size)
     (set-frame-position (selected-frame) left top)
     (set-frame-size (selected-frame) pixel-width pixel-height t)
-    (with-current-buffer (get-buffer-create "*moom-font*")
-      (erase-buffer)
-      (insert ";; 1. M-x eval-buffer\n")
-      (insert ";; 2. Copy and paste following configurations into your init.el.\n")
-      (insert "(with-eval-after-load \"moom-font\"\n")
-      (insert (format "(setq moom-scaling-gradient (/ (float %d) %d))\n"
-                      (nth 0 (car moom-font-table))
-                      (nth 1 (car moom-font-table))))
-      (insert (format "(setq moom-font-table '%s))" moom-font-table))
-      (goto-char 0))))
+    (let ((buffer "*moom-font*"))
+      (with-current-buffer (get-buffer-create buffer)
+        (erase-buffer)
+        (insert ";; 1. M-x eval-buffer\n")
+        (insert ";; 2. Paste the following configurations into your init.el.\n")
+        (insert "(with-eval-after-load \"moom-font\"\n")
+        (insert (format "  (setq moom-scaling-gradient (/ (float %d) %d))\n"
+                        (nth 0 (car moom-font-table))
+                        (nth 1 (car moom-font-table))))
+        (insert (format "  (setq moom-font-table (quote %s)))" moom-font-table))
+        (goto-char 0)
+        (switch-to-buffer buffer)))))
 
 ;; init
 (when window-system

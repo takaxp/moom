@@ -162,14 +162,15 @@ In future, these font names will be automatically identified without user action
 ** moom-font.el
 
 #+CAPTION: User variables in moom-font.el
-|                       | default | type    |
-|-----------------------+---------+---------|
-| moom-font-ascii       | Monaco  | string  |
-| moom-font-ja          | Osaka   | string  |
-| moom-font-init-size   | 12      | integer |
-| moom-font-ascii-scale | 1.0     | float   |
-| moom-font-ja-scale    | 1.2     | float   |
-| moom-font-verbose     | nil     | boolean |
+|                       | default | type                            |
+|-----------------------+---------+---------------------------------|
+| moom-font-ascii       | Monaco  | string                          |
+| moom-font-ja          | Osaka   | string                          |
+| moom-font-init-size   | 12      | integer                         |
+| moom-font-ascii-scale | 1.0     | float                           |
+| moom-font-ja-scale    | 1.2     | float                           |
+| moom-font-table       | nil     | (repeat (list integer integer)) |
+| moom-font-verbose     | nil     | boolean                         |
 
 * Example keybindings
 ** Overview
