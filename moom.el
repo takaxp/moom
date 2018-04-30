@@ -825,10 +825,10 @@ When `moom--font-module-p' is nil, font size is fixed except for `moom-reset' ev
   "Generate a font table.
 The last frame position and size will be restored."
   (interactive)
-  (if (fboundp 'moom-font-generate-font-table)
+  (if (not (fboundp 'moom-font--generate-font-table))
       (warn "moom-font.el is NOT installed.")
     (moom--save-last-status)
-    (moom-font-generate-font-table)
+    (moom-font--generate-font-table)
     (moom-restore-last-status)))
 
 ;;;###autoload

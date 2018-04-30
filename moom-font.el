@@ -127,6 +127,29 @@ Return a font name extracted from XLFD if possible, otherwise return nil."
   (when table
     (cdr (assoc size table))))
 
+(defun moom-font--generate-font-table (&optional begin end)
+  "Generate a font table.
+If BEGIN is nil, use 5 as the default value.
+If END is nil, use 50 as the default value."
+  (let ((moom-font-table nil))
+    (cl-loop
+     for pt from (or begin 5) to (or end 50)
+     do
+     (moom-font-resize pt)
+     (push (list moom-font--size (frame-char-width)) moom-font-table))
+    (let ((buffer "*moom-font*"))
+      (with-current-buffer (get-buffer-create buffer)
+        (erase-buffer)
+        (insert ";; 1. M-x eval-buffer\n")
+        (insert ";; 2. Paste the following configurations into your init.el.\n")
+        (insert "(with-eval-after-load \"moom-font\"\n")
+        (insert (format "  (setq moom-scaling-gradient (/ (float %d) %d))\n"
+                        (nth 0 (car moom-font-table))
+                        (nth 1 (car moom-font-table))))
+        (insert (format "  (setq moom-font-table (quote %s)))" moom-font-table))
+        (goto-char 0)
+        (switch-to-buffer buffer)))))
+
 ;;;###autoload
 (defun moom-font-resize (&optional n width)
   "Resize font.
@@ -213,31 +236,6 @@ Optional argument DEC specifies a decreasing step."
         (message
          "[moom-font] Failed to detect the font family name from \"%s\"."
          xlfd-name)))))
-
-;;;###autoload
-(defun moom-font-generate-font-table (&optional begin end)
-  "Generate a font table.
-If BEGIN is nil, use 5 as the default value.
-If END is nil, use 50 as the default value."
-  (interactive)
-  (let ((moom-font-table nil))
-    (cl-loop
-     for pt from (or begin 5) to (or end 50)
-     do
-     (moom-font-resize pt)
-     (push (list moom-font--size (frame-char-width)) moom-font-table))
-    (let ((buffer "*moom-font*"))
-      (with-current-buffer (get-buffer-create buffer)
-        (erase-buffer)
-        (insert ";; 1. M-x eval-buffer\n")
-        (insert ";; 2. Paste the following configurations into your init.el.\n")
-        (insert "(with-eval-after-load \"moom-font\"\n")
-        (insert (format "  (setq moom-scaling-gradient (/ (float %d) %d))\n"
-                        (nth 0 (car moom-font-table))
-                        (nth 1 (car moom-font-table))))
-        (insert (format "  (setq moom-font-table (quote %s)))" moom-font-table))
-        (goto-char 0)
-        (switch-to-buffer buffer)))))
 
 ;; init
 (when window-system
