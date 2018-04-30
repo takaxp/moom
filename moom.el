@@ -376,6 +376,7 @@ maintained at 80. Add appropriate functions to `moom-before-fill-screen-hook'
 in order to move the frame to specific position."
   (interactive)
   (run-hooks 'moom-before-fill-screen-hook)
+  (set-frame-width (selected-frame) moom-frame-width-single)
   (when moom--font-module-p
     (moom-font-resize (moom--fullscreen-font-size) (display-pixel-width)))
   (set-frame-size (selected-frame)
@@ -454,6 +455,7 @@ If PLIST is nil, `moom-fill-band-options' is used."
          (range (plist-get values :range))
          (band-pixel-width nil)
          (band-pixel-height nil))
+    (set-frame-width (selected-frame) moom-frame-width-single)
     (cond ((memq direction '(vertical nil))
            (setq band-pixel-width
                  (if (floatp range)
@@ -462,7 +464,6 @@ If PLIST is nil, `moom-fill-band-options' is used."
            (when (< band-pixel-width moom--fill-minimum-range)
              (setq band-pixel-width moom--fill-minimum-range)
              (warn "Range was changed since given value is too small."))
-           (set-frame-width (selected-frame) moom-frame-width-single)
            (when moom--font-module-p
              (moom-font-resize
               (moom--font-size band-pixel-width) band-pixel-width))
@@ -485,8 +486,7 @@ If PLIST is nil, `moom-fill-band-options' is used."
                       range)
                     (moom--frame-internal-height)))
            (when moom--font-module-p
-             (moom-font-resize
-              (moom--font-size (display-pixel-width)) (display-pixel-width)))
+             (moom-font-resize (moom--fullscreen-font-size) (display-pixel-width)))
            ;; (set-frame-width (selected-frame) moom-frame-width-single)
            ;; (when (and moom--font-module-p
            ;;            (floatp range))
