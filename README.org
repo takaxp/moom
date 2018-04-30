@@ -133,9 +133,19 @@ After you identify the font names in a buffer, then please configure them as fol
 
 If you find the column exceeds 80 when the frame is maximized, then configure =moom-scaling-gradient= properly. It depends on ASCII font type. For instance, ~1.66~ (default) for Menlo, Monaco, ~2.0~ for Inconsolata.
 
+In future, these font names will be automatically identified without user action. I hope... :/
+
+*** Font table
+
 You can also use =M-x moom-generate-font-table= to identify appropriate values of =moom-scaling-gradient=, and additionally =moom-font-table=. After calling =moom-generate-font-table=, the current buffer will be changed to the ~*moom-font*~ buffer. Please follow the instructions described in that buffer.
 
-In future, these font names will be automatically identified without user action. I hope... :/
+Here is an example. ~Monaco~ is used for ASCII font and ~Migu 2M~ is used for Japanese font in these images. The upper image shows a gap between strings in ASCII and Japanese at the first line, the font table is not defined in this case. On the other hand, the lower image shows no gap since the font table is utilized to identify the correct size of font. You can freely customize the font table in you init.el for your convenience.
+
+#+CAPTION: Without font table (Monaco: 13pt 8px)
+[[https://github.com/takaxp/moom-images/blob/master/monaco-13pt8px.png]]
+
+#+CAPTION: With font table (Monaco: 14pt 8px)
+[[https://github.com/takaxp/moom-images/blob/master/monaco-14pt8px.png]]
 
 ** Resize font
 
