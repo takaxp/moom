@@ -90,6 +90,7 @@ These functions normally change font size. But the behavior can be changed by =M
  - moom-toggle-frame-maximized
  - moom-cycle-line-spacing
  - moom-reset-line-spacing
+ - moom-generate-font-table
  - moom-print-status
  - moom-version
 
@@ -132,7 +133,7 @@ After you identify the font names in a buffer, then please configure them as fol
 
 If you find the column exceeds 80 when the frame is maximized, then configure =moom-scaling-gradient= properly. It depends on ASCII font type. For instance, ~1.66~ (default) for Menlo, Monaco, ~2.0~ for Inconsolata.
 
-You can also use =M-x moom-font-generate-font-table= to identify appropriate values of =moom-scaling-gradient=, and additionally =moom-font-table=. After calling =moom-font-generate-font-table=, the current buffer will be changed to the ~*moom-font*~ buffer. Please follow the instructions described in that buffer.
+You can also use =M-x moom-generate-font-table= to identify appropriate values of =moom-scaling-gradient=, and additionally =moom-font-table=. After calling =moom-generate-font-table=, the current buffer will be changed to the ~*moom-font*~ buffer. Please follow the instructions described in that buffer.
 
 In future, these font names will be automatically identified without user action. I hope... :/
 

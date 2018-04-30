@@ -147,7 +147,7 @@ the actual pixel width will not exceed the WIDTH."
       (moom-font--change-size
        (setq moom-font--size (1- moom-font--size))))
     (when moom-font-verbose
-      (message "0: %s" moom-font--size)))
+      (message "[moom-font] %s" moom-font--size)))
   (run-hooks 'moom-font-after-resize-hook))
 
 ;;;###autoload
@@ -158,7 +158,7 @@ the actual pixel width will not exceed the WIDTH."
   (moom-font--change-size
    (setq moom-font--size moom-font-init-size))
   (when moom-font-verbose
-    (message "0: %s" moom-font--size))
+    (message "[moom-font] %s" moom-font--size))
   (run-hooks 'moom-font-after-resize-hook))
 
 ;;;###autoload
@@ -174,7 +174,7 @@ Optional argument INC specifies an increasing step."
                  inc 1)))
     (moom-font--change-size moom-font--size)
     (when moom-font-verbose
-      (message "+%d: %s" inc moom-font--size)))
+      (message "[moom-font] +%d: %s" inc moom-font--size)))
   (run-hooks 'moom-font-after-resize-hook))
 
 ;;;###autoload
@@ -190,9 +190,11 @@ Optional argument DEC specifies a decreasing step."
                       (> dec 0)
                       (> moom-font--size dec))
                  dec 1)))
+    (when (< moom-font--size 1)
+      (setq moom-font--size 1))
     (when (and moom-font-verbose
                (> moom-font--size 0))
-      (message "-%d: %s" dec moom-font--size))
+      (message "[moom-font] -%d: %s" dec moom-font--size))
     (moom-font--change-size moom-font--size))
   (run-hooks 'moom-font-after-resize-hook))
 
@@ -213,23 +215,17 @@ Optional argument DEC specifies a decreasing step."
          xlfd-name)))))
 
 ;;;###autoload
-(defun moom-font-generate-font-table ()
-  "Generate a font table."
+(defun moom-font-generate-font-table (&optional begin end)
+  "Generate a font table.
+If BEGIN is nil, use 5 as the default value.
+If END is nil, use 50 as the default value."
   (interactive)
-  (let ((moom-font-table nil)
-        (last-font-size moom-font--size)
-        (left (frame-parameter (selected-frame) 'left))
-        (top (frame-parameter (selected-frame) 'top))
-        (pixel-width (frame-pixel-width))
-        (pixel-height (frame-pixel-height)))
+  (let ((moom-font-table nil))
     (cl-loop
-     for pt from 5 to 50
+     for pt from (or begin 5) to (or end 50)
      do
      (moom-font-resize pt)
      (push (list moom-font--size (frame-char-width)) moom-font-table))
-    (moom-font-resize last-font-size)
-    (set-frame-position (selected-frame) left top)
-    (set-frame-size (selected-frame) pixel-width pixel-height t)
     (let ((buffer "*moom-font*"))
       (with-current-buffer (get-buffer-create buffer)
         (erase-buffer)
