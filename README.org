@@ -132,6 +132,8 @@ After you identify the font names in a buffer, then please configure them as fol
 
 If you find the column exceeds 80 when the frame is maximized, then configure =moom-scaling-gradient= properly. It depends on ASCII font type. For instance, ~1.66~ (default) for Menlo, Monaco, ~2.0~ for Inconsolata.
 
+You can also use =M-x moom-font-generate-font-table= to identify appropriate values of =moom-scaling-gradient=, and additionally =moom-font-table=. After calling =moom-font-generate-font-table=, the current buffer will be changed to the ~*moom-font*~ buffer. Please follow the instructions described in that buffer.
+
 In future, these font names will be automatically identified without user action. I hope... :/
 
 ** Resize font
@@ -162,14 +164,15 @@ In future, these font names will be automatically identified without user action
 ** moom-font.el
 
 #+CAPTION: User variables in moom-font.el
-|                       | default | type    |
-|-----------------------+---------+---------|
-| moom-font-ascii       | Monaco  | string  |
-| moom-font-ja          | Osaka   | string  |
-| moom-font-init-size   | 12      | integer |
-| moom-font-ascii-scale | 1.0     | float   |
-| moom-font-ja-scale    | 1.2     | float   |
-| moom-font-verbose     | nil     | boolean |
+|                       | default | type                            |
+|-----------------------+---------+---------------------------------|
+| moom-font-ascii       | Monaco  | string                          |
+| moom-font-ja          | Osaka   | string                          |
+| moom-font-init-size   | 12      | integer                         |
+| moom-font-ascii-scale | 1.0     | float                           |
+| moom-font-ja-scale    | 1.2     | float                           |
+| moom-font-table       | nil     | (repeat (list integer integer)) |
+| moom-font-verbose     | nil     | boolean                         |
 
 * Example keybindings
 ** Overview
