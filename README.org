@@ -80,6 +80,13 @@ These functions normally change font size. But the behavior can be changed by =M
  - moom-fill-bottom-right
  - moom-fill-band
 
+Note - If you find any problems around font settings when resizing the Emacs frame, you can easily disable =moom-font.el=. Just toggle =moom-toggle-font-module= in your init.el
+
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load "moom"
+  (moom-toggle-font-module))
+#+END_SRC
+
 ** Other functions
 
  - moom-reset
