@@ -195,6 +195,10 @@ Including fringes and border."
          (* 2 (cdr (assoc 'internal-border-width (frame-geometry)))))
     0)) ;; TODO check this by terminal
 
+(defun moom--internal-border-height ()
+  "Height of internal border within `frame-pixel-height'."
+  (* 2 (cdr (assoc 'internal-border-width (frame-geometry)))))
+
 (defun moom--frame-internal-height ()
   "Height of internal objects.
 Including title-bar, menu-bar, offset depends on window system, and border."
@@ -203,7 +207,7 @@ Including title-bar, menu-bar, offset depends on window system, and border."
          (nthcdr 2 (assoc 'tool-bar-size (frame-geometry)))
          (if (memq window-system '(x w32))
              (nthcdr 2 (assoc 'menu-bar-size (frame-geometry))) 0)
-         (* 2 (cdr (assoc 'internal-border-width (frame-geometry)))))
+         (moom--internal-border-height))
     0)) ;; TODO check this by terminal
 
 (defun moom--max-frame-pixel-width ()
@@ -576,7 +580,8 @@ If PLIST is nil, `moom-fill-band-options' is used."
                       (+ (cdr moom-move-frame-pixel-offset)
                          (moom--vertical-center)
                          (- (/ (+ (frame-pixel-height)
-                                  (moom--frame-internal-height))
+                                  (moom--frame-internal-height)
+                                  (- (moom--internal-border-height)))
                                2))))
   (when moom-verbose
     (moom-print-status)))
@@ -639,7 +644,8 @@ please configure the margins by `moom-screen-margin'."
          (+ (cdr moom-move-frame-pixel-offset)
             (moom--vertical-center)
             (- (/ (+ (frame-pixel-height)
-                     (moom--frame-internal-height))
+                     (moom--frame-internal-height)
+                     (- (moom--internal-border-height)))
                   2)))))
     (set-frame-position nil center-pos-x center-pos-y))
   (when moom-verbose
@@ -793,8 +799,7 @@ STATUS is a list consists of font size, frame position, frame region, and pixel-
                   (- (cdr (assoc "pixel-width" moom--last-status))
                      (moom--frame-internal-width))
                   (+ (- (cdr (assoc "pixel-height" moom--last-status))
-                        (* 2 (cdr (assoc 'internal-border-width
-                                         (frame-geometry))))))
+                        (moom--internal-border-height)))
                   t)
   (when moom-verbose
     (moom-print-status)))
