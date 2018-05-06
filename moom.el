@@ -504,7 +504,9 @@ If PLIST is nil, `moom-fill-band-options' is used."
     (when (and band-pixel-width
                band-pixel-height)
       (set-frame-size nil band-pixel-width band-pixel-height t)
-      (moom-move-frame-to-center band-pixel-width band-pixel-height))))
+      (moom-move-frame-to-center
+       (+ band-pixel-width (moom--frame-internal-width))
+       (+ band-pixel-height (moom--internal-border-height))))))
 
 ;;;###autoload
 (defun moom-cycle-line-spacing ()
