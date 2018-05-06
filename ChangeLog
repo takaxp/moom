@@ -1,7 +1,23 @@
-2018-05-02  Takaaki ISHIKAWA  <takaxp@ieee.org>
+2018-05-06  Takaaki ISHIKAWA  <takaxp@ieee.org>
 
-	* Release: version 1.1.0
+	* moom-font.el: version 1.1.0
+	- [new] moom-font-table
+	- [new] moom-font--extract-family-name
+	- [new] moom-font-print-name-at-point
+	- [update] moom-font-ja
+
+	* moom.el: version 1.1.0
+	- [new] moom-fill-band-options
+	- [new] moom-scaling-gradient
+	- [new] moom-generate-font-table
+	- [new] moom-recommended-keybindings
+	- [update] moom-fill-band
+	- [update] moom-move-frame-to-center
+	- [update] moom-print-status
+	- [update] moom-toggle-font-module
 
 2018-04-23  Takaaki ISHIKAWA  <takaxp@ieee.org>
 
-	* Release: version 1.0.0
+	* moom-font.el: version 1.0.0
+
+	* moom.el: version 1.0.0
