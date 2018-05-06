@@ -504,7 +504,7 @@ If PLIST is nil, `moom-fill-band-options' is used."
     (when (and band-pixel-width
                band-pixel-height)
       (set-frame-size nil band-pixel-width band-pixel-height t)
-      (moom-move-frame-to-center))))
+      (moom-move-frame-to-center band-pixel-width band-pixel-height))))
 
 ;;;###autoload
 (defun moom-cycle-line-spacing ()
@@ -634,16 +634,18 @@ please configure the margins by `moom-screen-margin'."
     (moom-print-status)))
 
 ;;;###autoload
-(defun moom-move-frame-to-center ()
-  "Move the current frame to the center of the screen."
+(defun moom-move-frame-to-center (&optional fpwidth fpheight)
+  "Move the current frame to the center of the screen.
+If FPWIDTH is nil, `frame-pixel-width' will be used.
+If FPHEIGHT is nil, `frame-pixel-height' will be used."
   (interactive)
   (let ((center-pos-x
          (+ (car moom-move-frame-pixel-offset)
-            (/ (- (display-pixel-width) (frame-pixel-width)) 2)))
+            (/ (- (display-pixel-width) (or fpwidth (frame-pixel-width))) 2)))
         (center-pos-y
          (+ (cdr moom-move-frame-pixel-offset)
             (moom--vertical-center)
-            (- (/ (+ (frame-pixel-height)
+            (- (/ (+ (or fpheight (frame-pixel-height))
                      (moom--frame-internal-height)
                      (- (moom--internal-border-height)))
                   2)))))
