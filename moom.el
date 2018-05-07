@@ -210,6 +210,18 @@ Including title-bar, menu-bar, offset depends on window system, and border."
          (moom--internal-border-height))
     0)) ;; TODO check this by terminal
 
+(defun moom--frame-pixel-width ()
+  "Return frame width in pixels."
+  (let ((edges (frame-edges)))
+    (- (nth 2 edges)
+       (nth 0 edges))))
+
+(defun moom--frame-pixel-height ()
+  "Return frame height in pixels."
+  (let ((edges (frame-edges)))
+    (- (nth 3 edges)
+       (nth 1 edges))))
+
 (defun moom--max-frame-pixel-width ()
   "Return the maximum width on pixel base."
   (- (display-pixel-width)
@@ -297,7 +309,7 @@ If BOUNDS is t, the frame will be controlled not to run over the screen."
            (not (eq window-system 'ns))) ;; TODO: support others if possible
       (let ((bounds-left 0)
             (bounds-right (- (display-pixel-width)
-                             (frame-pixel-width))))
+                             (moom--frame-pixel-width))))
         (cond ((< posx bounds-left) bounds-left)
               ((> posx bounds-right) bounds-right)
               (t posx)))
@@ -319,8 +331,8 @@ If BOUNDS is t, the frame will be controlled not to run over the screen."
           ("top" . ,(frame-parameter nil 'top))
           ("width" . ,(frame-width))
           ("height" . ,(frame-height))
-          ("pixel-width" . ,(frame-pixel-width))
-          ("pixel-height" . ,(frame-pixel-height)))))
+          ("pixel-width" . ,(moom--frame-pixel-width))
+          ("pixel-height" . ,(moom--frame-pixel-height)))))
 
 (defun moom--fill-display (area)
   "Move the frame to AREA.
@@ -479,7 +491,7 @@ If PLIST is nil, `moom-fill-band-options' is used."
            (setq band-pixel-width
                  (- (if (and moom--font-module-p
                              (floatp range))
-                        (frame-pixel-width)
+                        (moom--frame-pixel-width)
                       band-pixel-width)
                     (moom--frame-internal-width)))
            (setq band-pixel-height (moom--max-frame-pixel-height)))
@@ -498,15 +510,13 @@ If PLIST is nil, `moom-fill-band-options' is used."
            ;; (set-frame-width nil moom-frame-width-single)
            ;; (when (and moom--font-module-p
            ;;            (floatp range))
-           ;;   (setq band-pixel-width (- (frame-pixel-width)
+           ;;   (setq band-pixel-width (- (moom--frame-pixel-width)
            ;;                             (moom--frame-internal-width))))
            (setq band-pixel-width (moom--max-frame-pixel-width))))
     (when (and band-pixel-width
                band-pixel-height)
       (set-frame-size nil band-pixel-width band-pixel-height t)
-      (moom-move-frame-to-center
-       (+ band-pixel-width (moom--frame-internal-width))
-       (+ band-pixel-height (moom--internal-border-height))))))
+      (moom-move-frame-to-center))))
 
 ;;;###autoload
 (defun moom-cycle-line-spacing ()
@@ -537,7 +547,7 @@ If PLIST is nil, `moom-fill-band-options' is used."
     (when (>= new-pos-x (display-pixel-width))
       (setq new-pos-x (- new-pos-x
                          (display-pixel-width)
-                         (frame-pixel-width)
+                         (moom--frame-pixel-width)
                          (- (moom--shift-amount 'right)))))
     (set-frame-position nil new-pos-x pos-y))
   (when moom-verbose
@@ -551,10 +561,10 @@ If PLIST is nil, `moom-fill-band-options' is used."
          (pos-y (frame-parameter nil 'top))
          (new-pos-x (moom--pos-x (- pos-x (or pixel
                                               (moom--shift-amount 'left))) t)))
-    (when (<= new-pos-x (- (frame-pixel-width)))
+    (when (<= new-pos-x (- (moom--frame-pixel-width)))
       (setq new-pos-x (+ new-pos-x
                          (display-pixel-width)
-                         (frame-pixel-width)
+                         (moom--frame-pixel-width)
                          (- (moom--shift-amount 'left)))))
     (set-frame-position nil new-pos-x pos-y))
   (when moom-verbose
@@ -567,7 +577,7 @@ If PLIST is nil, `moom-fill-band-options' is used."
   (set-frame-position nil
                       (+ (car moom-move-frame-pixel-offset)
                          (/ (- (display-pixel-width)
-                               (frame-pixel-width))
+                               (moom--frame-pixel-width))
                             2))
                       (frame-parameter nil 'top))
   (when moom-verbose
@@ -581,7 +591,7 @@ If PLIST is nil, `moom-fill-band-options' is used."
                       (moom--pos-x (frame-parameter nil 'left))
                       (+ (cdr moom-move-frame-pixel-offset)
                          (moom--vertical-center)
-                         (- (/ (+ (frame-pixel-height)
+                         (- (/ (+ (moom--frame-pixel-height)
                                   (moom--frame-internal-height)
                                   (- (moom--internal-border-height)))
                                2))))
@@ -609,7 +619,7 @@ please configure the margins by `moom-screen-margin'."
   (set-frame-position nil
                       (moom--pos-x (frame-parameter nil 'left))
                       (- (display-pixel-height)
-                         (frame-pixel-height)
+                         (moom--frame-pixel-height)
                          (nth 0 moom--screen-margin)
                          (nth 1 moom--screen-margin)))
   (when moom-verbose
@@ -620,7 +630,7 @@ please configure the margins by `moom-screen-margin'."
   "Move the current frame to the right edge of the screen."
   (interactive)
   (set-frame-position nil
-                      (- (display-pixel-width) (frame-pixel-width))
+                      (- (display-pixel-width) (moom--frame-pixel-width))
                       (frame-parameter nil 'top))
   (when moom-verbose
     (moom-print-status)))
@@ -636,18 +646,16 @@ please configure the margins by `moom-screen-margin'."
     (moom-print-status)))
 
 ;;;###autoload
-(defun moom-move-frame-to-center (&optional fpwidth fpheight)
-  "Move the current frame to the center of the screen.
-If FPWIDTH is nil, `frame-pixel-width' will be used.
-If FPHEIGHT is nil, `frame-pixel-height' will be used."
+(defun moom-move-frame-to-center ()
+  "Move the current frame to the center of the screen."
   (interactive)
   (let ((center-pos-x
          (+ (car moom-move-frame-pixel-offset)
-            (/ (- (display-pixel-width) (or fpwidth (frame-pixel-width))) 2)))
+            (/ (- (display-pixel-width) (moom--frame-pixel-width)) 2)))
         (center-pos-y
          (+ (cdr moom-move-frame-pixel-offset)
             (moom--vertical-center)
-            (- (/ (+ (or fpheight (frame-pixel-height))
+            (- (/ (+ (moom--frame-pixel-height)
                      (moom--frame-internal-height)
                      (- (moom--internal-border-height)))
                   2)))))
@@ -898,8 +906,8 @@ If you give only '(reset) as the argument, then \\[moom-reset] is activated."
     (frame-char-width)
     (frame-width)
     (frame-height)
-    (frame-pixel-width)
-    (frame-pixel-height)
+    (moom--frame-pixel-width)
+    (moom--frame-pixel-height)
     (moom--pos-x (frame-parameter nil 'left))
     (frame-parameter nil 'top))))
 
