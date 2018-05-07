@@ -244,6 +244,18 @@ Including title-bar, menu-bar, offset depends on window system, and border."
                (* 2 (moom--frame-internal-height)))
             2.0)))
 
+(defun moom--frame-width ()
+  "Return frame width."
+  (/ (- (moom--frame-pixel-width)
+        (moom--frame-internal-width))
+     (frame-char-width)))
+
+(defun moom--frame-height ()
+  "Return frame height."
+  (/ (- (moom--frame-pixel-height)
+        (moom--internal-border-height))
+     (frame-char-height)))
+
 (defun moom--max-frame-width ()
   "Return the maximum width based on screen size."
   (floor (/ (moom--max-frame-pixel-width)
@@ -329,8 +341,8 @@ If BOUNDS is t, the frame will be controlled not to run over the screen."
         `(("font-size" . ,(if moom--font-module-p moom-font--size nil))
           ("left" . ,(moom--pos-x (frame-parameter nil 'left)))
           ("top" . ,(frame-parameter nil 'top))
-          ("width" . ,(frame-width))
-          ("height" . ,(frame-height))
+          ("width" . ,(moom--frame-width))
+          ("height" . ,(moom--frame-height))
           ("pixel-width" . ,(moom--frame-pixel-width))
           ("pixel-height" . ,(moom--frame-pixel-height)))))
 
@@ -708,7 +720,7 @@ please configure the margins by `moom-screen-margin'."
 Argument FRAME-HEIGHT specifies new frame height.
 If PIXELWISE is non-nil, the frame height will be changed by pixel value."
   (interactive
-   (list (read-number "New Height: " (frame-height))))
+   (list (read-number "New Height: " (moom--frame-height))))
   (when (not frame-height)
     (setq frame-height moom-min-frame-height))
   (if pixelwise
@@ -733,7 +745,7 @@ If PIXELWISE is non-nil, the frame height will be changed by pixel value."
 This function does not effect font size.
 If FRAME-WIDTH is nil, `moom-frame-width-single' will be used."
   (interactive
-   (list (read-number "New Width: " (frame-width))))
+   (list (read-number "New Width: " (moom--frame-width))))
   (let ((width (or frame-width
                    moom-frame-width-single)))
     (setq moom--frame-width width)
@@ -904,8 +916,8 @@ If you give only '(reset) as the argument, then \\[moom-reset] is activated."
     "[Moom] Font: %spt(%dpx) | Frame: c(%d, %d) p(%d, %d) | Origin: (%s, %s)"
     (if moom--font-module-p moom-font--size "**")
     (frame-char-width)
-    (frame-width)
-    (frame-height)
+    (moom--frame-width)
+    (moom--frame-height)
     (moom--frame-pixel-width)
     (moom--frame-pixel-height)
     (moom--pos-x (frame-parameter nil 'left))
