@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.1.0
+;; Version: 1.1.1
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -210,6 +210,18 @@ Including title-bar, menu-bar, offset depends on window system, and border."
          (moom--internal-border-height))
     0)) ;; TODO check this by terminal
 
+(defun moom--frame-pixel-width ()
+  "Return frame width in pixels."
+  (let ((edges (frame-edges)))
+    (- (nth 2 edges)
+       (nth 0 edges))))
+
+(defun moom--frame-pixel-height ()
+  "Return frame height in pixels."
+  (let ((edges (frame-edges)))
+    (- (nth 3 edges)
+       (nth 1 edges))))
+
 (defun moom--max-frame-pixel-width ()
   "Return the maximum width on pixel base."
   (- (display-pixel-width)
@@ -231,6 +243,18 @@ Including title-bar, menu-bar, offset depends on window system, and border."
                (nth 1 moom--screen-margin)
                (* 2 (moom--frame-internal-height)))
             2.0)))
+
+(defun moom--frame-width ()
+  "Return frame width."
+  (/ (- (moom--frame-pixel-width)
+        (moom--frame-internal-width))
+     (frame-char-width)))
+
+(defun moom--frame-height ()
+  "Return frame height."
+  (/ (- (moom--frame-pixel-height)
+        (moom--internal-border-height))
+     (frame-char-height)))
 
 (defun moom--max-frame-width ()
   "Return the maximum width based on screen size."
@@ -285,7 +309,8 @@ the actual pixel width will not exceed the WIDTH."
 (defun moom--fullscreen-font-size ()
   "Return the maximum font-size for full screen."
   (if window-system
-      (moom--font-size (display-pixel-width))
+      (moom--font-size (+ (moom--max-frame-pixel-width)
+                          (moom--frame-internal-width)))
     12)) ;; FIXME, use face-attribute
 
 (defun moom--pos-x (posx &optional bounds)
@@ -297,19 +322,63 @@ If BOUNDS is t, the frame will be controlled not to run over the screen."
            (not (eq window-system 'ns))) ;; TODO: support others if possible
       (let ((bounds-left 0)
             (bounds-right (- (display-pixel-width)
-                             (frame-pixel-width))))
+                             (moom--frame-pixel-width))))
         (cond ((< posx bounds-left) bounds-left)
               ((> posx bounds-right) bounds-right)
               (t posx)))
     posx))
 
+(defun moom--pos-y (posy &optional bounds)
+  "Extract a value from POSY.
+If BOUNDS is t, the frame will be controlled not to run over the screen."
+  (when (listp posy)
+    (setq posy (nth 1 posy)))
+  (if (and bounds
+           (not (eq window-system 'ns))) ;; TODO: support others if possible
+      (let ((bounds-top 0)
+            (bounds-bottom (- (display-pixel-height)
+                              (moom--frame-pixel-height))))
+        (cond ((< posy bounds-top) bounds-top)
+              ((> posy bounds-bottom) bounds-bottom)
+              (t posy)))
+    posy))
+
+(defun moom--horizontal-center ()
+  "Horizontal center position."
+  (+ (nth 2 moom--screen-margin)
+     (floor (/ (+ (moom--max-frame-pixel-width)
+                  (moom--frame-internal-width))
+               2.0))))
+
+
 (defun moom--vertical-center ()
   "Vertical center position."
   (+ (nth 0 moom--screen-margin)
-     (floor (/ (- (display-pixel-height)
-                  (nth 0 moom--screen-margin)
-                  (nth 1 moom--screen-margin))
+     (floor (/ (+ (moom--max-frame-pixel-height)
+                  (moom--frame-internal-height))
                2.0))))
+
+(defun moom--horizontal-center-pos ()
+  "Left edge position when centering."
+  (+ (car moom-move-frame-pixel-offset)
+     (moom--horizontal-center)
+     (let ((scroll (frame-parameter nil 'scroll-bar-width)))
+       (if (> scroll 0) ;; TBD
+           scroll
+         (frame-parameter nil 'left-fringe)))
+     (- (/ (+ (moom--frame-pixel-width)
+              (moom--frame-internal-width)
+              (- (moom--internal-border-height)))
+           2))))
+
+(defun moom--vertical-center-pos ()
+  "Top edge position when centering."
+  (+ (cdr moom-move-frame-pixel-offset)
+     (moom--vertical-center)
+     (- (/ (+ (moom--frame-pixel-height)
+              (moom--frame-internal-height)
+              (- (moom--internal-border-height)))
+           2))))
 
 (defun moom--save-last-status ()
   "Store the last frame position, size, and font-size."
@@ -317,10 +386,10 @@ If BOUNDS is t, the frame will be controlled not to run over the screen."
         `(("font-size" . ,(if moom--font-module-p moom-font--size nil))
           ("left" . ,(moom--pos-x (frame-parameter nil 'left)))
           ("top" . ,(frame-parameter nil 'top))
-          ("width" . ,(frame-width))
-          ("height" . ,(frame-height))
-          ("pixel-width" . ,(frame-pixel-width))
-          ("pixel-height" . ,(frame-pixel-height)))))
+          ("width" . ,(moom--frame-width))
+          ("height" . ,(moom--frame-height))
+          ("pixel-width" . ,(moom--frame-pixel-width))
+          ("pixel-height" . ,(moom--frame-pixel-height)))))
 
 (defun moom--fill-display (area)
   "Move the frame to AREA.
@@ -328,12 +397,13 @@ Font size will be changed appropriately.
 AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
   (interactive)
   (moom--save-last-status)
-  (let* ((align-width (display-pixel-width))
+  (let* ((align-width (+ (moom--max-frame-pixel-width)
+                         (moom--frame-internal-width)))
          (pixel-width
           (- (floor (/ align-width 2.0))
              (moom--frame-internal-width)))
          (pixel-height (moom--max-half-frame-pixel-height))
-         (pos-x 0)
+         (pos-x (nth 2 moom--screen-margin))
          (pos-y (nth 0 moom--screen-margin)))
     ;; Region
     (cond ((memq area '(top bottom))
@@ -348,11 +418,13 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
     (moom--font-resize (moom--font-size align-width) align-width)
     ;; Position
     (when (memq area '(right topr botr))
-      (setq pos-x (ceiling (/ (display-pixel-width) 2.0))))
+      (setq pos-x (moom--horizontal-center)))
     (when (memq area '(bottom botl botr))
       (setq pos-y (moom--vertical-center)))
     (when (memq area '(top bottom left right topl topr botl botr))
-      (set-frame-position nil pos-x pos-y)
+      (set-frame-position nil
+                          (moom--pos-x pos-x)
+                          (moom--pos-y pos-y))
       (set-frame-size nil pixel-width pixel-height t)))
   (when moom-verbose
     (moom-print-status)))
@@ -388,7 +460,9 @@ maintained at 80. Add appropriate functions to `moom-before-fill-screen-hook'
 in order to move the frame to specific position."
   (interactive)
   (run-hooks 'moom-before-fill-screen-hook)
-  (moom--font-resize (moom--fullscreen-font-size) (display-pixel-width))
+  (moom--font-resize (moom--fullscreen-font-size)
+                     (+ (moom--max-frame-pixel-width)
+                        (moom--frame-internal-width)))
   (set-frame-size nil
                   (moom--max-frame-pixel-width)
                   (moom--max-frame-pixel-height) t)
@@ -468,7 +542,9 @@ If PLIST is nil, `moom-fill-band-options' is used."
     (cond ((memq direction '(vertical nil))
            (setq band-pixel-width
                  (if (floatp range)
-                     (floor (/ (* (display-pixel-width) range) 100.0))
+                     (floor (/ (* range (+ (moom--max-frame-pixel-width)
+                                           (moom--frame-internal-width)))
+                               100.0))
                    range))
            (when (< band-pixel-width moom--fill-minimum-range)
              (setq band-pixel-width moom--fill-minimum-range)
@@ -479,34 +555,32 @@ If PLIST is nil, `moom-fill-band-options' is used."
            (setq band-pixel-width
                  (- (if (and moom--font-module-p
                              (floatp range))
-                        (frame-pixel-width)
+                        (moom--frame-pixel-width)
                       band-pixel-width)
                     (moom--frame-internal-width)))
            (setq band-pixel-height (moom--max-frame-pixel-height)))
           ((eq direction 'horizontal)
            (setq band-pixel-height
                  (- (if (floatp range)
-                        (floor (/ (* (- (display-pixel-height)
-                                        (nth 0 moom--screen-margin)
-                                        (nth 1 moom--screen-margin))
+                        (floor (/ (* (+ (moom--max-frame-pixel-height)
+                                        (moom--frame-internal-height))
                                      range)
                                   100.0))
                       range)
                     (moom--frame-internal-height)))
            (moom--font-resize (moom--fullscreen-font-size)
-                              (display-pixel-width))
+                              (+ (moom--max-frame-pixel-width)
+                                 (moom--frame-internal-width)))
            ;; (set-frame-width nil moom-frame-width-single)
            ;; (when (and moom--font-module-p
            ;;            (floatp range))
-           ;;   (setq band-pixel-width (- (frame-pixel-width)
+           ;;   (setq band-pixel-width (- (moom--frame-pixel-width)
            ;;                             (moom--frame-internal-width))))
            (setq band-pixel-width (moom--max-frame-pixel-width))))
     (when (and band-pixel-width
                band-pixel-height)
       (set-frame-size nil band-pixel-width band-pixel-height t)
-      (moom-move-frame-to-center
-       (+ band-pixel-width (moom--frame-internal-width))
-       (+ band-pixel-height (moom--internal-border-height))))))
+      (moom-move-frame-to-center))))
 
 ;;;###autoload
 (defun moom-cycle-line-spacing ()
@@ -537,7 +611,7 @@ If PLIST is nil, `moom-fill-band-options' is used."
     (when (>= new-pos-x (display-pixel-width))
       (setq new-pos-x (- new-pos-x
                          (display-pixel-width)
-                         (frame-pixel-width)
+                         (moom--frame-pixel-width)
                          (- (moom--shift-amount 'right)))))
     (set-frame-position nil new-pos-x pos-y))
   (when moom-verbose
@@ -551,10 +625,10 @@ If PLIST is nil, `moom-fill-band-options' is used."
          (pos-y (frame-parameter nil 'top))
          (new-pos-x (moom--pos-x (- pos-x (or pixel
                                               (moom--shift-amount 'left))) t)))
-    (when (<= new-pos-x (- (frame-pixel-width)))
+    (when (<= new-pos-x (- (moom--frame-pixel-width)))
       (setq new-pos-x (+ new-pos-x
                          (display-pixel-width)
-                         (frame-pixel-width)
+                         (moom--frame-pixel-width)
                          (- (moom--shift-amount 'left)))))
     (set-frame-position nil new-pos-x pos-y))
   (when moom-verbose
@@ -565,11 +639,8 @@ If PLIST is nil, `moom-fill-band-options' is used."
   "Move the current frame to the horizontal center of the screen."
   (interactive)
   (set-frame-position nil
-                      (+ (car moom-move-frame-pixel-offset)
-                         (/ (- (display-pixel-width)
-                               (frame-pixel-width))
-                            2))
-                      (frame-parameter nil 'top))
+                      (moom--pos-x (moom--horizontal-center-pos) t)
+                      (moom--pos-y (frame-parameter nil 'top) t))
   (when moom-verbose
     (moom-print-status)))
 
@@ -578,13 +649,8 @@ If PLIST is nil, `moom-fill-band-options' is used."
   "Move the current frame to the vertical center of the screen."
   (interactive)
   (set-frame-position nil
-                      (moom--pos-x (frame-parameter nil 'left))
-                      (+ (cdr moom-move-frame-pixel-offset)
-                         (moom--vertical-center)
-                         (- (/ (+ (frame-pixel-height)
-                                  (moom--frame-internal-height)
-                                  (- (moom--internal-border-height)))
-                               2))))
+                      (moom--pos-x (frame-parameter nil 'left) t)
+                      (moom--pos-y (moom--vertical-center-pos) t))
   (when moom-verbose
     (moom-print-status)))
 
@@ -609,8 +675,9 @@ please configure the margins by `moom-screen-margin'."
   (set-frame-position nil
                       (moom--pos-x (frame-parameter nil 'left))
                       (- (display-pixel-height)
-                         (frame-pixel-height)
-                         (nth 0 moom--screen-margin)
+                         (moom--frame-pixel-height)
+                         (moom--frame-internal-height)
+                         (- (moom--internal-border-height))
                          (nth 1 moom--screen-margin)))
   (when moom-verbose
     (moom-print-status)))
@@ -620,7 +687,9 @@ please configure the margins by `moom-screen-margin'."
   "Move the current frame to the right edge of the screen."
   (interactive)
   (set-frame-position nil
-                      (- (display-pixel-width) (frame-pixel-width))
+                      (moom--pos-x (- (display-pixel-width)
+                                      (moom--frame-pixel-width)
+                                      (nth 3 moom--screen-margin)))
                       (frame-parameter nil 'top))
   (when moom-verbose
     (moom-print-status)))
@@ -630,28 +699,18 @@ please configure the margins by `moom-screen-margin'."
   "Move the current frame to the left edge of the screen."
   (interactive)
   (set-frame-position nil
-                      0
+                      (moom--pos-x (nth 2 moom--screen-margin))
                       (frame-parameter nil 'top))
   (when moom-verbose
     (moom-print-status)))
 
 ;;;###autoload
-(defun moom-move-frame-to-center (&optional fpwidth fpheight)
-  "Move the current frame to the center of the screen.
-If FPWIDTH is nil, `frame-pixel-width' will be used.
-If FPHEIGHT is nil, `frame-pixel-height' will be used."
+(defun moom-move-frame-to-center ()
+  "Move the current frame to the center of the screen."
   (interactive)
-  (let ((center-pos-x
-         (+ (car moom-move-frame-pixel-offset)
-            (/ (- (display-pixel-width) (or fpwidth (frame-pixel-width))) 2)))
-        (center-pos-y
-         (+ (cdr moom-move-frame-pixel-offset)
-            (moom--vertical-center)
-            (- (/ (+ (or fpheight (frame-pixel-height))
-                     (moom--frame-internal-height)
-                     (- (moom--internal-border-height)))
-                  2)))))
-    (set-frame-position nil center-pos-x center-pos-y))
+  (set-frame-position nil
+                      (moom--pos-x (moom--horizontal-center-pos))
+                      (moom--pos-y (moom--vertical-center-pos) t))
   (when moom-verbose
     (moom-print-status)))
 
@@ -662,16 +721,18 @@ When ARG is a list like '(10 10), move the frame to the position.
 When ARG is a single number like 10, shift the frame horizontally +10 pixel.
 When ARG is nil, then move to the default position '(0 0)."
   (interactive)
-  (let ((pos-x 0)
+  (let ((pos-x (nth 2 moom--screen-margin))
         (pos-y (nth 0 moom--screen-margin)))
     (cond ((not arg) t) ;; (0, 0)
           ((numberp arg) ;; horizontal shift
-           (setq pos-x arg)
+           (setq pos-x (+ pos-x arg))
            (setq pos-y (frame-parameter nil 'top)))
           ((listp arg) ;; move to '(x, y)
-           (setq pos-x (nth 0 arg))
+           (setq pos-x (+ pos-x (nth 0 arg)))
            (setq pos-y (+ pos-y (nth 1 arg)))))
-    (set-frame-position nil pos-x pos-y))
+    (set-frame-position nil
+                        (moom--pos-x pos-x)
+                        (moom--pos-y pos-y)))
   (when moom-verbose
     (moom-print-status)))
 
@@ -700,7 +761,7 @@ please configure the margins by `moom-screen-margin'."
 Argument FRAME-HEIGHT specifies new frame height.
 If PIXELWISE is non-nil, the frame height will be changed by pixel value."
   (interactive
-   (list (read-number "New Height: " (frame-height))))
+   (list (read-number "New Height: " (moom--frame-height))))
   (when (not frame-height)
     (setq frame-height moom-min-frame-height))
   (if pixelwise
@@ -725,7 +786,7 @@ If PIXELWISE is non-nil, the frame height will be changed by pixel value."
 This function does not effect font size.
 If FRAME-WIDTH is nil, `moom-frame-width-single' will be used."
   (interactive
-   (list (read-number "New Width: " (frame-width))))
+   (list (read-number "New Width: " (moom--frame-width))))
   (let ((width (or frame-width
                    moom-frame-width-single)))
     (setq moom--frame-width width)
@@ -896,18 +957,18 @@ If you give only '(reset) as the argument, then \\[moom-reset] is activated."
     "[Moom] Font: %spt(%dpx) | Frame: c(%d, %d) p(%d, %d) | Origin: (%s, %s)"
     (if moom--font-module-p moom-font--size "**")
     (frame-char-width)
-    (frame-width)
-    (frame-height)
-    (frame-pixel-width)
-    (frame-pixel-height)
+    (moom--frame-width)
+    (moom--frame-height)
+    (moom--frame-pixel-width)
+    (moom--frame-pixel-height)
     (moom--pos-x (frame-parameter nil 'left))
-    (frame-parameter nil 'top))))
+    (moom--pos-y (frame-parameter nil 'top)))))
 
 ;;;###autoload
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.1.0"))
+  (let ((moom-release "1.1.1"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
