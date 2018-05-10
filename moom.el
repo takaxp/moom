@@ -328,6 +328,21 @@ If BOUNDS is t, the frame will be controlled not to run over the screen."
               (t posx)))
     posx))
 
+(defun moom--pos-y (posy &optional bounds)
+  "Extract a value from POSY.
+If BOUNDS is t, the frame will be controlled not to run over the screen."
+  (when (listp posy)
+    (setq posy (nth 1 posy)))
+  (if (and bounds
+           (not (eq window-system 'ns))) ;; TODO: support others if possible
+      (let ((bounds-top 0)
+            (bounds-bottom (- (display-pixel-height)
+                              (moom--frame-pixel-height))))
+        (cond ((< posy bounds-top) bounds-top)
+              ((> posy bounds-bottom) bounds-bottom)
+              (t posy)))
+    posy))
+
 (defun moom--horizontal-center ()
   "Horizontal center position."
   (+ (nth 2 moom--screen-margin)
@@ -407,7 +422,9 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
     (when (memq area '(bottom botl botr))
       (setq pos-y (moom--vertical-center)))
     (when (memq area '(top bottom left right topl topr botl botr))
-      (set-frame-position nil pos-x pos-y)
+      (set-frame-position nil
+                          (moom--pos-x pos-x)
+                          (moom--pos-y pos-y))
       (set-frame-size nil pixel-width pixel-height t)))
   (when moom-verbose
     (moom-print-status)))
@@ -622,8 +639,8 @@ If PLIST is nil, `moom-fill-band-options' is used."
   "Move the current frame to the horizontal center of the screen."
   (interactive)
   (set-frame-position nil
-                      (moom--horizontal-center-pos)
-                      (frame-parameter nil 'top))
+                      (moom--pos-x (moom--horizontal-center-pos) t)
+                      (moom--pos-y (frame-parameter nil 'top) t))
   (when moom-verbose
     (moom-print-status)))
 
@@ -632,8 +649,8 @@ If PLIST is nil, `moom-fill-band-options' is used."
   "Move the current frame to the vertical center of the screen."
   (interactive)
   (set-frame-position nil
-                      (moom--pos-x (frame-parameter nil 'left))
-                      (moom--vertical-center-pos))
+                      (moom--pos-x (frame-parameter nil 'left) t)
+                      (moom--pos-y (moom--vertical-center-pos) t))
   (when moom-verbose
     (moom-print-status)))
 
@@ -670,9 +687,9 @@ please configure the margins by `moom-screen-margin'."
   "Move the current frame to the right edge of the screen."
   (interactive)
   (set-frame-position nil
-                      (- (display-pixel-width)
-                         (moom--frame-pixel-width)
-                         (nth 3 moom--screen-margin))
+                      (moom--pos-x (- (display-pixel-width)
+                                      (moom--frame-pixel-width)
+                                      (nth 3 moom--screen-margin)))
                       (frame-parameter nil 'top))
   (when moom-verbose
     (moom-print-status)))
@@ -682,7 +699,7 @@ please configure the margins by `moom-screen-margin'."
   "Move the current frame to the left edge of the screen."
   (interactive)
   (set-frame-position nil
-                      (nth 2 moom--screen-margin)
+                      (moom--pos-x (nth 2 moom--screen-margin))
                       (frame-parameter nil 'top))
   (when moom-verbose
     (moom-print-status)))
@@ -692,8 +709,8 @@ please configure the margins by `moom-screen-margin'."
   "Move the current frame to the center of the screen."
   (interactive)
   (set-frame-position nil
-                      (moom--horizontal-center-pos)
-                      (moom--vertical-center-pos))
+                      (moom--pos-x (moom--horizontal-center-pos))
+                      (moom--pos-y (moom--vertical-center-pos) t))
   (when moom-verbose
     (moom-print-status)))
 
@@ -713,7 +730,9 @@ When ARG is nil, then move to the default position '(0 0)."
           ((listp arg) ;; move to '(x, y)
            (setq pos-x (+ pos-x (nth 0 arg)))
            (setq pos-y (+ pos-y (nth 1 arg)))))
-    (set-frame-position nil pos-x pos-y))
+    (set-frame-position nil
+                        (moom--pos-x pos-x)
+                        (moom--pos-y pos-y)))
   (when moom-verbose
     (moom-print-status)))
 
@@ -943,7 +962,7 @@ If you give only '(reset) as the argument, then \\[moom-reset] is activated."
     (moom--frame-pixel-width)
     (moom--frame-pixel-height)
     (moom--pos-x (frame-parameter nil 'left))
-    (frame-parameter nil 'top))))
+    (moom--pos-y (frame-parameter nil 'top)))))
 
 ;;;###autoload
 (defun moom-version ()
