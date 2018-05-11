@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.1.1
+;; Version: 1.1.2
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -968,7 +968,7 @@ If you give only '(reset) as the argument, then \\[moom-reset] is activated."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.1.1"))
+  (let ((moom-release "1.1.2"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
@@ -980,16 +980,17 @@ frame geometry so that the frame width could be maintained at 80.
 
 No keybindings are configured as default but recommended as follows:
 
-(global-set-key (kbd \"M-0\") 'moom-move-frame) ;; to top-left corner
-(global-set-key (kbd \"M-1\") 'moom-move-frame-left)
-(global-set-key (kbd \"M-2\") 'moom-move-frame-to-center)
-(global-set-key (kbd \"M-3\") 'moom-move-frame-right)
-(global-set-key (kbd \"<f2>\") 'moom-cycle-frame-height)
-(global-set-key (kbd \"M-<f2>\") 'moom-toggle-frame-maximized)
-
 (with-eval-after-load \"moom\"
+  (define-key moom-mode-map (kbd \"M-0\") 'moom-move-frame) ;; move to top-left
+  (define-key moom-mode-map (kbd \"M-1\") 'moom-move-frame-left)
+  (define-key moom-mode-map (kbd \"M-2\") 'moom-move-frame-to-center)
+  (define-key moom-mode-map (kbd \"M-3\") 'moom-move-frame-right)
+  (define-key moom-mode-map (kbd \"<f2>\") 'moom-cycle-frame-height)
+  (define-key moom-mode-map (kbd \"M-<f2>\") 'moom-toggle-frame-maximized)
   (define-key moom-mode-map (kbd \"C-c f s\") 'moom-change-frame-width-single)
   (define-key moom-mode-map (kbd \"C-c f d\") 'moom-change-frame-width-double))
+
+You can use `moom-recommended-keybindings' to apply recommended keybindings in your init.el.
 
 To see more details and examples, please visit https://github.com/takaxp/moom.
 "
