@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.1.2
+;; Version: 1.1.3
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -173,6 +173,16 @@ For instance,
   (setq moom--init-status moom--last-status)
   ;; JP-font module
   (when moom--font-module-p
+    (setq moom-font-ascii
+          (moom-font--extract-family-name (face-font 'default nil ?A)))
+    (unless (x-list-fonts moom-font-ascii)
+      (warn "[moom] Font \"%s\" is NOT installed in your system."
+            moom-font-ascii))
+    (setq moom-font-ja
+          (moom-font--extract-family-name (face-font 'default nil ?あ)))
+    (unless (x-list-fonts moom-font-ja)
+      (warn "[moom] Font \"%s\" is NOT installed in your system."
+            moom-font-ja))
     (add-hook 'moom-font-after-resize-hook #'moom--make-frame-height-list)))
 
 (defun moom--abort ()
@@ -968,7 +978,7 @@ If you give only '(reset) as the argument, then \\[moom-reset] is activated."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.1.2"))
+  (let ((moom-release "1.1.3"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload

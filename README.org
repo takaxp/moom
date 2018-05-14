@@ -123,7 +123,11 @@ No need to load =moom-font.el= explicitly. If the package is installed in your s
 
 ** Setting
 
-=moom-font-ascii=, =moom-font-ja=, =moom-font-ascii-scale=, =moom-font-ja-scale= should be configured manually according to your environment. The default values are =Monaco=, =Osaka=, =1.0=, and =1.2=. The scaling factors for each font are integrated into =face-font-rescale-alist= properly. If you don't know which fonts are used in Emacs frame, you can easily check them by ~M-x moom-font-print-name-at-point~ or ~M-x describe-char~ on a character.
+Font names specified as =moom-font-ascii= and =moom-font-ja= are now automatically identified without user action when you activate =moom-mode=. But =moom-font-ascii-scale=, =moom-font-ja-scale= should be configured still manually according to your environment. If you don't satisfy the automatically configured setting of =moom-font-ascii= and =moom-font-ja=, then please set these parameters manually.
+
+The default values for =moom-font-ascii= and =moom-font-ja= are =1.0= and =1.2= respectably. The scaling factors for each font are integrated into =face-font-rescale-alist= properly.
+
+If you don't know which fonts are used in Emacs frame, you can easily check them by ~M-x moom-font-print-name-at-point~ or ~M-x describe-char~ on a character.
 
 The following text is an example message when you type ~M-x moom-font-print-name-at-point~.
 #+BEGIN_SRC txt
@@ -140,9 +144,7 @@ After you identify the font names in a buffer, then please configure them as fol
   (setq moom-font-ja-scale 1.2))
 #+END_SRC
 
-If you find the column exceeds 80 when the frame is maximized, then configure =moom-scaling-gradient= properly. It depends on ASCII font type. For instance, ~1.66~ (default) for Menlo, Monaco, ~2.0~ for Inconsolata.
-
-In future, these font names will be automatically identified without user action. I hope... :/
+If you find the column exceeds 80 when the frame is maximized, then configure =moom-scaling-gradient= properly. It depends on ASCII font type. For instance, ~1.66~ (default) for Menlo, Monaco, ~2.0~ for Inconsolata. Please see the following section.
 
 *** Font table
 
