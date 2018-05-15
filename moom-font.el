@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.1.1
+;; Version: 1.1.2
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Twitter: @takaxp
@@ -84,6 +84,13 @@
   "Current font size.")
 (defvar moom-font--pause nil)
 
+(defun moom-font--update-rescale-alist (key value)
+  "Update `face-font-rescale-alist'.
+If KEY exists in `face-font-rescale-alist', delete it before updating the list.
+VALUE is a new value to re-scale the font in KEY."
+  (delete (assoc key face-font-rescale-alist) face-font-rescale-alist)
+  (add-to-list 'face-font-rescale-alist `(,key . ,value)))
+
 (defun moom-font--change-size (&optional arg)
   "Core function to change font size.
 If `ARG' is nil, the default size is used."
@@ -95,10 +102,12 @@ If `ARG' is nil, the default size is used."
          (ja-rescale (concat ".*" ja-font ".*"))
          (ascii-font moom-font-ascii)
          (ascii-rescale (concat ".*" ascii-font ".*")))
-    (add-to-list 'face-font-rescale-alist
-                 `(,ja-rescale . ,moom-font-ja-scale))
-    (add-to-list 'face-font-rescale-alist
-                 `(,ascii-rescale . ,moom-font-ascii-scale))
+    (moom-font--update-rescale-alist ascii-rescale moom-font-ascii-scale)
+    (moom-font--update-rescale-alist ja-rescale moom-font-ja-scale)
+    ;; (delete (assoc ascii-rescale face-font-rescale-alist)
+    ;;         face-font-rescale-alist)
+    ;; (add-to-list 'face-font-rescale-alist
+    ;;              `(,ascii-rescale . ,moom-font-ascii-scale))
     (unless moom-font--pause
       (set-fontset-font nil 'ascii
                         (font-spec :family ascii-font :size font-size))
@@ -239,13 +248,20 @@ Optional argument DEC specifies a decreasing step."
          xlfd-name)))))
 
 ;; init
-(when window-system
-  (let ((font (moom-font--extract-family-name
-               (cdr (assoc 'font (frame-parameters))))))
-    (when font
-      (setq moom-font-ascii font)
-      (unless (eq system-type 'darwin)
-        (setq moom-font-ja font))))) ;; TODO Refine this
+(when (and window-system
+           (fboundp 'x-list-fonts))
+  (let ((ascii-font
+         (moom-font--extract-family-name (face-font 'default nil ?A)))
+        (ja-font
+         (moom-font--extract-family-name (face-font 'default nil ?あ))))
+    (if (x-list-fonts ascii-font)
+        (setq moom-font-ascii ascii-font)
+      (warn "[moom-font] Font \"%s\" is NOT installed in your system."
+            ascii-font))
+    (if (x-list-fonts ja-font)
+        (setq moom-font-ja ja-font)
+      (warn "[moom-font] Font \"%s\" is NOT installed in your system."
+            ja-font))))
 
 (provide 'moom-font)
 

@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.1.3
+;; Version: 1.1.4
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -173,21 +173,7 @@ For instance,
   (setq moom--init-status moom--last-status)
   ;; JP-font module
   (when moom--font-module-p
-    (add-hook 'moom-font-after-resize-hook #'moom--make-frame-height-list)
-    (when (and window-system
-               (fboundp 'x-list-fonts))
-      (let ((ascii-font
-             (moom-font--extract-family-name (face-font 'default nil ?A)))
-            (ja-font
-             (moom-font--extract-family-name (face-font 'default nil ?あ))))
-        (if (x-list-fonts ascii-font)
-            (setq moom-font-ascii ascii-font)
-          (warn "[moom] Font \"%s\" is NOT installed in your system."
-                ascii-font))
-        (if (x-list-fonts ja-font)
-            (setq moom-font-ja ja-font)
-          (warn "[moom] Font \"%s\" is NOT installed in your system."
-                ja-font))))))
+    (add-hook 'moom-font-after-resize-hook #'moom--make-frame-height-list)))
 
 (defun moom--abort ()
   "Abort."
@@ -982,7 +968,7 @@ If you give only '(reset) as the argument, then \\[moom-reset] is activated."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.1.3"))
+  (let ((moom-release "1.1.4"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
