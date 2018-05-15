@@ -173,17 +173,21 @@ For instance,
   (setq moom--init-status moom--last-status)
   ;; JP-font module
   (when moom--font-module-p
-    (setq moom-font-ascii
-          (moom-font--extract-family-name (face-font 'default nil ?A)))
-    (unless (x-list-fonts moom-font-ascii)
-      (warn "[moom] Font \"%s\" is NOT installed in your system."
-            moom-font-ascii))
-    (setq moom-font-ja
-          (moom-font--extract-family-name (face-font 'default nil ?あ)))
-    (unless (x-list-fonts moom-font-ja)
-      (warn "[moom] Font \"%s\" is NOT installed in your system."
-            moom-font-ja))
-    (add-hook 'moom-font-after-resize-hook #'moom--make-frame-height-list)))
+    (add-hook 'moom-font-after-resize-hook #'moom--make-frame-height-list)
+    (when (and window-system
+               (fboundp 'x-list-fonts))
+      (let ((ascii-font
+             (moom-font--extract-family-name (face-font 'default nil ?A)))
+            (ja-font
+             (moom-font--extract-family-name (face-font 'default nil ?あ))))
+        (if (x-list-fonts ascii-font)
+            (setq moom-font-ascii ascii-font)
+          (warn "[moom] Font \"%s\" is NOT installed in your system."
+                ascii-font))
+        (if (x-list-fonts ja-font)
+            (setq moom-font-ja ja-font)
+          (warn "[moom] Font \"%s\" is NOT installed in your system."
+                ja-font))))))
 
 (defun moom--abort ()
   "Abort."
