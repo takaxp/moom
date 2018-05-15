@@ -123,28 +123,37 @@ No need to load =moom-font.el= explicitly. If the package is installed in your s
 
 ** Setting
 
-Font names specified as =moom-font-ascii= and =moom-font-ja= are now automatically identified without user action when you activate =moom-mode=. But =moom-font-ascii-scale=, =moom-font-ja-scale= should be configured still manually according to your environment. If you don't satisfy the automatically configured setting of =moom-font-ascii= and =moom-font-ja=, then please set these parameters manually.
+Font names for ASCII and Japanese font are now automatically identified without user action when =moom-mode= is activated. But =moom-font-ascii-scale= and =moom-font-ja-scale= should be configured still manually according to your environment. If you don't satisfy the automatically configured setting for ASCII and Japanese font, then please set these parameters manually by functions of =moom-font-ascii= or =moom-font-ja=.
 
-The default values for =moom-font-ascii= and =moom-font-ja= are =1.0= and =1.2= respectably. The scaling factors for each font are integrated into =face-font-rescale-alist= properly.
+The default values for =moom-font-ascii-scale= and =moom-font-ja-scale= are =1.0= and =1.2= respectably. The scaling factors for each font are integrated into =face-font-rescale-alist= properly.
 
 If you don't know which fonts are used in Emacs frame, you can easily check them by ~M-x moom-font-print-name-at-point~ or ~M-x describe-char~ on a character.
 
 The following text is an example message when you type ~M-x moom-font-print-name-at-point~.
+
 #+BEGIN_SRC txt
-[moom-font] Set "Menlo" to ‘moom-font-ja’ or ‘moom-font-ascii.’
+[moom-font] It’s "Menlo". Call ‘moom-font-ja’ or ‘moom-font-ascii’ with "Menlo".
 #+END_SRC
 
 After you identify the font names in a buffer, then please configure them as follows:
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "moom-font"
-  (setq moom-font-ascii "Menlo") ;; Ricty Diminished, Inconsolata
-  (setq moom-font-ja "Migu 2M") ;; Hiragino Maru Gothic Pro
   (setq moom-font-ascii-scale 1.0)
-  (setq moom-font-ja-scale 1.2))
+  (setq moom-font-ja-scale 1.2)
+  (moom-font-ascii "Menlo") ;; Ricty Diminished, Inconsolata
+  (moom-font-ja "Migu 2M")) ;; Hiragino Maru Gothic Pro
 #+END_SRC
 
-If you find the column exceeds 80 when the frame is maximized, then configure =moom-scaling-gradient= properly. It depends on ASCII font type. For instance, ~1.66~ (default) for Menlo, Monaco, ~2.0~ for Inconsolata. Please see the following section.
+Normally, ASCII and Japanese fonts will be updated when resizing fonts. But if you provide an optional argument to =moom-font-ascii= or =moom-font-ja=, the given font is immediately applied and reflected in each buffer. See the following example setting.
+
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load "moom-font"
+  (moom-font-ascii "Menlo" '(:immediate t))
+  (moom-font-ja "Migu 2M" '(:immediate t)))
+#+END_SRC
+
+When you find the column exceeds 80 when the frame is maximized, then configure =moom-scaling-gradient= properly. It depends on ASCII font type. For instance, ~1.66~ (default) for Menlo, Monaco, ~2.0~ for Inconsolata. Please see the following section.
 
 *** Font table
 
