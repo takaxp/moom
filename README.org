@@ -101,13 +101,13 @@ Note - If you find any problems around font settings when resizing the Emacs fra
  - moom-print-status
  - moom-version
 
-*** How to setup Top and Bottom margin
+*** How to setup screen margins
 
-Just provide a list to setup Top and/or Bottom margin of screen. Currently, it supports Top and Bottom margins. If you set the optional 2nd argument as =t=, then the frame will be automatically resized for filling screen with given margins.
+Just provide a list to setup screen margins. The list consists of four values to control screen margins from the ~top~, ~bottom~, ~left~, and ~right~ edge. When you set the optional 2nd argument as =t=, then the frame will be automatically resized for filling screen with given margins.
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "moom"
-  (moom-screen-margin '(100 200 0 0))) ;; {top, bottom, left, right}
+  (moom-screen-margin '(100 50 20 20) t)) ;; {top, bottom, left, right}
 #+END_SRC
 
 For macOS users, the default margin is =(23 0 0 0)=, and for other system types, it is also configured using combination of =frame-monitor-geometry= and =frame-monitor-workarea= when you activate =moom-mode=. But the actual work area is probably depends on user environment. So please call =moom-screen-margin= with an appropriate list to configure the margins if needed.

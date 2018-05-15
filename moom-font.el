@@ -104,10 +104,6 @@ If `ARG' is nil, the default size is used."
          (ascii-rescale (concat ".*" ascii-font ".*")))
     (moom-font--update-rescale-alist ascii-rescale moom-font-ascii-scale)
     (moom-font--update-rescale-alist ja-rescale moom-font-ja-scale)
-    ;; (delete (assoc ascii-rescale face-font-rescale-alist)
-    ;;         face-font-rescale-alist)
-    ;; (add-to-list 'face-font-rescale-alist
-    ;;              `(,ascii-rescale . ,moom-font-ascii-scale))
     (unless moom-font--pause
       (set-fontset-font nil 'ascii
                         (font-spec :family ascii-font :size font-size))
