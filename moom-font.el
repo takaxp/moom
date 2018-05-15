@@ -254,11 +254,11 @@ Optional argument DEC specifies a decreasing step."
          (moom-font--extract-family-name (face-font 'default nil ?A)))
         (ja-font
          (moom-font--extract-family-name (face-font 'default nil ?あ))))
-    (if (x-list-fonts ascii-font)
+    (if (and ascii-font (x-list-fonts ascii-font))
         (setq moom-font-ascii ascii-font)
       (warn "[moom-font] Font \"%s\" is NOT installed in your system."
             ascii-font))
-    (if (x-list-fonts ja-font)
+    (if (and ja-font (x-list-fonts ja-font))
         (setq moom-font-ja ja-font)
       (warn "[moom-font] Font \"%s\" is NOT installed in your system."
             ja-font))))
