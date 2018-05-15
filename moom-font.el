@@ -150,14 +150,15 @@ If END is nil, use 50 as the default value."
 
 (defun moom-font--font-exist-p (font-family)
   "Check given FONT-FAMILY exists."
-  (let ((result (and window-system
-                     (fboundp 'x-list-fonts)
-                     (x-list-fonts font-family))))
-    (if result
-        (when moom-font-verbose
-          (message "[moom-font] \"%s\" is available." font-family))
-      (warn "[moom-font] \"%s\" is NOT installed in your system." font-family))
-    result))
+  (when window-system
+    (let ((result (and (fboundp 'x-list-fonts)
+                       (x-list-fonts font-family))))
+      (if result
+          (when moom-font-verbose
+            (message "[moom-font] \"%s\" is available." font-family))
+        (warn "[moom-font] \"%s\" is NOT installed in your system."
+              font-family))
+      result)))
 
 ;;;###autoload
 (defun moom-font-ascii (font &optional plist)
