@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.1.0
+;; Version: 1.1.1
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Twitter: @takaxp
@@ -95,9 +95,10 @@ If `ARG' is nil, the default size is used."
          (ja-rescale (concat ".*" ja-font ".*"))
          (ascii-font moom-font-ascii)
          (ascii-rescale (concat ".*" ascii-font ".*")))
-    (setq face-font-rescale-alist
-          `((,ja-rescale . ,moom-font-ja-scale)
-            (,ascii-rescale . ,moom-font-ascii-scale)))
+    (add-to-list 'face-font-rescale-alist
+                 `(,ja-rescale . ,moom-font-ja-scale))
+    (add-to-list 'face-font-rescale-alist
+                 `(,ascii-rescale . ,moom-font-ascii-scale))
     (unless moom-font--pause
       (set-fontset-font nil 'ascii
                         (font-spec :family ascii-font :size font-size))
