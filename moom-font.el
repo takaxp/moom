@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.1.3
+;; Version: 1.1.4
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Twitter: @takaxp
@@ -80,7 +80,8 @@
   "Update `face-font-rescale-alist'.
 If KEY exists in `face-font-rescale-alist', delete it before updating the list.
 VALUE is a new value to re-scale the font in KEY."
-  (delete (assoc key face-font-rescale-alist) face-font-rescale-alist)
+  (setq face-font-rescale-alist
+        (delete (assoc key face-font-rescale-alist) face-font-rescale-alist))
   (add-to-list 'face-font-rescale-alist `(,key . ,value)))
 
 (defun moom-font--change-size (&optional arg)
@@ -148,7 +149,7 @@ If END is nil, use 50 as the default value."
         (goto-char 0)
         (switch-to-buffer buffer)))))
 
-(defun moom-font--font-exist-p (font-family)
+(defun moom-font--font-exists-p (font-family)
   "Check given FONT-FAMILY exists."
   (when window-system
     (let ((result (and (fboundp 'x-list-fonts)
@@ -165,7 +166,7 @@ If END is nil, use 50 as the default value."
   "Set ASCII font family by given FONT.
 If PLIST is non-nil and it has immediate property,
 given FONT is immediately applied."
-  (when (moom-font--font-exist-p font)
+  (when (moom-font--font-exists-p font)
     (setq moom-font--ascii font)
     (when (plist-get plist :immediate)
       (moom-font--change-size))))
@@ -175,7 +176,7 @@ given FONT is immediately applied."
   "Set Japanese font family by given FONT.
 If PLIST is non-nil and it has immediate property,
 given FONT is immediately applied."
-  (when (moom-font--font-exist-p font)
+  (when (moom-font--font-exists-p font)
     (setq moom-font--ja font)
     (when (plist-get plist :immediate)
       (moom-font--change-size))))
@@ -277,10 +278,19 @@ Optional argument DEC specifies a decreasing step."
         (ja-font
          (moom-font--extract-family-name (face-font 'default nil ?あ))))
     ;; Apply font if found. Otherwise, use the default ASCII or Japanese font.
-    (when ascii-font
-      (moom-font-ascii ascii-font))
-    (when ja-font
-      (moom-font-ja ja-font))))
+    (if ascii-font
+        (moom-font-ascii ascii-font)
+      (cond ((eq window-system 'w32)
+             (moom-font-ascii "MS Gothic"))
+            ((eq window-system 'x)
+             (moom-font-ascii "TakaoGothic"))))
+    (if ja-font
+        (moom-font-ja ja-font)
+      (setq moom-font-ja-scale 1.0)
+      (cond ((eq window-system 'w32)
+             (moom-font-ja "MS Gothic"))
+            ((eq window-system 'x)
+             (moom-font-ja "TakaoGothic"))))))
 
 (provide 'moom-font)
 

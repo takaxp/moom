@@ -153,7 +153,7 @@ Normally, ASCII and Japanese fonts will be updated when resizing fonts. But if y
   (moom-font-ja "Migu 2M" '(:immediate t)))
 #+END_SRC
 
-When you find the column exceeds 80 when the frame is maximized, then configure =moom-scaling-gradient= properly. It depends on ASCII font type. For instance, ~1.66~ (default) for Menlo, Monaco, ~2.0~ for Inconsolata. Please see the following section.
+When you find the column exceeds 80 when the frame is maximized, then configure =moom-scaling-gradient= properly. It depends on ASCII font type. For instance, ~1.66~ (default) for Menlo, Monaco, ~2.0~ for Inconsolata, MS Gothic, and TakaoGothic. Please see the following section.
 
 *** Font table
 
@@ -197,13 +197,13 @@ Here is an example. ~Monaco~ is used for ASCII font and ~Migu 2M~ is used for Ja
 #+CAPTION: User variables in moom-font.el
 |                       | default | type                            |
 |-----------------------+---------+---------------------------------|
-| moom-font-ascii       | Monaco  | string                          |
-| moom-font-ja          | Osaka   | string                          |
 | moom-font-init-size   | 12      | integer                         |
 | moom-font-ascii-scale | 1.0     | float                           |
 | moom-font-ja-scale    | 1.2     | float                           |
 | moom-font-table       | nil     | (repeat (list integer integer)) |
 | moom-font-verbose     | nil     | boolean                         |
+
+Note - ~moom-font-ascii~ and ~moom-font-ja~ was hidden. Please use a function of the same name.
 
 * Example keybindings
 ** Overview
