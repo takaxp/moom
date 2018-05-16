@@ -171,7 +171,17 @@ Here is an example. ~Monaco~ is used for ASCII font and ~Migu 2M~ is used for Ja
 
  - moom-font-increase
  - moom-font-decrease
+ - moom-font-resize
  - moom-font-size-reset
+
+** Font setting
+
+ - moom-font-ja
+ - moom-font-ascii
+
+** Other functions
+
+ - moom-font-print-name-at-point
 
 * User variables
 ** moom.el
