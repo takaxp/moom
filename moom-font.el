@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.1.2
+;; Version: 1.1.5
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Twitter: @takaxp
@@ -33,16 +33,6 @@
 ;;; Code:
 (eval-when-compile
   (require 'cl-lib))
-
-(defcustom moom-font-ja "Osaka"
-  "Font name for Japanese font."
-  :type 'string
-  :group 'moom)
-
-(defcustom moom-font-ascii "Monaco"
-  "Font name for ASCII font."
-  :type 'string
-  :group 'moom)
 
 (defcustom moom-font-init-size 12
   "The default value to set font size."
@@ -83,12 +73,15 @@
 (defvar moom-font--size moom-font-init-size
   "Current font size.")
 (defvar moom-font--pause nil)
+(defvar moom-font--ascii nil)
+(defvar moom-font--ja nil)
 
 (defun moom-font--update-rescale-alist (key value)
   "Update `face-font-rescale-alist'.
 If KEY exists in `face-font-rescale-alist', delete it before updating the list.
 VALUE is a new value to re-scale the font in KEY."
-  (delete (assoc key face-font-rescale-alist) face-font-rescale-alist)
+  (setq face-font-rescale-alist
+        (delete (assoc key face-font-rescale-alist) face-font-rescale-alist))
   (add-to-list 'face-font-rescale-alist `(,key . ,value)))
 
 (defun moom-font--change-size (&optional arg)
@@ -98,9 +91,9 @@ If `ARG' is nil, the default size is used."
     (setq moom-font--size arg))
   (let* ((font-size moom-font--size)
          (ja-font-scale moom-font-ja-scale)
-         (ja-font moom-font-ja)
+         (ja-font moom-font--ja)
          (ja-rescale (concat ".*" ja-font ".*"))
-         (ascii-font moom-font-ascii)
+         (ascii-font moom-font--ascii)
          (ascii-rescale (concat ".*" ascii-font ".*")))
     (moom-font--update-rescale-alist ascii-rescale moom-font-ascii-scale)
     (moom-font--update-rescale-alist ja-rescale moom-font-ja-scale)
@@ -156,6 +149,38 @@ If END is nil, use 50 as the default value."
         (goto-char 0)
         (switch-to-buffer buffer)))))
 
+(defun moom-font--font-exists-p (font-family)
+  "Check given FONT-FAMILY exists."
+  (when window-system
+    (let ((result (and (fboundp 'x-list-fonts)
+                       (x-list-fonts font-family))))
+      (if result
+          (when moom-font-verbose
+            (message "[moom-font] \"%s\" is available." font-family))
+        (warn "[moom-font] \"%s\" is NOT installed in your system."
+              font-family))
+      result)))
+
+;;;###autoload
+(defun moom-font-ascii (font &optional plist)
+  "Set ASCII font family by given FONT.
+If PLIST is non-nil and it has immediate property,
+given FONT is immediately applied."
+  (when (moom-font--font-exists-p font)
+    (setq moom-font--ascii font)
+    (when (plist-get plist :immediate)
+      (moom-font--change-size))))
+
+;;;###autoload
+(defun moom-font-ja (font &optional plist)
+  "Set Japanese font family by given FONT.
+If PLIST is non-nil and it has immediate property,
+given FONT is immediately applied."
+  (when (moom-font--font-exists-p font)
+    (setq moom-font--ja font)
+    (when (plist-get plist :immediate)
+      (moom-font--change-size))))
+
 ;;;###autoload
 (defun moom-font-resize (&optional n width)
   "Resize font.
@@ -203,7 +228,8 @@ Optional argument INC specifies an increasing step."
                  inc 1)))
     (moom-font--change-size moom-font--size)
     (when moom-font-verbose
-      (message "[moom-font] +%d: %s" inc moom-font--size)))
+      (message "[moom-font] +%d: %s"
+               (if (integerp inc) inc 1) moom-font--size)))
   (run-hooks 'moom-font-after-resize-hook))
 
 ;;;###autoload
@@ -223,7 +249,8 @@ Optional argument DEC specifies a decreasing step."
       (setq moom-font--size 1))
     (when (and moom-font-verbose
                (> moom-font--size 0))
-      (message "[moom-font] -%d: %s" dec moom-font--size))
+      (message "[moom-font] -%d: %s"
+               (if (integerp dec) dec 1) moom-font--size))
     (moom-font--change-size moom-font--size))
   (run-hooks 'moom-font-after-resize-hook))
 
@@ -237,8 +264,8 @@ Optional argument DEC specifies a decreasing step."
            (family-name (moom-font--extract-family-name xlfd-name)))
       (if family-name
           (message
-           "[moom-font] Set \"%s\" to `moom-font-ja' or `moom-font-ascii.'"
-           family-name)
+           "[moom-font] It's \"%s\". Call `moom-font-ja' or `moom-font-ascii' with \"%s\"."
+           family-name family-name)
         (message
          "[moom-font] Failed to detect the font family name from \"%s\"."
          xlfd-name)))))
@@ -250,14 +277,25 @@ Optional argument DEC specifies a decreasing step."
          (moom-font--extract-family-name (face-font 'default nil ?A)))
         (ja-font
          (moom-font--extract-family-name (face-font 'default nil ?あ))))
-    (if (and ascii-font (x-list-fonts ascii-font))
-        (setq moom-font-ascii ascii-font)
-      (warn "[moom-font] Font \"%s\" is NOT installed in your system."
-            ascii-font))
-    (if (and ja-font (x-list-fonts ja-font))
-        (setq moom-font-ja ja-font)
-      (warn "[moom-font] Font \"%s\" is NOT installed in your system."
-            ja-font))))
+    ;; Apply font if found. Otherwise, use the default ASCII or Japanese font.
+    (if ascii-font
+        (moom-font-ascii ascii-font)
+      (cond ((memq window-system '(ns mac))
+             (moom-font-ascii "Monaco"))
+            ((eq window-system 'w32)
+             (moom-font-ascii "ＭＳ ゴシック"))
+            ((eq window-system 'x)
+             (moom-font-ascii "TakaoGothic"))))
+    (if ja-font
+        (moom-font-ja ja-font)
+      (cond ((memq window-system '(ns w32))
+             (moom-font-ja "Osaka"))
+            ((eq window-system 'w32)
+             (setq moom-font-ja-scale 1.0)
+             (moom-font-ja "ＭＳ ゴシック"))
+            ((eq window-system 'x)
+             (setq moom-font-ja-scale 1.0)
+             (moom-font-ja "TakaoGothic"))))))
 
 (provide 'moom-font)
 

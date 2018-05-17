@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.1.4
+;; Version: 1.1.5
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -909,44 +909,46 @@ keybindings, put the following code in your init.el.
  (with-eval-after-load \"moom\"
    (moom-recommended-keybindings 'all))
 'all is identical to '(move fit expand fill font reset).
-If you give only '(reset) as the argument, then \\[moom-reset] is activated."
-  (when (eq 'all options)
-    (setq options '(move fit expand fill font reset)))
-  (when (memq 'move options)
-    (define-key moom-mode-map (kbd "M-0") 'moom-move-frame)
-    (define-key moom-mode-map (kbd "M-1") 'moom-move-frame-left)
-    (define-key moom-mode-map (kbd "M-2") 'moom-move-frame-to-center)
-    (define-key moom-mode-map (kbd "M-3") 'moom-move-frame-right))
-  (when (memq 'fit options)
-    (define-key moom-mode-map (kbd "M-<f1>") 'moom-move-frame-to-edge-left)
-    (define-key moom-mode-map (kbd "M-<f3>") 'moom-move-frame-to-edge-right)
-    (define-key moom-mode-map (kbd "<f1>") 'moom-move-frame-to-edge-top)
-    (define-key moom-mode-map (kbd "S-<f1>") 'moom-move-frame-to-edge-bottom))
-  (when (memq 'expand options)
-    (define-key moom-mode-map (kbd "<f2>") 'moom-cycle-frame-height)
-    (define-key moom-mode-map (kbd "C-c f s") 'moom-change-frame-width-single)
-    (define-key moom-mode-map (kbd "C-c f d") 'moom-change-frame-width-double)
-    (define-key moom-mode-map (kbd "C-c f a") 'moom-change-frame-width-half-again))
-  (when (memq 'fill options)
-    (define-key moom-mode-map (kbd "C-c f f t") 'moom-fill-top)
-    (define-key moom-mode-map (kbd "C-c f f b") 'moom-fill-bottom)
-    (define-key moom-mode-map (kbd "C-c f f l") 'moom-fill-left)
-    (define-key moom-mode-map (kbd "C-c f f r") 'moom-fill-right)
-    (define-key moom-mode-map (kbd "C-c f f 1") 'moom-fill-top-left)
-    (define-key moom-mode-map (kbd "C-c f f 2") 'moom-fill-top-right)
-    (define-key moom-mode-map (kbd "C-c f f 3") 'moom-fill-bottom-left)
-    (define-key moom-mode-map (kbd "C-c f f 4") 'moom-fill-bottom-right)
-    (define-key moom-mode-map (kbd "C-c f f m") 'moom-fill-band)
-    (define-key moom-mode-map (kbd "M-<f2>") 'moom-toggle-frame-maximized))
-  (when (memq 'font options)
-    (define-key moom-mode-map (kbd "C--") 'moom-font-decrease)
-    (define-key moom-mode-map (kbd "C-=") 'moom-font-increase)
-    (define-key moom-mode-map (kbd "C-0") 'moom-font-size-reset))
-  (when (memq 'reset options)
-    (define-key moom-mode-map (kbd "C-c C-0") 'moom-reset))
-  (when (and moom-verbose
-             options)
-    (message "[Moom] Key defined for APIs of %s." options)))
+If you give only '(reset) as the argument, then \\[moom-reset] is activated.
+The keybindings will be assigned when Emacs runs in GUI."
+  (when window-system
+    (when (eq 'all options)
+      (setq options '(move fit expand fill font reset)))
+    (when (memq 'move options)
+      (define-key moom-mode-map (kbd "M-0") 'moom-move-frame)
+      (define-key moom-mode-map (kbd "M-1") 'moom-move-frame-left)
+      (define-key moom-mode-map (kbd "M-2") 'moom-move-frame-to-center)
+      (define-key moom-mode-map (kbd "M-3") 'moom-move-frame-right))
+    (when (memq 'fit options)
+      (define-key moom-mode-map (kbd "M-<f1>") 'moom-move-frame-to-edge-left)
+      (define-key moom-mode-map (kbd "M-<f3>") 'moom-move-frame-to-edge-right)
+      (define-key moom-mode-map (kbd "<f1>") 'moom-move-frame-to-edge-top)
+      (define-key moom-mode-map (kbd "S-<f1>") 'moom-move-frame-to-edge-bottom))
+    (when (memq 'expand options)
+      (define-key moom-mode-map (kbd "<f2>") 'moom-cycle-frame-height)
+      (define-key moom-mode-map (kbd "C-c f s") 'moom-change-frame-width-single)
+      (define-key moom-mode-map (kbd "C-c f d") 'moom-change-frame-width-double)
+      (define-key moom-mode-map (kbd "C-c f a") 'moom-change-frame-width-half-again))
+    (when (memq 'fill options)
+      (define-key moom-mode-map (kbd "C-c f f t") 'moom-fill-top)
+      (define-key moom-mode-map (kbd "C-c f f b") 'moom-fill-bottom)
+      (define-key moom-mode-map (kbd "C-c f f l") 'moom-fill-left)
+      (define-key moom-mode-map (kbd "C-c f f r") 'moom-fill-right)
+      (define-key moom-mode-map (kbd "C-c f f 1") 'moom-fill-top-left)
+      (define-key moom-mode-map (kbd "C-c f f 2") 'moom-fill-top-right)
+      (define-key moom-mode-map (kbd "C-c f f 3") 'moom-fill-bottom-left)
+      (define-key moom-mode-map (kbd "C-c f f 4") 'moom-fill-bottom-right)
+      (define-key moom-mode-map (kbd "C-c f f m") 'moom-fill-band)
+      (define-key moom-mode-map (kbd "M-<f2>") 'moom-toggle-frame-maximized))
+    (when (memq 'font options)
+      (define-key moom-mode-map (kbd "C--") 'moom-font-decrease)
+      (define-key moom-mode-map (kbd "C-=") 'moom-font-increase)
+      (define-key moom-mode-map (kbd "C-0") 'moom-font-size-reset))
+    (when (memq 'reset options)
+      (define-key moom-mode-map (kbd "C-c C-0") 'moom-reset))
+    (when (and moom-verbose
+               options)
+      (message "[Moom] Key defined for APIs of %s." options))))
 
 ;;;###autoload
 (defun moom-print-status ()
@@ -968,7 +970,7 @@ If you give only '(reset) as the argument, then \\[moom-reset] is activated."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.1.4"))
+  (let ((moom-release "1.1.5"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
@@ -1000,9 +1002,10 @@ To see more details and examples, please visit https://github.com/takaxp/moom.
   :global t
   :require 'moom
   :group 'moom
-  (if moom-mode
-      (moom--setup)
-    (moom--abort)))
+  (when window-system
+    (if moom-mode
+        (moom--setup)
+      (moom--abort))))
 
 (provide 'moom)
 
