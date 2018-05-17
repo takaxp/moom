@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.1.5
+;; Version: 1.1.6
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Twitter: @takaxp
@@ -288,7 +288,7 @@ Optional argument DEC specifies a decreasing step."
              (moom-font-ascii "TakaoGothic"))))
     (if ja-font
         (moom-font-ja ja-font)
-      (cond ((memq window-system '(ns w32))
+      (cond ((memq window-system '(ns mac))
              (moom-font-ja "Osaka"))
             ((eq window-system 'w32)
              (setq moom-font-ja-scale 1.0)
