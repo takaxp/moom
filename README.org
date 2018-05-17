@@ -213,7 +213,7 @@ Here is an example. ~Monaco~ is used for ASCII font and ~Migu 2M~ is used for Ja
 | moom-font-table       | nil     | (repeat (list integer integer)) |
 | moom-font-verbose     | nil     | boolean                         |
 
-Note - ~moom-font-ascii~ and ~moom-font-ja~ was hidden. Please use a function of the same name.
+Note - *breaking changes* Variables of ~moom-font-ascii~ and ~moom-font-ja~ were hidden so that font settings could be controlled conveniently by utility functions. Please utilize each function of the same name to setup fonts.
 
 * Example keybindings
 ** Overview
