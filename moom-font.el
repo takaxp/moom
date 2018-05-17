@@ -73,8 +73,8 @@
 (defvar moom-font--size moom-font-init-size
   "Current font size.")
 (defvar moom-font--pause nil)
-(defvar moom-font--ascii "Monaco")
-(defvar moom-font--ja "Osaka")
+(defvar moom-font--ascii nil)
+(defvar moom-font--ja nil)
 
 (defun moom-font--update-rescale-alist (key value)
   "Update `face-font-rescale-alist'.
@@ -280,16 +280,21 @@ Optional argument DEC specifies a decreasing step."
     ;; Apply font if found. Otherwise, use the default ASCII or Japanese font.
     (if ascii-font
         (moom-font-ascii ascii-font)
-      (cond ((eq window-system 'w32)
-             (moom-font-ascii "MS Gothic"))
+      (cond ((memq window-system '(ns mac))
+             (moom-font-ascii "Monaco"))
+            ((eq window-system 'w32)
+             (moom-font-ascii "ＭＳ ゴシック"))
             ((eq window-system 'x)
              (moom-font-ascii "TakaoGothic"))))
     (if ja-font
         (moom-font-ja ja-font)
-      (setq moom-font-ja-scale 1.0)
-      (cond ((eq window-system 'w32)
-             (moom-font-ja "MS Gothic"))
+      (cond ((memq window-system '(ns w32))
+             (moom-font-ja "Osaka"))
+            ((eq window-system 'w32)
+             (setq moom-font-ja-scale 1.0)
+             (moom-font-ja "ＭＳ ゴシック"))
             ((eq window-system 'x)
+             (setq moom-font-ja-scale 1.0)
              (moom-font-ja "TakaoGothic"))))))
 
 (provide 'moom-font)
