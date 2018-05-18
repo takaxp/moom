@@ -1,3 +1,18 @@
+2018-05-18  Takaaki ISHIKAWA  <takaxp@ieee.org>
+
+	* moom-font.el: version 1.2.0
+	- [breaking change]	Remove moom-font-ja variable, switched to a function
+	- [breaking change] Remove moom-font-ascii variable, switched to a function
+	- [new feature] Support auto detection of the default fonts
+	- [new] moom-font-ja (as a function)
+	- [new] moom-font-ascii (as a function)
+
+	* moom.el: version 1.2.0
+	- [new feature] Support setting of screen margins by moom-screen-margin
+	- [improve]	Calculating	frame columns and height lines
+	- [improve]	Calculating	frame width and height in pixels
+	- [improve] Centering frame in Linux and Windows
+
 2018-05-06  Takaaki ISHIKAWA  <takaxp@ieee.org>
 
 	* moom-font.el: version 1.1.0
