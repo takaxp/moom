@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.2.0
+;; Version: 1.2.1
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Twitter: @takaxp
@@ -33,11 +33,6 @@
 ;;; Code:
 (eval-when-compile
   (require 'cl-lib))
-
-(defcustom moom-font-init-size 12
-  "The default value to set font size."
-  :type 'integer
-  :group 'moom)
 
 (defcustom moom-font-ja-scale 1.2
   "The default value to scale JP fonts."
@@ -70,7 +65,9 @@
   :type 'hook
   :group 'moom)
 
-(defvar moom-font--size moom-font-init-size
+(defvar moom-font--init-size 12
+  "The default value to set font size.")
+(defvar moom-font--size moom-font--init-size
   "Current font size.")
 (defvar moom-font--pause nil)
 (defvar moom-font--ascii nil)
@@ -107,6 +104,17 @@ If `ARG' is nil, the default size is used."
         (set-fontset-font nil '(#x0080 . #x024F) spec)
         (set-fontset-font nil '(#x0370 . #x03FF) spec)
         (set-fontset-font nil 'mule-unicode-0100-24ff spec)))))
+
+(defun moom-font--extract-font-size (xlfd)
+  "Try to identify the font size.
+Return an integer value extracted from XLFD if possible, otherwise return nil."
+  (when (stringp xlfd)
+    (let ((size
+           (string-to-number
+            (if (string-match
+                 "^-[^-]+-[^-]+-[^-]+-[^-]+-[^-]+-[^-]+-\\([^-]+\\)-.*$" xlfd)
+                (match-string 1 xlfd) "0"))))
+      (if (> size 0) size nil))))
 
 (defun moom-font--extract-family-name (xlfd)
   "Try to identify the font name.
@@ -168,8 +176,13 @@ If PLIST is non-nil and it has immediate property,
 given FONT is immediately applied."
   (when (moom-font--font-exists-p font)
     (setq moom-font--ascii font)
+    (let ((font-size (plist-get plist :size)))
+      (when font-size
+        (setq moom-font--size font-size)))
     (when (plist-get plist :immediate)
-      (moom-font--change-size))))
+      (run-hooks 'moom-font-before-resize-hook)
+      (moom-font--change-size)
+      (run-hooks 'moom-font-after-resize-hook))))
 
 ;;;###autoload
 (defun moom-font-ja (font &optional plist)
@@ -192,7 +205,7 @@ the actual pixel width will not exceed the WIDTH."
   (run-hooks 'moom-font-before-resize-hook)
   (unless moom-font--pause
     (moom-font--change-size
-     (setq moom-font--size (or n moom-font-init-size)))
+     (setq moom-font--size (or n moom-font--init-size)))
     (when (and width
                (< width (frame-pixel-width)))
       (when moom-font-verbose
@@ -210,7 +223,7 @@ the actual pixel width will not exceed the WIDTH."
   (interactive)
   (run-hooks 'moom-font-before-resize-hook)
   (moom-font--change-size
-   (setq moom-font--size moom-font-init-size))
+   (setq moom-font--size moom-font--init-size))
   (when moom-font-verbose
     (message "[moom-font] %s" moom-font--size))
   (run-hooks 'moom-font-after-resize-hook))
@@ -273,10 +286,16 @@ Optional argument DEC specifies a decreasing step."
 ;; init
 (when (and window-system
            (fboundp 'x-list-fonts))
-  (let ((ascii-font
-         (moom-font--extract-family-name (face-font 'default nil ?A)))
-        (ja-font
-         (moom-font--extract-family-name (face-font 'default nil ?あ))))
+  (let* ((default-font (face-font 'default nil ?A))
+         (size
+          (moom-font--extract-font-size default-font))
+         (ascii-font
+          (moom-font--extract-family-name default-font))
+         (ja-font
+          (moom-font--extract-family-name (face-font 'default nil ?あ))))
+    (when size
+      (setq moom-font--size
+            (setq moom-font--init-size size)))
     ;; Apply font if found. Otherwise, use the default ASCII or Japanese font.
     (if ascii-font
         (moom-font-ascii ascii-font)

@@ -207,11 +207,12 @@ Here is an example. ~Monaco~ is used for ASCII font and ~Migu 2M~ is used for Ja
 #+CAPTION: User variables in moom-font.el
 |                       | default | type                            |
 |-----------------------+---------+---------------------------------|
-| moom-font-init-size   | 12      | integer                         |
 | moom-font-ascii-scale | 1.0     | float                           |
 | moom-font-ja-scale    | 1.2     | float                           |
 | moom-font-table       | nil     | (repeat (list integer integer)) |
 | moom-font-verbose     | nil     | boolean                         |
+
+Note - *(breaking changes at v1.2.1)* ~moom-font-init-size~ was hidden. The size is now automatically detected. If you want to use customized variable, please use =moom-font-ascii= with ~:size~ option like =(moom-font-ascii "Inconsolata" :size 14)=.
 
 Note - *(breaking changes at v1.2.0)* Variables of ~moom-font-ascii~ and ~moom-font-ja~ were hidden so that font settings could be controlled conveniently by utility functions. Please utilize each function of the same name to setup fonts.
 

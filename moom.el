@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.2.0
+;; Version: 1.2.1
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -166,8 +166,6 @@ For instance,
 
 (defun moom--setup ()
   "Init function."
-  (unless moom--screen-margin
-    (setq moom--screen-margin (moom--default-screen-margin)))
   (moom--make-frame-height-list)
   (moom--save-last-status)
   (setq moom--init-status moom--last-status)
@@ -970,7 +968,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.2.0"))
+  (let ((moom-release "1.2.1"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
@@ -1006,6 +1004,10 @@ To see more details and examples, please visit https://github.com/takaxp/moom.
     (if moom-mode
         (moom--setup)
       (moom--abort))))
+
+;; Setting default value
+(unless moom--screen-margin
+  (setq moom--screen-margin (moom--default-screen-margin)))
 
 (provide 'moom)
 
