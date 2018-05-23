@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.2.1
+;; Version: 1.2.2
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Twitter: @takaxp
@@ -84,26 +84,24 @@ VALUE is a new value to re-scale the font in KEY."
 (defun moom-font--change-size (&optional arg)
   "Core function to change font size.
 If `ARG' is nil, the default size is used."
-  (when arg
-    (setq moom-font--size arg))
-  (let* ((font-size moom-font--size)
-         (ja-font-scale moom-font-ja-scale)
-         (ja-font moom-font--ja)
-         (ja-rescale (concat ".*" ja-font ".*"))
-         (ascii-font moom-font--ascii)
-         (ascii-rescale (concat ".*" ascii-font ".*")))
-    (moom-font--update-rescale-alist ascii-rescale moom-font-ascii-scale)
-    (moom-font--update-rescale-alist ja-rescale moom-font-ja-scale)
-    (unless moom-font--pause
-      (set-fontset-font nil 'ascii
-                        (font-spec :family ascii-font :size font-size))
-      (let ((spec (font-spec :family ja-font :size font-size)))
-        (set-fontset-font nil 'japanese-jisx0208 spec)
-        (set-fontset-font nil 'katakana-jisx0201 spec)
-        (set-fontset-font nil 'japanese-jisx0212 spec)
-        (set-fontset-font nil '(#x0080 . #x024F) spec)
-        (set-fontset-font nil '(#x0370 . #x03FF) spec)
-        (set-fontset-font nil 'mule-unicode-0100-24ff spec)))))
+  (unless moom-font--pause
+    (when arg
+      (setq moom-font--size arg))
+    (moom-font--update-rescale-alist
+     (concat ".*" moom-font--ascii ".*") moom-font-ascii-scale)
+    (moom-font--update-rescale-alist
+     (concat ".*" moom-font--ja ".*") moom-font-ja-scale)
+    (set-fontset-font nil 'ascii
+                      (font-spec :family moom-font--ascii
+                                 :size moom-font--size))
+    (let ((spec (font-spec :family moom-font--ja
+                           :size moom-font--size)))
+      (set-fontset-font nil 'japanese-jisx0208 spec)
+      (set-fontset-font nil 'katakana-jisx0201 spec)
+      (set-fontset-font nil 'japanese-jisx0212 spec)
+      (set-fontset-font nil '(#x0080 . #x024F) spec)
+      (set-fontset-font nil '(#x0370 . #x03FF) spec)
+      (set-fontset-font nil 'mule-unicode-0100-24ff spec))))
 
 (defun moom-font--extract-font-size (xlfd)
   "Try to identify the font size.
@@ -179,6 +177,9 @@ given FONT is immediately applied."
     (let ((font-size (plist-get plist :size)))
       (when font-size
         (setq moom-font--size font-size)))
+    (let ((rescale (plist-get plist :scale)))
+      (when rescale
+        (setq moom-font-ascii-scale rescale)))
     (when (plist-get plist :immediate)
       (run-hooks 'moom-font-before-resize-hook)
       (moom-font--change-size)
@@ -191,6 +192,9 @@ If PLIST is non-nil and it has immediate property,
 given FONT is immediately applied."
   (when (moom-font--font-exists-p font)
     (setq moom-font--ja font)
+    (let ((rescale (plist-get plist :scale)))
+      (when rescale
+        (setq moom-font-ja-scale rescale)))
     (when (plist-get plist :immediate)
       (moom-font--change-size))))
 
@@ -277,7 +281,7 @@ Optional argument DEC specifies a decreasing step."
            (family-name (moom-font--extract-family-name xlfd-name)))
       (if family-name
           (message
-           "[moom-font] It's \"%s\". Call `moom-font-ja' or `moom-font-ascii' with \"%s\"."
+           "[moom-font] It's \"%s\".\n[moom-font] Call `moom-font-ja' or `moom-font-ascii' with \"%s\"."
            family-name family-name)
         (message
          "[moom-font] Failed to detect the font family name from \"%s\"."
@@ -310,11 +314,9 @@ Optional argument DEC specifies a decreasing step."
       (cond ((memq window-system '(ns mac))
              (moom-font-ja "Osaka"))
             ((eq window-system 'w32)
-             (setq moom-font-ja-scale 1.0)
-             (moom-font-ja "ＭＳ ゴシック"))
+             (moom-font-ja "ＭＳ ゴシック" '(:size 1.0)))
             ((eq window-system 'x)
-             (setq moom-font-ja-scale 1.0)
-             (moom-font-ja "TakaoGothic"))))))
+             (moom-font-ja "TakaoGothic" '(:size 1.0)))))))
 
 (provide 'moom-font)
 
