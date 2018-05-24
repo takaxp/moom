@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.2.1
+;; Version: 1.2.2
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -117,8 +117,8 @@ the screen will be covered precisely by the specified value in pixels.
 This parameter is used to calculate the font pixel width when resizing
 the frame width to keep the column 80. It depends on Font.
 For instance,
-1.66(5.0/3.0) : Menlo, Monaco
-2.00(5.0/2.5) : Inconsolata
+1.66 or (5.0/3.0) : Menlo, Monaco
+2.00 or (5.0/2.5) : Inconsolata
 ."
   :type 'float
   :group 'moom)
@@ -281,19 +281,27 @@ Including title-bar, menu-bar, offset depends on window system, and border."
     (cl-pushnew (max min-height max-height) heights)
     (setq moom--height-list (copy-sequence heights))))
 
+(defun moom--cycle-frame-height-list ()
+  "Rotate `moom--height-list'."
+  (setq moom--height-list
+        (append (cdr moom--height-list)
+                (list (car moom--height-list)))))
+
 (defun moom--font-size (pixel-width)
   "Return an appropriate font-size based on PIXEL-WIDTH.
 If `moom-font-table' is non-nil, the returned value will be more precisely
 calculated."
   (let* ((font-width (/ (float (- pixel-width (moom--frame-internal-width)))
                         moom-frame-width-single))
-         (scaled (/ font-width
-                    (if moom--font-module-p
-                        moom-font-ascii-scale 1.0)))
+         (scaled-width (/ font-width
+                          (if moom--font-module-p
+                              moom-font-ascii-scale 1.0)))
          (font-size (when moom--font-module-p
-                      (moom-font--find-size (floor scaled) moom-font-table))))
+                      (moom-font--find-size
+                       (floor scaled-width) moom-font-table))))
     (if font-size font-size
-      (floor (* (if (< scaled 1) 1 scaled) moom-scaling-gradient)))))
+      (floor (* (if (< scaled-width 1) 1 scaled-width)
+                moom-scaling-gradient)))))
 
 (defun moom--font-resize (font-size &optional pixel-width)
   "Resize font.
@@ -743,14 +751,15 @@ please configure the margins by `moom-screen-margin'."
   (unless moom--height-list
     (moom--make-frame-height-list))
   (let ((height (car moom--height-list)))
+    (when (equal height (moom--frame-height))
+      (moom--cycle-frame-height-list)
+      (setq height (car moom--height-list)))
     (cond ((equal height (moom--max-frame-height))
            (moom-change-frame-height (moom--max-frame-pixel-height) t))
           ((equal height (/ (moom--max-frame-height) 2))
            (moom-change-frame-height (moom--max-half-frame-pixel-height) t))
           (t (moom-change-frame-height height))))
-  (setq moom--height-list
-        (append (cdr moom--height-list)
-                (list (car moom--height-list))))
+  (moom--cycle-frame-height-list)
   (run-hooks 'moom-resize-frame-height-hook))
 
 ;;;###autoload
@@ -968,7 +977,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.2.1"))
+  (let ((moom-release "1.2.2"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
