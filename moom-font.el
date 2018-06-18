@@ -281,8 +281,8 @@ Optional argument DEC specifies a decreasing step."
            (family-name (moom-font--extract-family-name xlfd-name)))
       (if family-name
           (message
-           "[moom-font] It's \"%s\".\n[moom-font] Call `moom-font-ja' or `moom-font-ascii' with \"%s\"."
-           family-name family-name)
+           "[moom-font] It's \"%s\", %s[pt].\n[moom-font] Call `moom-font-ja' or `moom-font-ascii' with \"%s\"."
+           family-name moom-font--size family-name)
         (message
          "[moom-font] Failed to detect the font family name from \"%s\"."
          xlfd-name)))))

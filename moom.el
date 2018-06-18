@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.2.3
+;; Version: 1.2.4
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -966,23 +966,24 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-print-status ()
   "Print font size, frame size and origin in mini buffer."
   (interactive)
-  (message
-   (format
-    "[Moom] Font: %spt(%dpx) | Frame: c(%d, %d) p(%d, %d) | Origin: (%s, %s)"
-    (if moom--font-module-p moom-font--size "**")
-    (frame-char-width)
-    (moom--frame-width)
-    (moom--frame-height)
-    (moom--frame-pixel-width)
-    (moom--frame-pixel-height)
-    (moom--pos-x (frame-parameter nil 'left))
-    (moom--pos-y (frame-parameter nil 'top)))))
+  (let ((message-log-max nil))
+    (message
+     (format
+      "[Moom] Font: %spt(%dpx) | Frame: c(%d, %d) p(%d, %d) | Origin: (%s, %s)"
+      (if moom--font-module-p moom-font--size "**")
+      (frame-char-width)
+      (moom--frame-width)
+      (moom--frame-height)
+      (moom--frame-pixel-width)
+      (moom--frame-pixel-height)
+      (moom--pos-x (frame-parameter nil 'left))
+      (moom--pos-y (frame-parameter nil 'top))))))
 
 ;;;###autoload
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.2.3"))
+  (let ((moom-release "1.2.4"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
