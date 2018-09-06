@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.2.4
+;; Version: 1.2.5
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -401,7 +401,6 @@ If BOUNDS is t, the frame will be controlled not to run over the screen."
   "Move the frame to AREA.
 Font size will be changed appropriately.
 AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
-  (interactive)
   (moom--save-last-status)
   (let* ((align-width (+ (moom--max-frame-pixel-width)
                          (moom--frame-internal-width)))
@@ -447,10 +446,53 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
           (t
            (error (format "%s is wrong value." moom-horizontal-shifts))))))
 
+(defun moom--frame-monitor-attribute (attribute &optional frame x y)
+  "Return the value of ATTRIBUTE on FRAME's monitor.
+
+If X and Y are both numbers, then ignore the value of FRAME; the
+monitor is determined to be the physical monitor that contains
+the pixel coordinate (X, Y).
+
+Taken from frame.el in 26.1 to support previous Emacs versions, 25.1 or later."
+  (if (and (numberp x)
+           (numberp y))
+      (cl-loop for monitor in (display-monitor-attributes-list)
+               for geometry = (alist-get 'geometry monitor)
+               for min-x = (pop geometry)
+               for min-y = (pop geometry)
+               for max-x = (+ min-x (pop geometry))
+               for max-y = (+ min-y (car geometry))
+               when (and (<= min-x x)
+                         (< x max-x)
+                         (<= min-y y)
+                         (< y max-y))
+               return (alist-get attribute monitor))
+    (alist-get attribute (frame-monitor-attributes frame))))
+
+(defun moom--frame-monitor-geometry (&optional frame x y)
+  "Return the geometry of FRAME's monitor.
+
+If X and Y are both numbers, then ignore the value of FRAME; the
+monitor is determined to be the physical monitor that contains
+the pixel coordinate (X, Y).
+
+Taken from frame.el in 26.1 to support previous Emacs versions, 25.1 or later."
+  (moom--frame-monitor-attribute 'geometry frame x y))
+
+(defun moom--frame-monitor-workarea (&optional frame x y)
+  "Return the workarea of FRAME's monitor.
+
+If X and Y are both numbers, then ignore the value of FRAME; the
+monitor is determined to be the physical monitor that contains
+the pixel coordinate (X, Y).
+
+Taken from frame.el in 26.1 to support previous Emacs versions, 25.1 or later."
+  (moom--frame-monitor-attribute 'workarea frame x y))
+
 (defun moom--default-screen-margin ()
   "Calculate screen margins."
-  (let ((geometry (frame-monitor-geometry))
-        (workarea (frame-monitor-workarea)))
+  (let ((geometry (moom--frame-monitor-geometry))
+        (workarea (moom--frame-monitor-workarea)))
     (list (- (nth 1 workarea) (nth 1 geometry))
           (- (+ (nth 1 geometry) (nth 3 geometry))
              (+ (nth 1 workarea) (nth 3 workarea)))
@@ -983,7 +1025,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.2.4"))
+  (let ((moom-release "1.2.5"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
