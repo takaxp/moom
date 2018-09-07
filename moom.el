@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.2.5
+;; Version: 1.2.6
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -977,12 +977,21 @@ The keybindings will be assigned when Emacs runs in GUI."
       (define-key moom-mode-map (kbd "M-<f1>") 'moom-move-frame-to-edge-left)
       (define-key moom-mode-map (kbd "M-<f3>") 'moom-move-frame-to-edge-right)
       (define-key moom-mode-map (kbd "<f1>") 'moom-move-frame-to-edge-top)
-      (define-key moom-mode-map (kbd "S-<f1>") 'moom-move-frame-to-edge-bottom))
+      (define-key moom-mode-map (kbd "S-<f1>") 'moom-move-frame-to-edge-bottom)
+      (define-key moom-mode-map (kbd "C-c f c l")
+        'moom-move-frame-to-centerline-from-left)
+      (define-key moom-mode-map (kbd "C-c f c r")
+        'moom-move-frame-to-centerline-from-right)
+      (define-key moom-mode-map (kbd "C-c f c t")
+        'moom-move-frame-to-centerline-from-top)
+      (define-key moom-mode-map (kbd "C-c f c b")
+        'moom-move-frame-to-centerline-from-bottom))
     (when (memq 'expand options)
       (define-key moom-mode-map (kbd "<f2>") 'moom-cycle-frame-height)
       (define-key moom-mode-map (kbd "C-c f s") 'moom-change-frame-width-single)
       (define-key moom-mode-map (kbd "C-c f d") 'moom-change-frame-width-double)
-      (define-key moom-mode-map (kbd "C-c f a") 'moom-change-frame-width-half-again))
+      (define-key moom-mode-map (kbd "C-c f a")
+        'moom-change-frame-width-half-again))
     (when (memq 'fill options)
       (define-key moom-mode-map (kbd "C-c f f t") 'moom-fill-top)
       (define-key moom-mode-map (kbd "C-c f f b") 'moom-fill-bottom)
@@ -1025,7 +1034,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.2.5"))
+  (let ((moom-release "1.2.6"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
