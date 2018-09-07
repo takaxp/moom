@@ -431,8 +431,7 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
                           (moom--pos-x pos-x)
                           (moom--pos-y pos-y))
       (set-frame-size nil pixel-width pixel-height t)))
-  (when moom-verbose
-    (moom-print-status)))
+  (moom-print-status))
 
 (defun moom--shift-amount (direction)
   "Extract shift amount from `moom-horizontal-shifts' based on DIRECTION."
@@ -514,8 +513,7 @@ in order to move the frame to specific position."
   (set-frame-size nil
                   (moom--max-frame-pixel-width)
                   (moom--max-frame-pixel-height) t)
-  (when moom-verbose
-    (moom-print-status))
+  (moom-print-status)
   (run-hooks 'moom-after-fill-screen-hook))
 
 ;;;###autoload
@@ -662,8 +660,7 @@ If PLIST is nil, `moom-fill-band-options' is used."
                          (moom--frame-pixel-width)
                          (- (moom--shift-amount 'right)))))
     (set-frame-position nil new-pos-x pos-y))
-  (when moom-verbose
-    (moom-print-status)))
+  (moom-print-status))
 
 ;;;###autoload
 (defun moom-move-frame-left (&optional pixel)
@@ -679,8 +676,7 @@ If PLIST is nil, `moom-fill-band-options' is used."
                          (moom--frame-pixel-width)
                          (- (moom--shift-amount 'left)))))
     (set-frame-position nil new-pos-x pos-y))
-  (when moom-verbose
-    (moom-print-status)))
+  (moom-print-status))
 
 ;;;###autoload
 (defun moom-move-frame-to-horizontal-center ()
@@ -689,8 +685,7 @@ If PLIST is nil, `moom-fill-band-options' is used."
   (set-frame-position nil
                       (moom--pos-x (moom--horizontal-center-pos) t)
                       (moom--pos-y (frame-parameter nil 'top) t))
-  (when moom-verbose
-    (moom-print-status)))
+  (moom-print-status))
 
 ;;;###autoload
 (defun moom-move-frame-to-vertical-center ()
@@ -699,8 +694,7 @@ If PLIST is nil, `moom-fill-band-options' is used."
   (set-frame-position nil
                       (moom--pos-x (frame-parameter nil 'left) t)
                       (moom--pos-y (moom--vertical-center-pos) t))
-  (when moom-verbose
-    (moom-print-status)))
+  (moom-print-status))
 
 ;;;###autoload
 (defun moom-move-frame-to-edge-top ()
@@ -711,8 +705,7 @@ please configure the margins by `moom-screen-margin'."
   (set-frame-position nil
                       (moom--pos-x (frame-parameter nil 'left))
                       (nth 0 moom--screen-margin))
-  (when moom-verbose
-    (moom-print-status)))
+  (moom-print-status))
 
 ;;;###autoload
 (defun moom-move-frame-to-edge-bottom ()
@@ -727,8 +720,7 @@ please configure the margins by `moom-screen-margin'."
                          (moom--frame-internal-height)
                          (- (moom--internal-border-height))
                          (nth 1 moom--screen-margin)))
-  (when moom-verbose
-    (moom-print-status)))
+  (moom-print-status))
 
 ;;;###autoload
 (defun moom-move-frame-to-edge-right ()
@@ -739,8 +731,7 @@ please configure the margins by `moom-screen-margin'."
                                       (moom--frame-pixel-width)
                                       (nth 3 moom--screen-margin)))
                       (frame-parameter nil 'top))
-  (when moom-verbose
-    (moom-print-status)))
+  (moom-print-status))
 
 ;;;###autoload
 (defun moom-move-frame-to-edge-left ()
@@ -749,8 +740,7 @@ please configure the margins by `moom-screen-margin'."
   (set-frame-position nil
                       (moom--pos-x (nth 2 moom--screen-margin))
                       (frame-parameter nil 'top))
-  (when moom-verbose
-    (moom-print-status)))
+  (moom-print-status))
 
 ;;;###autoload
 (defun moom-move-frame-to-center ()
@@ -759,8 +749,7 @@ please configure the margins by `moom-screen-margin'."
   (set-frame-position nil
                       (moom--pos-x (moom--horizontal-center-pos))
                       (moom--pos-y (moom--vertical-center-pos) t))
-  (when moom-verbose
-    (moom-print-status)))
+  (moom-print-status))
 
 ;;;###autoload
 (defun moom-move-frame (&optional arg)
@@ -781,8 +770,7 @@ When ARG is nil, then move to the default position '(0 0)."
     (set-frame-position nil
                         (moom--pos-x pos-x)
                         (moom--pos-y pos-y)))
-  (when moom-verbose
-    (moom-print-status)))
+  (moom-print-status))
 
 ;;;###autoload
 (defun moom-cycle-frame-height ()
@@ -831,8 +819,7 @@ If PIXELWISE is non-nil, the frame height will be changed by pixel value."
         (when moom-verbose
           (message "[Moom] Force set the height %s." frame-height)))
       (set-frame-height nil (floor frame-height))))
-  (when moom-verbose
-    (moom-print-status)))
+  (moom-print-status))
 
 ;;;###autoload
 (defun moom-change-frame-width (&optional frame-width)
@@ -845,8 +832,7 @@ If FRAME-WIDTH is nil, `moom-frame-width-single' will be used."
                    moom-frame-width-single)))
     (setq moom--frame-width width)
     (set-frame-width nil width))
-  (when moom-verbose
-    (moom-print-status)))
+  (moom-print-status))
 
 ;;;###autoload
 (defun moom-change-frame-width-single ()
@@ -920,8 +906,7 @@ STATUS is a list consists of font size, frame position, frame region, and pixel-
                   (+ (- (cdr (assoc "pixel-height" moom--last-status))
                         (moom--internal-border-height)))
                   t)
-  (when moom-verbose
-    (moom-print-status)))
+  (moom-print-status))
 
 ;;;###autoload
 (defun moom-toggle-font-module ()
@@ -1017,18 +1002,19 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-print-status ()
   "Print font size, frame size and origin in mini buffer."
   (interactive)
-  (let ((message-log-max nil))
-    (message
-     (format
-      "[Moom] Font: %spt(%dpx) | Frame: c(%d, %d) p(%d, %d) | Origin: (%s, %s)"
-      (if moom--font-module-p moom-font--size "**")
-      (frame-char-width)
-      (moom--frame-width)
-      (moom--frame-height)
-      (moom--frame-pixel-width)
-      (moom--frame-pixel-height)
-      (moom--pos-x (frame-parameter nil 'left))
-      (moom--pos-y (frame-parameter nil 'top))))))
+  (when moom-verbose
+    (let ((message-log-max nil))
+      (message
+       (format
+        "[Moom] Font: %spt(%dpx) | Frame: c(%d, %d) p(%d, %d) | Origin: (%s, %s)"
+        (if moom--font-module-p moom-font--size "**")
+        (frame-char-width)
+        (moom--frame-width)
+        (moom--frame-height)
+        (moom--frame-pixel-width)
+        (moom--frame-pixel-height)
+        (moom--pos-x (frame-parameter nil 'left))
+        (moom--pos-y (frame-parameter nil 'top)))))))
 
 ;;;###autoload
 (defun moom-version ()
