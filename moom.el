@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.2.6
+;; Version: 1.2.7
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -743,6 +743,41 @@ please configure the margins by `moom-screen-margin'."
   (moom-print-status))
 
 ;;;###autoload
+(defun moom-move-frame-to-centerline-from-left ()
+  "Fit frame to vertical line in the middle from left side."
+  (interactive)
+  (set-frame-position nil (- (moom--horizontal-center)
+                             (moom--frame-pixel-width))
+                      (frame-parameter nil 'top))
+  (moom-print-status))
+
+;;;###autoload
+(defun moom-move-frame-to-centerline-from-right ()
+  "Fit frame to vertical line in the middle from right side."
+  (interactive)
+  (set-frame-position nil (moom--horizontal-center)
+                      (frame-parameter nil 'top))
+  (moom-print-status))
+
+;;;###autoload
+(defun moom-move-frame-to-centerline-from-top ()
+  "Fit frame to horizontal line in the middle from above."
+  (interactive)
+  (set-frame-position nil (frame-parameter nil 'left)
+                      (- (moom--vertical-center)
+                         (moom--frame-internal-height)
+                         (moom--frame-pixel-height)))
+  (moom-print-status))
+
+;;;###autoload
+(defun moom-move-frame-to-centerline-from-bottom ()
+  "Fit frame to horizontal line in the middle from below."
+  (interactive)
+  (set-frame-position nil (frame-parameter nil 'left)
+                      (moom--vertical-center))
+  (moom-print-status))
+
+;;;###autoload
 (defun moom-move-frame-to-center ()
   "Move the current frame to the center of the screen."
   (interactive)
@@ -1020,7 +1055,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.2.6"))
+  (let ((moom-release "1.2.7"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
