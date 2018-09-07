@@ -47,12 +47,21 @@ Note - This module has basically been tested on [[https://www.apple.com/macos/hi
  - moom-move-frame-to-vertical-center
  - moom-move-frame-to-horizontal-center
 
-** Fit to edge
+** Fit
+
+*** edge
 
  - moom-move-frame-to-edge-left
  - moom-move-frame-to-edge-right
  - moom-move-frame-to-edge-top
  - moom-move-frame-to-edge-bottom
+
+*** center line
+
+ - moom-move-frame-to-centerline-from-left
+ - moom-move-frame-to-centerline-from-right
+ - moom-move-frame-to-centerline-from-top
+ - moom-move-frame-to-centerline-from-bottom
 
 ** Expand
 
@@ -255,6 +264,16 @@ You can use =moom-recommended-keybindings= to set keybindings for each API in a 
   (define-key moom-mode-map (kbd "S-<f1>") 'moom-move-frame-to-edge-bottom))
 #+END_SRC
 
+Additionally, move onto the center line.
+
+#+begin_src emacs-lisp
+(with-eval-after-load "moom"
+  (define-key moom-mode-map (kbd "C-c f c l") 'moom-move-frame-to-centerline-from-left)
+  (define-key moom-mode-map (kbd "C-c f c r") 'moom-move-frame-to-centerline-from-right)
+  (define-key moom-mode-map (kbd "C-c f c t") 'moom-move-frame-to-centerline-from-top)
+  (define-key moom-mode-map (kbd "C-c f c b") 'moom-move-frame-to-centerline-from-bottom))
+#+end_src
+
 ** Expand
 [[https://github.com/takaxp/moom-images/blob/master/cycle-height.gif]] [[https://github.com/takaxp/moom-images/blob/master/expand.gif]]
 
@@ -267,7 +286,6 @@ You can use =moom-recommended-keybindings= to set keybindings for each API in a 
 #+END_SRC
 
 ** Fill
-
 
 [[https://github.com/takaxp/moom-images/blob/master/fill.gif]] [[https://github.com/takaxp/moom-images/blob/master/quarters.gif]]
 
