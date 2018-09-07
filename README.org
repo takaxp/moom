@@ -224,7 +224,12 @@ In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs
 #+CAPTION: Assgined keys
 [[https://github.com/takaxp/moom-images/blob/master/layout.png]]
 
-You can use =moom-recommended-keybindings= to set keybindings for each API in a bundle. The function require a list argument or ='all= . The list can contain multiple API types. When the argument is ='(move fit expand fill font reset)= , it is identical to ='all= .
+You can use =moom-recommended-keybindings= to set keybindings for each API in a bundle. The function require a list argument or =all=. The list can contain multiple API types. When the argument is =(move fit expand fill font reset)= , it is identical to =all=.
+
+#+begin_src emacs-lisp
+(with-eval-after-load "moom"
+  (moom-recommended-keybindings '(move fit expand fill font reset))) ;; 'all
+#+end_src
 
 ** Move
 
