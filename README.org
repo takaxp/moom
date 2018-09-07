@@ -266,6 +266,8 @@ You can use =moom-recommended-keybindings= to set keybindings for each API in a 
 
 Additionally, move onto the center line.
 
+[[https://github.com/takaxp/moom-images/blob/master/centerline.gif]]
+
 #+begin_src emacs-lisp
 (with-eval-after-load "moom"
   (define-key moom-mode-map (kbd "C-c f c l") 'moom-move-frame-to-centerline-from-left)
