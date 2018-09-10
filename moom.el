@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.2.7
+;; Version: 1.2.8
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -86,7 +86,7 @@
   :type 'integer
   :group 'moom)
 
-(defcustom moom-frame-width-double 163
+(defcustom moom-frame-width-double (+ (* 2 moom-frame-width-single) 3)
   "The width of the current frame (double size)."
   :type 'integer
   :group 'moom)
@@ -123,6 +123,14 @@ For instance,
   :type 'float
   :group 'moom)
 
+(defcustom moom-display-line-numbers-width 6
+  "Width to expand the frame for function `global-display-line-numbers-mode'.
+For function `display-line-numbers-mode',
+- set this variable to 0, and also
+- set `moom-frame-width-single' more than 80 (e.g. 86)"
+  :group 'moom
+  :type 'integer)
+
 (defcustom moom-verbose nil
   "Show responses from \"moom\"."
   :type 'boolean
@@ -156,7 +164,7 @@ For instance,
 
 (defvar moom--init-status nil)
 (defvar moom--font-module-p (require 'moom-font nil t))
-(defvar moom--frame-width moom-frame-width-single)
+(defvar moom--frame-width 80)
 (defvar moom--height-list nil)
 (defvar moom--height-steps 4)
 (defvar moom--last-status nil)
@@ -166,17 +174,26 @@ For instance,
 
 (defun moom--setup ()
   "Init function."
+  (unless (eq (setq moom--frame-width moom-frame-width-single) 80)
+    (set-frame-width nil moom--frame-width))
   (moom--make-frame-height-list)
   (moom--save-last-status)
   (setq moom--init-status moom--last-status)
   ;; JP-font module
   (when moom--font-module-p
-    (add-hook 'moom-font-after-resize-hook #'moom--make-frame-height-list)))
+    (add-hook 'moom-font-after-resize-hook #'moom--make-frame-height-list))
+  ;; display-line-numbers-mode
+  (when (fboundp 'global-display-line-numbers-mode)
+    (add-hook 'global-display-line-numbers-mode-hook
+              #'moom--update-frame-display-line-numbers)))
 
 (defun moom--abort ()
   "Abort."
   (moom-reset-line-spacing)
-  (moom-reset))
+  (moom-reset)
+  (when (fboundp 'global-display-line-numbers-mode)
+    (remove-hook 'global-display-line-numbers-mode-hook
+                 #'moom--update-frame-display-line-numbers)))
 
 (defun moom--lighter ()
   "Lighter."
@@ -498,6 +515,24 @@ Taken from frame.el in 26.1 to support previous Emacs versions, 25.1 or later."
           (- (nth 2 geometry) (nth 2 workarea))
           (- (+ (nth 0 geometry) (nth 2 geometry))
              (+ (nth 0 workarea) (nth 2 workarea))))))
+
+(defun moom--update-frame-display-line-numbers ()
+  "Expand frame width by `moom-display-line-numbers-width'.
+This feature is available when function `global-display-line-numbers-mode'
+is utilized."
+  (if (numberp moom-display-line-numbers-width)
+      (unless (eq moom-display-line-numbers-width 0)
+        (let ((flag (if global-display-line-numbers-mode 1 -1)))
+          (setq moom-frame-width-single
+                (+ moom-frame-width-single
+                   (* flag moom-display-line-numbers-width)))
+          (setq moom-frame-width-double
+                (+ (* 2 moom-frame-width-single) 3))
+          (set-frame-width nil
+                           (+ (frame-width)
+                              (* flag moom-display-line-numbers-width)))))
+    (user-error "Unexpected value of `moom-display-line-numbers-width'"))
+  (moom-print-status))
 
 ;;;###autoload
 (defun moom-fill-screen ()
@@ -1055,7 +1090,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.2.7"))
+  (let ((moom-release "1.2.8"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
