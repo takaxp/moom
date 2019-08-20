@@ -1,10 +1,10 @@
 ;;; moom.el --- Commands to control frame position and size -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2017-2018 Takaaki ISHIKAWA
+;; Copyright (C) 2017-2019 Takaaki ISHIKAWA
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.2.8
+;; Version: 1.2.9
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -926,6 +926,24 @@ This function does not effect font size."
   (moom-change-frame-width (floor (* 1.5 moom-frame-width-single))))
 
 ;;;###autoload
+(defun moom-delete-windows ()
+  "Delete all window and make frame width single."
+  (interactive)
+  (let ((buffer (buffer-name)))
+    (delete-windows-on)
+    (switch-to-buffer buffer))
+  (moom-change-frame-width-single)
+  (moom-move-frame-to-horizontal-center))
+
+;;;###autoload
+(defun moom-split-window ()
+  "Split window and make frame width double."
+  (interactive)
+  (moom-change-frame-width-double)
+  (moom-move-frame-to-horizontal-center)
+  (split-window-right))
+
+;;;###autoload
 (defun moom-reset ()
   "Reset associated parameters."
   (interactive)
@@ -1045,6 +1063,8 @@ The keybindings will be assigned when Emacs runs in GUI."
       (define-key moom-mode-map (kbd "<f2>") 'moom-cycle-frame-height)
       (define-key moom-mode-map (kbd "C-c f s") 'moom-change-frame-width-single)
       (define-key moom-mode-map (kbd "C-c f d") 'moom-change-frame-width-double)
+      (define-key moom-mode-map (kbd "C-c f S") 'moom-delete-windows)
+      (define-key moom-mode-map (kbd "C-c f D") 'moom-split-window)
       (define-key moom-mode-map (kbd "C-c f a")
         'moom-change-frame-width-half-again))
     (when (memq 'fill options)
@@ -1090,7 +1110,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.2.8"))
+  (let ((moom-release "1.2.9"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
@@ -1110,7 +1130,9 @@ No keybindings are configured as default but recommended as follows:
   (define-key moom-mode-map (kbd \"<f2>\") 'moom-cycle-frame-height)
   (define-key moom-mode-map (kbd \"M-<f2>\") 'moom-toggle-frame-maximized)
   (define-key moom-mode-map (kbd \"C-c f s\") 'moom-change-frame-width-single)
-  (define-key moom-mode-map (kbd \"C-c f d\") 'moom-change-frame-width-double))
+  (define-key moom-mode-map (kbd \"C-c f d\") 'moom-change-frame-width-double)
+  (define-key moom-mode-map (kbd \"C-c f S\") 'moom-delete-windows)
+  (define-key moom-mode-map (kbd \"C-c f D\") 'moom-split-window))
 
 You can use `moom-recommended-keybindings' to apply recommended keybindings in your init.el.
 

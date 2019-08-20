@@ -74,6 +74,11 @@ These functions will not change font size.
  - moom-change-frame-height
  - moom-cycle-frame-height
 
+*** split and delete window
+
+ - moom-split-window
+ - moom-delete-windows
+
 ** Fill display
 
 These functions normally change font size. But the behavior can be changed by =M-x moom-toggle-font-module=.
@@ -284,6 +289,8 @@ Additionally, move onto the center line.
   (define-key moom-mode-map (kbd "<f2>") 'moom-cycle-frame-height)
   (define-key moom-mode-map (kbd "C-c f s") 'moom-change-frame-width-single)
   (define-key moom-mode-map (kbd "C-c f d") 'moom-change-frame-width-double)
+  (define-key moom-mode-map (kbd "C-c f S") 'moom-split-window)
+  (define-key moom-mode-map (kbd "C-c f D") 'moom-delete-windows)
   (define-key moom-mode-map (kbd "C-c f a") 'moom-change-frame-width-half-again))
 #+END_SRC
 
