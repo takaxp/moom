@@ -28,7 +28,7 @@ or
 * A set of commands to control frame position and size by keyboard
 
 #+CAPTION: demo for moving and zooming, frame maximized
-[[https://github.com/takaxp/moom-images/blob/master/demo1.gif]]
+[[https://github.com/takaxp/contents/blob/master/moom/demo1.gif]]
 
 Note - This module has basically been tested on [[https://www.apple.com/macos/high-sierra/][macOS High Sierra]] with a Full HD (1920x1080) single display.
 
@@ -133,7 +133,7 @@ For Windows 10 users, =(0 50 0 10)= looks nice, but some gaps still exist on lef
 No need to load =moom-font.el= explicitly. If the package is installed in your system, then it will be activated automatically. The package is basically provided for the users who rely on Japanese fonts.
 
 #+CAPTION: demo for increasing and decreasing fonts, frame maximized
-[[https://github.com/takaxp/moom-images/blob/master/demo2.gif]]
+[[https://github.com/takaxp/contents/blob/master/moom/demo2.gif]]
 
 ** Setting
 
@@ -176,10 +176,10 @@ You can also use =M-x moom-generate-font-table= to identify appropriate values o
 Here is an example. ~Monaco~ is used for ASCII font and ~Migu 2M~ is used for Japanese font in these images. The upper image shows a gap between strings in ASCII and Japanese at the first line, the font table is not defined in this case. On the other hand, the lower image shows no gap since the font table is utilized to identify the correct size of font. You can freely customize the font table in you init.el for your convenience.
 
 #+CAPTION: Without font table (Monaco: 13pt 8px)
-[[https://github.com/takaxp/moom-images/blob/master/monaco-13pt8px.png]]
+[[https://github.com/takaxp/contents/blob/master/moom/monaco-13pt8px.png]]
 
 #+CAPTION: With font table (Monaco: 14pt 8px)
-[[https://github.com/takaxp/moom-images/blob/master/monaco-14pt8px.png]]
+[[https://github.com/takaxp/contents/blob/master/moom/monaco-14pt8px.png]]
 
 ** Resize font
 
@@ -236,7 +236,7 @@ Note - *(breaking changes at v1.2.0)* Variables of ~moom-font-ascii~ and ~moom-f
 In general, =Cmd-<TAB>= is used to switch windows, which is not limited to Emacs.app. So it is natural to concentrate all keybindings associated to control frame position and size into the left side of your keyboard with pressing =Cmd=. The following example keybindings are basically designed in that manner.
 
 #+CAPTION: Assgined keys
-[[https://github.com/takaxp/moom-images/blob/master/layout.png]]
+[[https://github.com/takaxp/contents/blob/master/moom/layout.png]]
 
 You can use =moom-recommended-keybindings= to set keybindings for each API in a bundle. The function require a list argument or =all=. The list can contain multiple API types. When the argument is =(move fit expand fill font reset)= , it is identical to =all=.
 
@@ -247,7 +247,7 @@ You can use =moom-recommended-keybindings= to set keybindings for each API in a 
 
 ** Move
 
-[[https://github.com/takaxp/moom-images/blob/master/shifts.gif]] [[https://github.com/takaxp/moom-images/blob/master/move-right.gif]] [[https://github.com/takaxp/moom-images/blob/master/center.gif]]
+[[https://github.com/takaxp/contents/blob/master/moom/shifts.gif]] [[https://github.com/takaxp/contents/blob/master/moom/move-right.gif]] [[https://github.com/takaxp/contents/blob/master/moom/center.gif]]
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "moom"
@@ -259,7 +259,7 @@ You can use =moom-recommended-keybindings= to set keybindings for each API in a 
 
 ** Fit
 
-[[https://github.com/takaxp/moom-images/blob/master/edges.gif]] [[https://github.com/takaxp/moom-images/blob/master/corners.gif]]
+[[https://github.com/takaxp/contents/blob/master/moom/edges.gif]] [[https://github.com/takaxp/contents/blob/master/moom/corners.gif]]
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "moom"
@@ -271,7 +271,7 @@ You can use =moom-recommended-keybindings= to set keybindings for each API in a 
 
 Additionally, move onto the center line.
 
-[[https://github.com/takaxp/moom-images/blob/master/centerline.gif]]
+[[https://github.com/takaxp/contents/blob/master/moom/centerline.gif]]
 
 #+begin_src emacs-lisp
 (with-eval-after-load "moom"
@@ -282,7 +282,7 @@ Additionally, move onto the center line.
 #+end_src
 
 ** Expand
-[[https://github.com/takaxp/moom-images/blob/master/cycle-height.gif]] [[https://github.com/takaxp/moom-images/blob/master/expand.gif]]
+[[https://github.com/takaxp/contents/blob/master/moom/cycle-height.gif]] [[https://github.com/takaxp/contents/blob/master/moom/expand.gif]]
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "moom"
@@ -296,7 +296,7 @@ Additionally, move onto the center line.
 
 ** Fill
 
-[[https://github.com/takaxp/moom-images/blob/master/fill.gif]] [[https://github.com/takaxp/moom-images/blob/master/quarters.gif]]
+[[https://github.com/takaxp/contents/blob/master/moom/fill.gif]] [[https://github.com/takaxp/contents/blob/master/moom/quarters.gif]]
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "moom"
@@ -313,7 +313,7 @@ Additionally, move onto the center line.
 
 ** Fill (screen by toggle)
 
-[[https://github.com/takaxp/moom-images/blob/master/fill-screen.gif]]
+[[https://github.com/takaxp/contents/blob/master/moom/fill-screen.gif]]
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "moom"
@@ -347,7 +347,7 @@ Additionally, move onto the center line.
 
 Expand the frame width temporarily during org-agenda is active.
 
-[[https://github.com/takaxp/moom-images/blob/master/org-agenda.gif]]
+[[https://github.com/takaxp/contents/blob/master/moom/org-agenda.gif]]
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "moom"
@@ -362,7 +362,7 @@ Expand the frame width temporarily during org-agenda is active.
 
 Entering quickly to the frame maximized presentation with [[https://github.com/takaxp/org-tree-slide][org-tree-slide.el]]. No additional settings are required. Just =M-x moom-toggle-frame-maximized=. The font is automatically scaled to be maintained the frame width at 80 even if you use Japanese font.
 
-[[https://github.com/takaxp/moom-images/blob/master/org-tree-slide.gif]]
+[[https://github.com/takaxp/contents/blob/master/moom/org-tree-slide.gif]]
 
 ** Org mode
 
