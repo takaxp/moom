@@ -1,7 +1,6 @@
 #+TITLE: Moom - A Moom port to GNU Emacs
 #+STARTUP: showall
 #+SETUPFILE: theme-readtheorg.setup
-#+LINK: submodule https://github.com/takaxp/moom-images/blob/master/
 
 [[https://melpa.org/#/moom][file:https://melpa.org/packages/moom-badge.svg]]
 
