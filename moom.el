@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.2.9
+;; Version: 1.2.10
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -153,6 +153,16 @@ For function `display-line-numbers-mode',
 
 (defcustom moom-resize-frame-height-hook nil
   "Hook runs after resizing the frame height."
+  :type 'hook
+  :group 'moom)
+
+(defcustom moom-split-window-hook nil
+  "Hook runs after splitting window horizontally."
+  :type 'hook
+  :group 'moom)
+
+(defcustom moom-delete-window-hook nil
+  "Hook runs after deleting window horizontally."
   :type 'hook
   :group 'moom)
 
@@ -933,7 +943,8 @@ This function does not effect font size."
     (delete-windows-on)
     (switch-to-buffer buffer))
   (moom-change-frame-width-single)
-  (moom-move-frame-to-horizontal-center))
+  (moom-move-frame-to-horizontal-center)
+  (run-hooks 'moom-delete-window-hook))
 
 ;;;###autoload
 (defun moom-split-window ()
@@ -941,7 +952,8 @@ This function does not effect font size."
   (interactive)
   (moom-change-frame-width-double)
   (moom-move-frame-to-horizontal-center)
-  (split-window-right))
+  (split-window-right)
+  (run-hooks 'moom-split-window-hook))
 
 ;;;###autoload
 (defun moom-reset ()
@@ -1110,7 +1122,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.2.9"))
+  (let ((moom-release "1.2.10"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
