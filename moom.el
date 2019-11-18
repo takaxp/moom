@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.2.10
+;; Version: 1.2.11
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -130,6 +130,17 @@ For function `display-line-numbers-mode',
 - set `moom-frame-width-single' more than 80 (e.g. 86)"
   :group 'moom
   :type 'integer)
+
+(defcustom moom-command-with-centering '(split delete)
+  "List of flags that specifies whether centerize the frame after changing the frame width."
+  :type '(repeat
+          (choice
+           (const :tag "Split window" :value split)
+           (const :tag "Delete windows" :value delete)
+           (const :tag "Change frame width single" :value single)
+           (const :tag "Change frame width double" :value double)
+           (const :tag "Change frame width half again" :value half-again)))
+  :group 'moom)
 
 (defcustom moom-verbose nil
   "Show responses from \"moom\"."
@@ -544,6 +555,27 @@ is utilized."
     (user-error "Unexpected value of `moom-display-line-numbers-width'"))
   (moom-print-status))
 
+(defun moom--centerize-p (arg)
+  "Return nil when `ARG' is not listed in `moom-command-with-centering'."
+  (memq arg (if (listp moom-command-with-centering)
+                moom-command-with-centering
+              (list moom-command-with-centering))))
+
+(defun moom--stay-in-region (target-width)
+  "Shift the frame to try to keep the frame staying in the display.
+The frame width shall be specified with TARGET-WIDTH."
+  (let ((shift (- (+ (* (frame-char-width) target-width)
+                     (moom--frame-internal-width)
+                     (moom--pos-x (frame-parameter nil 'left)))
+                  (- (display-pixel-width)
+                     (nth 3 moom--screen-margin)))))
+    ;; Left side border
+    (when (< (moom--pos-x (frame-parameter nil 'left)) shift)
+      (setq shift (moom--pos-x (frame-parameter nil 'left))))
+    ;; Right side border
+    (when (> shift 0)
+      (moom-move-frame-left shift))))
+
 ;;;###autoload
 (defun moom-fill-screen ()
   "Expand frame width and height to fill the screen.
@@ -919,21 +951,31 @@ If FRAME-WIDTH is nil, `moom-frame-width-single' will be used."
   "Change the frame width to single.
 This function does not effect font size."
   (interactive)
-  (moom-change-frame-width))
+  (moom-change-frame-width)
+  (when (moom--centerize-p 'single)
+    (moom-move-frame-to-horizontal-center)))
 
 ;;;###autoload
 (defun moom-change-frame-width-double ()
   "Change the frame width to double.
 This function does not effect font size."
   (interactive)
-  (moom-change-frame-width moom-frame-width-double))
+  (unless (moom--centerize-p 'double)
+    (moom--stay-in-region moom-frame-width-double))
+  (moom-change-frame-width moom-frame-width-double)
+  (when (moom--centerize-p 'double)
+    (moom-move-frame-to-horizontal-center)))
 
 ;;;###autoload
 (defun moom-change-frame-width-half-again ()
   "Change the frame width to half as large again as single width.
 This function does not effect font size."
   (interactive)
-  (moom-change-frame-width (floor (* 1.5 moom-frame-width-single))))
+  (unless (moom--centerize-p 'half-again)
+    (moom--stay-in-region (floor (* 1.5 moom-frame-width-single))))
+  (moom-change-frame-width (floor (* 1.5 moom-frame-width-single)))
+  (when (moom--centerize-p 'half-again)
+    (moom-move-frame-to-horizontal-center)))
 
 ;;;###autoload
 (defun moom-delete-windows ()
@@ -942,16 +984,20 @@ This function does not effect font size."
   (let ((buffer (buffer-name)))
     (delete-windows-on)
     (switch-to-buffer buffer))
-  (moom-change-frame-width-single)
-  (moom-move-frame-to-horizontal-center)
+  (moom-change-frame-width)
+  (when (moom--centerize-p 'delete)
+    (moom-move-frame-to-horizontal-center))
   (run-hooks 'moom-delete-window-hook))
 
 ;;;###autoload
 (defun moom-split-window ()
   "Split window and make frame width double."
   (interactive)
-  (moom-change-frame-width-double)
-  (moom-move-frame-to-horizontal-center)
+  (unless (moom--centerize-p 'split)
+    (moom--stay-in-region moom-frame-width-double))
+  (moom-change-frame-width moom-frame-width-double)
+  (when (moom--centerize-p 'split)
+    (moom-move-frame-to-horizontal-center))
   (split-window-right)
   (run-hooks 'moom-split-window-hook))
 
@@ -1122,7 +1168,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.2.10"))
+  (let ((moom-release "1.2.11"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload

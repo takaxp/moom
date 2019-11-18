@@ -200,20 +200,34 @@ Here is an example. ~Monaco~ is used for ASCII font and ~Migu 2M~ is used for Ja
 ** moom.el
 
 #+CAPTION: User variables in moom.el
-|                              | default                            | type    |
-|------------------------------+------------------------------------+---------|
-| moom-move-frame-pixel-offset | '(0 . 0)                           | sexp    |
-| moom-min-frame-height        | 16                                 | integer |
-| moom-init-line-spacing       | line-spacing                       | float   |
-| moom-min-line-spacing        | 0.1                                | float   |
-| moom-max-line-spacing        | 0.8                                | float   |
-| moom-frame-width-single      | 80                                 | integer |
-| moom-frame-width-double      | 163                                | integer |
-| moom-horizontal-shifts       | '(200 200)                         | choice  |
-| moom-fill-band-options       | '(:direction vertical :range 50.0) | plist   |
-| moom-scaling-gradient        | 1.66                               | float   |
-| moom-verbose                 | nil                                | boolean |
-| moom-lighter                 | Moom                               | string  |
+|                                      | default                            | type    |
+|--------------------------------------+------------------------------------+---------|
+| moom-move-frame-pixel-offset         | '(0 . 0)                           | sexp    |
+| moom-min-frame-height                | 16                                 | integer |
+| moom-init-line-spacing               | line-spacing                       | float   |
+| moom-min-line-spacing                | 0.1                                | float   |
+| moom-max-line-spacing                | 0.8                                | float   |
+| moom-frame-width-single              | 80                                 | integer |
+| moom-frame-width-double              | 163                                | integer |
+| moom-horizontal-shifts               | '(200 200)                         | choice  |
+| moom-fill-band-options               | '(:direction vertical :range 50.0) | plist   |
+| moom-scaling-gradient                | 1.66                               | float   |
+| moom-moom-display-line-numbers-width | 6                                  | integer |
+| moom-command-with-centering          | '(split delete)                    | list    |
+| moom-verbose                         | nil                                | boolean |
+| moom-lighter                         | Moom                               | string  |
+
+*** moom-command-with-centering
+
+The following commands will centerize the frame position in display if =moom-command-with-centering= includes the corresponding values. If you specify =nil= then no commands will centerize the frame.
+
+| Value      | Command                            |
+|------------+------------------------------------|
+| split      | moom-split-window                  |
+| delete     | moom-delete-windows                |
+| single     | moom-change-frame-width-single     |
+| double     | moom-change-frame-width-double     |
+| half-again | moom-change-frame-width-half-again |
 
 ** moom-font.el
 
@@ -380,6 +394,8 @@ Run =org-redisplay-inline-images= after font resizing to synchronize the image w
  - moom-before-fill-screen-hook
  - moom-after-fill-screen-hook
  - moom-resize-frame-height-hook
+ - moom-split-window-hook
+ - moom-delete-window-hook
  - moom-font-before-resize-hook (in moom-font.el)
  - moom-font-after-resize-hook (in moom-font.el)
 
