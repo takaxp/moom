@@ -1,10 +1,10 @@
 ;;; moom.el --- Commands to control frame position and size -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2017-2019 Takaaki ISHIKAWA
+;; Copyright (C) 2017-2020 Takaaki ISHIKAWA
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.2.11
+;; Version: 1.2.12
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -34,7 +34,7 @@
 ;; Now make your dominant hand FREE from your mouse by Moom.
 ;;
 ;; Install:
-;;  - Get moom.el and moom-font.el from MELPA or Github.
+;;  - Get moom.el and moom-font.el from MELPA or GitHub.
 ;;
 ;; Setup:
 ;;  - After installing, activate Moom by (moom-mode 1) in your init.el.
@@ -227,7 +227,9 @@ Including fringes and border."
   (if window-system
       (+ (frame-parameter nil 'left-fringe)
          (frame-parameter nil 'right-fringe)
-         (frame-parameter nil 'scroll-bar-width)
+         (if (get-scroll-bar-mode)
+             (frame-parameter nil 'scroll-bar-width)
+           0)
          (* 2 (cdr (assoc 'internal-border-width (frame-geometry)))))
     0)) ;; TODO check this by terminal
 
@@ -407,7 +409,7 @@ If BOUNDS is t, the frame will be controlled not to run over the screen."
   (+ (car moom-move-frame-pixel-offset)
      (moom--horizontal-center)
      (let ((scroll (frame-parameter nil 'scroll-bar-width)))
-       (if (> scroll 0) ;; TBD
+       (if (and (> scroll 0) (get-scroll-bar-mode));; TBD
            scroll
          (frame-parameter nil 'left-fringe)))
      (- (/ (+ (moom--frame-pixel-width)
@@ -1168,7 +1170,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.2.11"))
+  (let ((moom-release "1.2.12"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
