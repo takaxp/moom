@@ -202,7 +202,8 @@ For function `display-line-numbers-mode',
   (setq moom--init-status moom--last-status)
   ;; JP-font module
   (when moom--font-module-p
-    (add-hook 'moom-font-after-resize-hook #'moom--make-frame-height-list))
+    (add-hook 'moom-font-after-resize-hook #'moom--make-frame-height-list)
+    (add-hook 'moom-font-after-resize-hook #'moom--stay-in-region))
   ;; display-line-numbers-mode
   (when (fboundp 'global-display-line-numbers-mode)
     (add-hook 'global-display-line-numbers-mode-hook
