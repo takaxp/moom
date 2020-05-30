@@ -901,7 +901,7 @@ please configure the margins by `moom-screen-margin'."
       (moom--cycle-frame-height-list)
       (setq height (car moom--height-list)))
     (cond ((equal height (moom--max-frame-height))
-           (moom-expand-height))
+           (moom-fill-height))
           ((equal height (/ (moom--max-frame-height) 2))
            (moom-change-frame-height (moom--max-half-frame-pixel-height) t))
           (t (moom-change-frame-height height))))
@@ -909,7 +909,7 @@ please configure the margins by `moom-screen-margin'."
   (run-hooks 'moom-resize-frame-height-hook))
 
 ;;;###autoload
-(defun moom-expand-height ()
+(defun moom-fill-height ()
   "Expand frame height to fill screen vertically without changing frame width."
   (moom-change-frame-height (moom--max-frame-pixel-height) t))
 
