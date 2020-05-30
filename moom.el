@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.2.12
+;; Version: 1.2.13
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -563,10 +563,11 @@ is utilized."
                 moom-command-with-centering
               (list moom-command-with-centering))))
 
-(defun moom--stay-in-region (target-width)
+(defun moom--stay-in-region (&optional target-width)
   "Shift the frame to try to keep the frame staying in the display.
 The frame width shall be specified with TARGET-WIDTH."
-  (let ((shift (- (+ (* (frame-char-width) target-width)
+  (let ((shift (- (+ (* (frame-char-width) (or target-width
+                                               (moom--frame-width)))
                      (moom--frame-internal-width)
                      (moom--pos-x (frame-parameter nil 'left)))
                   (- (display-pixel-width)
@@ -1170,7 +1171,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.2.12"))
+  (let ((moom-release "1.2.13"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
