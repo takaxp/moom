@@ -964,22 +964,20 @@ This function does not effect font size."
   "Change the frame width to double.
 This function does not effect font size."
   (interactive)
-  (unless (moom--centerize-p 'double)
-    (moom--stay-in-region moom-frame-width-double))
   (moom-change-frame-width moom-frame-width-double)
-  (when (moom--centerize-p 'double)
-    (moom-move-frame-to-horizontal-center)))
+  (if (moom--centerize-p 'double)
+      (moom-move-frame-to-horizontal-center)
+    (moom--stay-in-region)))
 
 ;;;###autoload
 (defun moom-change-frame-width-half-again ()
   "Change the frame width to half as large again as single width.
 This function does not effect font size."
   (interactive)
-  (unless (moom--centerize-p 'half-again)
-    (moom--stay-in-region (floor (* 1.5 moom-frame-width-single))))
   (moom-change-frame-width (floor (* 1.5 moom-frame-width-single)))
-  (when (moom--centerize-p 'half-again)
-    (moom-move-frame-to-horizontal-center)))
+  (if (moom--centerize-p 'half-again)
+      (moom-move-frame-to-horizontal-center)
+    (moom--stay-in-region)))
 
 ;;;###autoload
 (defun moom-delete-windows ()
@@ -997,11 +995,10 @@ This function does not effect font size."
 (defun moom-split-window ()
   "Split window and make frame width double."
   (interactive)
-  (unless (moom--centerize-p 'split)
-    (moom--stay-in-region moom-frame-width-double))
   (moom-change-frame-width moom-frame-width-double)
-  (when (moom--centerize-p 'split)
-    (moom-move-frame-to-horizontal-center))
+  (if (moom--centerize-p 'split)
+      (moom-move-frame-to-horizontal-center)
+    (moom--stay-in-region))
   (split-window-right)
   (run-hooks 'moom-split-window-hook))
 
