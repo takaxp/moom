@@ -1,3 +1,29 @@
+2020-05-31  Takaaki ISHIKAWA  <takaxp@ieee.org>
+
+	* moom-font.el: version 1.3.0
+	- [improve] Detecting fonts with moom-font--extract-family-name
+	- [improve] moom-font-ja and moom-font-ascii support scale option
+
+	* moom.el: version 1.3.0
+	- [breaking change] moom-font-init-size is now internal
+	- [improve] Prevent writing moom status to message buffer
+	- [improve] Frame will stay	in display region when resizing
+	- [new] moom-fill-height
+	- [new] moom-split-window
+	- [new] moom-delete-windows
+	- [new] moom-split-window-hook
+	- [new] moom-delete-window-hook
+	- [new feature] Fit frame to vertical or horizontal center line
+	  - [new] moom-move-frame-to-centerline-from-left
+	  - [new] moom-move-frame-to-centerline-from-right
+	  - [new] moom-move-frame-to-centerline-from-top
+	  - [new] moom-move-frame-to-centerline-from-bottom
+	- [new feature] Centering for some commands
+	  - moom-command-with-centering controls which command can centering
+	- [new feature] Support line-number-mode
+	  - moom-display-line-numbers-width controls the default digit
+	- [update] moom-cycle-frame-height
+
 2018-05-18  Takaaki ISHIKAWA  <takaxp@ieee.org>
 
 	* moom-font.el: version 1.2.0
