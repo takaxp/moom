@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.0
+;; Version: 1.3.1
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -980,6 +980,16 @@ This function does not effect font size."
     (moom--stay-in-region)))
 
 ;;;###autoload
+(defun moom-change-frame-width-max ()
+  "Change the frame width to fill display horizontally.
+This function does not effect font size."
+  (interactive)
+  (set-frame-size nil
+                  (moom--max-frame-pixel-width)
+                  (frame-pixel-height) t)
+  (moom--stay-in-region))
+
+;;;###autoload
 (defun moom-delete-windows ()
   "Delete all window and make frame width single."
   (interactive)
@@ -1122,6 +1132,7 @@ The keybindings will be assigned when Emacs runs in GUI."
       (define-key moom-mode-map (kbd "<f2>") 'moom-cycle-frame-height)
       (define-key moom-mode-map (kbd "C-c f s") 'moom-change-frame-width-single)
       (define-key moom-mode-map (kbd "C-c f d") 'moom-change-frame-width-double)
+      (define-key moom-mode-map (kbd "C-c f m") 'moom-change-frame-width-max)
       (define-key moom-mode-map (kbd "C-c f S") 'moom-delete-windows)
       (define-key moom-mode-map (kbd "C-c f D") 'moom-split-window)
       (define-key moom-mode-map (kbd "C-c f a")
@@ -1169,7 +1180,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.0"))
+  (let ((moom-release "1.3.1"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
@@ -1190,6 +1201,7 @@ No keybindings are configured as default but recommended as follows:
   (define-key moom-mode-map (kbd \"M-<f2>\") 'moom-toggle-frame-maximized)
   (define-key moom-mode-map (kbd \"C-c f s\") 'moom-change-frame-width-single)
   (define-key moom-mode-map (kbd \"C-c f d\") 'moom-change-frame-width-double)
+  (define-key moom-mode-map (kbd \"C-c f m\") 'moom-change-frame-width-max)
   (define-key moom-mode-map (kbd \"C-c f S\") 'moom-delete-windows)
   (define-key moom-mode-map (kbd \"C-c f D\") 'moom-split-window))
 

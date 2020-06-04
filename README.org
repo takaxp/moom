@@ -69,6 +69,7 @@ These functions will not change font size.
  - moom-change-frame-width-single
  - moom-change-frame-width-double
  - moom-change-frame-width-half-again
+ - moom-change-frame-width-max
  - moom-change-frame-width
  - moom-change-frame-height
  - moom-cycle-frame-height
@@ -302,9 +303,10 @@ Additionally, move onto the center line.
   (define-key moom-mode-map (kbd "<f2>") 'moom-cycle-frame-height)
   (define-key moom-mode-map (kbd "C-c f s") 'moom-change-frame-width-single)
   (define-key moom-mode-map (kbd "C-c f d") 'moom-change-frame-width-double)
+  (define-key moom-mode-map (kbd "C-c f a") 'moom-change-frame-width-half-again)
+  (define-key moom-mode-map (kbd "C-c f m") 'moom-change-frame-width-max)
   (define-key moom-mode-map (kbd "C-c f S") 'moom-split-window)
-  (define-key moom-mode-map (kbd "C-c f D") 'moom-delete-windows)
-  (define-key moom-mode-map (kbd "C-c f a") 'moom-change-frame-width-half-again))
+  (define-key moom-mode-map (kbd "C-c f D") 'moom-delete-windows))
 #+END_SRC
 
 ** Fill
