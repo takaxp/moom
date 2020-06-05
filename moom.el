@@ -987,7 +987,7 @@ This function does not effect font size."
   (set-frame-size nil
                   (moom--max-frame-pixel-width)
                   (frame-pixel-height) t)
-  (moom--stay-in-region))
+  (moom-move-frame-to-edge-left))
 
 ;;;###autoload
 (defun moom-delete-windows ()
