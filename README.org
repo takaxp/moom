@@ -398,6 +398,7 @@ Run =org-redisplay-inline-images= after font resizing to synchronize the image w
  - moom-resize-frame-height-hook
  - moom-split-window-hook
  - moom-delete-window-hook
+ - moom-before-setup-hook
  - moom-font-before-resize-hook (in moom-font.el)
  - moom-font-after-resize-hook (in moom-font.el)
 
