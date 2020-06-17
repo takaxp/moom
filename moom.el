@@ -177,6 +177,11 @@ For function `display-line-numbers-mode',
   :type 'hook
   :group 'moom)
 
+(defcustom moom-before-setup-hook nil
+  "Hook runs before enabling `moom-mode'."
+  :type 'hook
+  :group 'moom)
+
 (defvar moom-mode-map
   (let ((map (make-sparse-keymap)))
     ;; No keybindings are configured as default. It's open for users.
@@ -196,6 +201,9 @@ For function `display-line-numbers-mode',
 
 (defun moom--setup ()
   "Init function."
+  (run-hooks 'moom-before-setup-hook)
+  (unless moom--screen-margin
+    (setq moom--screen-margin (moom--default-screen-margin)))
   (unless (eq (setq moom--frame-width moom-frame-width-single) 80)
     (set-frame-width nil moom--frame-width))
   (moom--make-frame-height-list)
@@ -217,6 +225,7 @@ For function `display-line-numbers-mode',
   (moom-reset-line-spacing)
   (moom-reset)
   (setq frame-resize-pixelwise moom--frame-resize-pixelwise)
+  (setq moom--screen-margin nil)
   (when (fboundp 'global-display-line-numbers-mode)
     (remove-hook 'global-display-line-numbers-mode-hook
                  #'moom--update-frame-display-line-numbers)))
@@ -1223,10 +1232,6 @@ To see more details and examples, please visit https://github.com/takaxp/moom.
     (if moom-mode
         (moom--setup)
       (moom--abort))))
-
-;; Setting default value
-(unless moom--screen-margin
-  (setq moom--screen-margin (moom--default-screen-margin)))
 
 (provide 'moom)
 
