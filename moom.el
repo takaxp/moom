@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.1
+;; Version: 1.3.2
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -192,6 +192,7 @@ For function `display-line-numbers-mode',
 (defvar moom--maximized nil)
 (defvar moom--screen-margin nil)
 (defvar moom--fill-minimum-range 256)
+(defvar moom--frame-resize-pixelwise nil)
 
 (defun moom--setup ()
   "Init function."
@@ -200,6 +201,8 @@ For function `display-line-numbers-mode',
   (moom--make-frame-height-list)
   (moom--save-last-status)
   (setq moom--init-status moom--last-status)
+  (setq moom--frame-resize-pixelwise frame-resize-pixelwise
+        frame-resize-pixelwise t)
   ;; JP-font module
   (when moom--font-module-p
     (add-hook 'moom-font-after-resize-hook #'moom--make-frame-height-list)
@@ -213,6 +216,7 @@ For function `display-line-numbers-mode',
   "Abort."
   (moom-reset-line-spacing)
   (moom-reset)
+  (setq frame-resize-pixelwise moom--frame-resize-pixelwise)
   (when (fboundp 'global-display-line-numbers-mode)
     (remove-hook 'global-display-line-numbers-mode-hook
                  #'moom--update-frame-display-line-numbers)))
@@ -1180,7 +1184,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.1"))
+  (let ((moom-release "1.3.2"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
