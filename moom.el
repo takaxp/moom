@@ -207,7 +207,7 @@ For function `display-line-numbers-mode',
     (setq moom--screen-margin (moom--default-screen-margin)))
   (when (equal moom--frame-origin '(0 0))
     (unless (eq system-type 'darwin)
-      (setq moom--frame-origin '(-10 8))))
+      (setq moom--frame-origin '(10 8))))
   (unless (eq (setq moom--frame-width moom-frame-width-single) 80)
     (set-frame-width nil moom--frame-width))
   (moom--make-frame-height-list)
