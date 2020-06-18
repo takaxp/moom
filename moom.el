@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.3
+;; Version: 1.3.4
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -196,6 +196,7 @@ For function `display-line-numbers-mode',
 (defvar moom--last-status nil)
 (defvar moom--maximized nil)
 (defvar moom--screen-margin nil)
+(defvar moom--frame-origin '(0 0))
 (defvar moom--fill-minimum-range 256)
 (defvar moom--frame-resize-pixelwise nil)
 
@@ -204,6 +205,9 @@ For function `display-line-numbers-mode',
   (run-hooks 'moom-before-setup-hook)
   (unless moom--screen-margin
     (setq moom--screen-margin (moom--default-screen-margin)))
+  (when (equal moom--frame-origin '(0 0))
+    (unless (eq system-type 'darwin)
+      (setq moom--frame-origin '(-10 8))))
   (unless (eq (setq moom--frame-width moom-frame-width-single) 80)
     (set-frame-width nil moom--frame-width))
   (moom--make-frame-height-list)
@@ -375,13 +379,11 @@ the actual pixel width will not exceed the WIDTH."
 
 (defun moom--frame-left ()
   "Return outer left position."
-  (if (eq system-type 'darwin)
-      (frame-parameter nil 'left)
-    (nth 0 (frame-edges))))
+  (+ (frame-parameter nil 'left) (nth 0 moom--frame-origin)))
 
 (defun moom--frame-top ()
   "Return outer top position."
-  (frame-parameter nil 'top))
+  (+ (frame-parameter nil 'top) (nth 1 moom--frame-origin)))
 
 (defun moom--pos-x (posx &optional bounds)
   "Extract a value from POSX.
@@ -1203,7 +1205,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.3"))
+  (let ((moom-release "1.3.4"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
