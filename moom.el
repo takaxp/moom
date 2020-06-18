@@ -379,11 +379,15 @@ the actual pixel width will not exceed the WIDTH."
 
 (defun moom--frame-left ()
   "Return outer left position."
-  (+ (frame-parameter nil 'left) (nth 0 moom--frame-origin)))
+  (let ((left (frame-parameter nil 'left)))
+    (+ (if (listp left) (nth 1 left) left)
+       (nth 0 moom--frame-origin))))
 
 (defun moom--frame-top ()
   "Return outer top position."
-  (+ (frame-parameter nil 'top) (nth 1 moom--frame-origin)))
+  (let ((top (frame-parameter nil 'top)))
+    (+ (if (listp top) (nth 1 top) top)
+       (nth 1 moom--frame-origin))))
 
 (defun moom--pos-x (posx &optional bounds)
   "Extract a value from POSX.
