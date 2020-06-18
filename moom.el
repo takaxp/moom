@@ -255,10 +255,10 @@ Including fringes and border."
   "Height of internal objects.
 Including title-bar, menu-bar, offset depends on window system, and border."
   (if window-system
-      (+ (nthcdr 2 (assoc 'title-bar-size (frame-geometry)))
-         (nthcdr 2 (assoc 'tool-bar-size (frame-geometry)))
+      (+ (cdr (alist-get 'title-bar-size (frame-geometry)))
+         (cdr (alist-get 'tool-bar-size (frame-geometry)))
          (if (memq window-system '(x w32))
-             (nthcdr 2 (assoc 'menu-bar-size (frame-geometry))) 0)
+             (cdr (alist-get 'menu-bar-size (frame-geometry))) 0)
          (moom--internal-border-height))
     0)) ;; TODO check this by terminal
 
