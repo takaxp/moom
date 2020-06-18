@@ -249,7 +249,7 @@ Including fringes and border."
 
 (defun moom--internal-border-height ()
   "Height of internal border within `frame-pixel-height'."
-  (* 2 (alist-get 'internal-border-width (frame-geometry))))
+  0)
 
 (defun moom--frame-internal-height ()
   "Height of internal objects.
@@ -375,11 +375,13 @@ the actual pixel width will not exceed the WIDTH."
 
 (defun moom--frame-left ()
   "Return outer left position."
-  (car (alist-get 'outer-position (frame-geometry))))
+  (if (eq system-type 'darwin)
+      (frame-parameter nil 'left)
+    (nth 0 (frame-edges))))
 
 (defun moom--frame-top ()
   "Return outer top position."
-  (cdr (alist-get 'outer-position (frame-geometry))))
+  (frame-parameter nil 'top))
 
 (defun moom--pos-x (posx &optional bounds)
   "Extract a value from POSX.
