@@ -490,7 +490,9 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
            (setq align-width (floor (/ align-width 2.0))))
           (nil t))
     ;; Font size
-    (moom--font-resize (moom--font-size align-width) align-width)
+    (let ((moom-font-before-resize-hook nil)
+          (moom-font-after-resize-hook nil))
+      (moom--font-resize (moom--font-size align-width) align-width))
     ;; Position
     (when (memq area '(right topr botr))
       (setq pos-x (moom--horizontal-center)))
