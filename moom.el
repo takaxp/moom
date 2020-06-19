@@ -1093,7 +1093,9 @@ STATUS is a list consists of font size, frame position, frame region, and pixel-
   (interactive)
   (when status
     (setq moom--last-status status))
-  (moom--font-resize (cdr (assoc "font-size" moom--last-status)) nil)
+  (let ((moom-font-before-resize-hook nil)
+        (moom-font-after-resize-hook nil))
+    (moom--font-resize (cdr (assoc "font-size" moom--last-status)) nil))
   (set-frame-position nil
                       (cdr (assoc "left" moom--last-status))
                       (cdr (assoc "top" moom--last-status)))
