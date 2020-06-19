@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.4
+;; Version: 1.3.5
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -178,7 +178,7 @@ For function `display-line-numbers-mode',
   :group 'moom)
 
 (defcustom moom-before-setup-hook nil
-  "Hook runs before enabling `moom-mode'."
+  "Hook runs before enabling this package."
   :type 'hook
   :group 'moom)
 
@@ -206,8 +206,8 @@ For function `display-line-numbers-mode',
   (unless moom--screen-margin
     (setq moom--screen-margin (moom--default-screen-margin)))
   (when (equal moom--frame-origin '(0 0))
-    (unless (eq system-type 'darwin)
-      (setq moom--frame-origin '(10 8))))
+    (when (eq window-system 'x)
+      (setq moom--frame-origin (moom--init-frame-origin))))
   (unless (eq (setq moom--frame-width moom-frame-width-single) 80)
     (set-frame-width nil moom--frame-width))
   (moom--make-frame-height-list)
@@ -608,6 +608,20 @@ The frame width shall be specified with TARGET-WIDTH."
     ;; Right side border
     (when (> shift 0)
       (moom-move-frame-left shift))))
+
+(defun moom--init-frame-origin ()
+  "Suggest the initial values for `moom--frame-origin'."
+  (moom--save-last-status)
+  (moom-move-frame)
+  (let* ((workarea (moom--frame-monitor-workarea))
+         (left (- (nth 0 workarea) (frame-parameter nil 'left)))
+         (top (- (nth 1 workarea) (frame-parameter nil 'top))))
+    (moom-restore-last-status)
+    (if (or (< left 0) (< top 0))
+        (progn
+          (warn "Unexpected case (left top) = (%s %s). Please report" left top)
+          (list 0 0))
+      (list left top))))
 
 ;;;###autoload
 (defun moom-fill-screen ()
@@ -1209,7 +1223,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.4"))
+  (let ((moom-release "1.3.5"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
