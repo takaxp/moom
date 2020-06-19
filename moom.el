@@ -616,8 +616,8 @@ The frame width shall be specified with TARGET-WIDTH."
   (moom--save-last-status)
   (set-frame-position nil 0 0)
   (let* ((workarea (moom--frame-monitor-workarea))
-         (left (- (nth 0 workarea) (nth 2 moom--screen-margin)))
-         (top (- (nth 1 workarea) (nth 0 moom--screen-margin))))
+         (left (- (nth 0 workarea) (frame-parameter nil 'left)))
+         (top (- (nth 1 workarea) (frame-parameter nil 'top))))
     (moom-restore-last-status)
     (if (or (< left 0) (< top 0))
         (progn
