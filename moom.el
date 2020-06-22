@@ -832,7 +832,7 @@ please configure the margins by `moom-screen-margin'."
   (interactive)
   (set-frame-position nil
                       (moom--pos-x (moom--frame-left) t)
-                      (moom--pos-y (nth 0 moom--screen-margin)) t)
+                      (moom--pos-y (nth 0 moom--screen-margin) t))
   (moom-print-status))
 
 ;;;###autoload
