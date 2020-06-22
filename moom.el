@@ -1223,8 +1223,8 @@ The keybindings will be assigned when Emacs runs in GUI."
         (moom--frame-height)
         (moom--frame-pixel-width)
         (moom--frame-pixel-height)
-        (moom--pos-x (moom--frame-left))
-        (moom--pos-y (moom--frame-top)))))))
+        (moom--frame-left)
+        (moom--frame-top))))))
 
 ;;;###autoload
 (defun moom-version ()
