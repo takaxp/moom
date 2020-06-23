@@ -776,8 +776,8 @@ If PLIST is nil, `moom-fill-band-options' is used."
   (interactive)
   (let* ((pos-x (moom--pos-x (moom--frame-left)))
          (pos-y (moom--frame-top))
-         (new-pos-x (moom--pos-x (+ pos-x (or pixel
-                                              (moom--shift-amount 'right))) t)))
+         (new-pos-x (+ pos-x (or pixel
+                                 (moom--shift-amount 'right)))))
     (when (>= new-pos-x (display-pixel-width))
       (setq new-pos-x (- new-pos-x
                          (display-pixel-width)
@@ -794,8 +794,8 @@ If PLIST is nil, `moom-fill-band-options' is used."
   (interactive)
   (let* ((pos-x (moom--pos-x (moom--frame-left)))
          (pos-y (moom--frame-top))
-         (new-pos-x (moom--pos-x (- pos-x (or pixel
-                                              (moom--shift-amount 'left))) t)))
+         (new-pos-x (- pos-x (or pixel
+                                 (moom--shift-amount 'left)))))
     (when (<= new-pos-x (- (moom--frame-pixel-width)))
       (setq new-pos-x (+ new-pos-x
                          (display-pixel-width)
