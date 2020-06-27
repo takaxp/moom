@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.7
+;; Version: 1.3.8
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -199,6 +199,7 @@ For function `display-line-numbers-mode',
 (defvar moom--frame-origin '(0 0))
 (defvar moom--fill-minimum-range 256)
 (defvar moom--frame-resize-pixelwise nil)
+;; (defvar moom--pos-options '(:grid screen :bound nil))
 
 (defun moom--setup ()
   "Init function."
@@ -389,12 +390,12 @@ the actual pixel width will not exceed the WIDTH."
     (+ (if (listp top) (nth 1 top) top)
        (nth 1 moom--frame-origin))))
 
-(defun moom--pos-x (posx &optional bounds)
+(defun moom--pos-x (posx &optional options)
   "Extract a value from POSX.
-If BOUNDS is t, the frame will be controlled not to run over the screen."
+OPTIONS controls grid and bound. see `moom--pos-options'."
   (when (listp posx)
     (setq posx (nth 1 posx)))
-  (if (and bounds
+  (if (and (plist-get options :bound)
            (not (eq window-system 'ns))) ;; TODO: support others if possible
       (let ((bounds-left 0) ;; TODO Shall be checked
             (bounds-right (- (display-pixel-width)
@@ -404,12 +405,12 @@ If BOUNDS is t, the frame will be controlled not to run over the screen."
               (t posx)))
     posx))
 
-(defun moom--pos-y (posy &optional bounds)
+(defun moom--pos-y (posy &optional options)
   "Extract a value from POSY.
-If BOUNDS is t, the frame will be controlled not to run over the screen."
+OPTIONS controls grid and bound. see `moom--pos-options'."
   (when (listp posy)
     (setq posy (nth 1 posy)))
-  (if (and bounds
+  (if (and (plist-get options :bound)
            (not (eq window-system 'ns))) ;; TODO: support others if possible
       (let ((bounds-top 0)
             (bounds-bottom (- (display-pixel-height)
@@ -811,8 +812,8 @@ If PLIST is nil, `moom-fill-band-options' is used."
   "Move the current frame to the horizontal center of the screen."
   (interactive)
   (set-frame-position nil
-                      (moom--pos-x (moom--horizontal-center-pos) t)
-                      (moom--pos-y (moom--frame-top) t))
+                      (moom--pos-x (moom--horizontal-center-pos) '(:bound t))
+                      (moom--pos-y (moom--frame-top) '(:bound t)))
   (moom-print-status))
 
 ;;;###autoload
@@ -820,8 +821,8 @@ If PLIST is nil, `moom-fill-band-options' is used."
   "Move the current frame to the vertical center of the screen."
   (interactive)
   (set-frame-position nil
-                      (moom--pos-x (moom--frame-left) t)
-                      (moom--pos-y (moom--vertical-center-pos) t))
+                      (moom--pos-x (moom--frame-left) '(:bound t))
+                      (moom--pos-y (moom--vertical-center-pos) '(:bound t)))
   (moom-print-status))
 
 ;;;###autoload
@@ -831,8 +832,8 @@ If you find the frame is NOT moved to the top exactly,
 please configure the margins by `moom-screen-margin'."
   (interactive)
   (set-frame-position nil
-                      (moom--pos-x (moom--frame-left) t)
-                      (moom--pos-y (nth 0 moom--screen-margin) t))
+                      (moom--pos-x (moom--frame-left) '(:bound t))
+                      (moom--pos-y (nth 0 moom--screen-margin) '(:bound t)))
   (moom-print-status))
 
 ;;;###autoload
@@ -842,13 +843,13 @@ If you find the frame is NOT moved to the bottom exactly,
 please configure the margins by `moom-screen-margin'."
   (interactive)
   (set-frame-position nil
-                      (moom--pos-x (moom--frame-left) t)
+                      (moom--pos-x (moom--frame-left) '(:bound t))
                       (moom--pos-y
                        (- (display-pixel-height)
                           (moom--frame-pixel-height)
                           (moom--frame-internal-height)
                           (- (moom--internal-border-height))
-                          (nth 1 moom--screen-margin)) t))
+                          (nth 1 moom--screen-margin)) '(:bound t)))
   (moom-print-status))
 
 ;;;###autoload
@@ -858,8 +859,8 @@ please configure the margins by `moom-screen-margin'."
   (set-frame-position nil
                       (moom--pos-x (- (display-pixel-width)
                                       (moom--frame-pixel-width)
-                                      (nth 3 moom--screen-margin)) t)
-                      (moom--pos-y (moom--frame-top) t))
+                                      (nth 3 moom--screen-margin)) '(:bound t))
+                      (moom--pos-y (moom--frame-top) '(:bound t)))
   (moom-print-status))
 
 ;;;###autoload
@@ -867,8 +868,8 @@ please configure the margins by `moom-screen-margin'."
   "Move the current frame to the left edge of the screen."
   (interactive)
   (set-frame-position nil
-                      (moom--pos-x (nth 2 moom--screen-margin) t)
-                      (moom--pos-y (moom--frame-top) t))
+                      (moom--pos-x (nth 2 moom--screen-margin) '(:bound t))
+                      (moom--pos-y (moom--frame-top) '(:bound t)))
   (moom-print-status))
 
 ;;;###autoload
@@ -892,7 +893,8 @@ please configure the margins by `moom-screen-margin'."
 (defun moom-move-frame-to-centerline-from-top ()
   "Fit frame to horizontal line in the middle from above."
   (interactive)
-  (set-frame-position nil (moom--pos-x (moom--frame-left))
+  (set-frame-position nil
+                      (moom--pos-x (moom--frame-left))
                       (moom--pos-y (- (moom--vertical-center)
                                       (moom--frame-internal-height)
                                       (moom--frame-pixel-height))))
@@ -912,7 +914,7 @@ please configure the margins by `moom-screen-margin'."
   (interactive)
   (set-frame-position nil
                       (moom--pos-x (moom--horizontal-center-pos))
-                      (moom--pos-y (moom--vertical-center-pos) t))
+                      (moom--pos-y (moom--vertical-center-pos) '(:bound t)))
   (moom-print-status))
 
 ;;;###autoload
@@ -1230,7 +1232,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.7"))
+  (let ((moom-release "1.3.8"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
