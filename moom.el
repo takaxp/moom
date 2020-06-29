@@ -210,6 +210,8 @@ For function `display-line-numbers-mode',
     (setq moom--screen-margin (moom--default-screen-margin)))
   (unless moom--virtual-grid
     (setq moom--virtual-grid (moom--virtual-grid)))
+  (unless moom--screen-grid
+    (setq moom--screen-grid (moom--screen-grid)))
   (unless (eq (setq moom--frame-width moom-frame-width-single) 80)
     (set-frame-width nil moom--frame-width))
   (moom--make-frame-height-list)
@@ -388,17 +390,26 @@ the actual pixel width will not exceed the WIDTH."
         (t (let ((workarea (moom--frame-monitor-workarea)))
              (list (nth 0 workarea) (nth 1 workarea))))))
 
+(defun moom--screen-grid ()
+  "Adjustment of `set-frame-position'."
+  (cond ((eq window-system 'w32) '(8 0))
+        ((and (eq window-system 'x)
+              (version< emacs-version "26.0")) '(10 0))
+        (t '(0 0))))
+
 (defun moom--frame-left ()
   "Return outer left position."
   (let ((left (frame-parameter nil 'left)))
     (+ (if (listp left) (nth 1 left) left)
-       (nth 0 moom--virtual-grid))))
+       (nth 0 moom--virtual-grid)
+       (nth 0 moom--screen-grid))))
 
 (defun moom--frame-top ()
   "Return outer top position."
   (let ((top (frame-parameter nil 'top)))
     (+ (if (listp top) (nth 1 top) top)
-       (nth 1 moom--virtual-grid))))
+       (nth 1 moom--virtual-grid)
+       (nth 1 moom--screen-grid))))
 
 (defun moom--pos-x (posx &optional options)
   "Extract a value from POSX.
