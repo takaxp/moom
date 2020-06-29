@@ -387,8 +387,8 @@ the actual pixel width will not exceed the WIDTH."
         ((and (eq window-system 'x)
               (version< emacs-version "26.0")) '(0 8))
         ((member window-system '(ns mac)) '(0 0))
-        (t (let ((workarea (moom--frame-monitor-workarea)))
-             (list (nth 0 workarea) (nth 1 workarea))))))
+        ((eq window-system 'x) '(10 8))
+        (t '(0 0))))
 
 (defun moom--screen-grid ()
   "Adjustment of `set-frame-position'."
@@ -417,8 +417,8 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
   (when (listp posx)
     (setq posx (nth 1 posx)))
   (setq posx (- posx (nth 0 moom--screen-grid)))
-  (when (and (plist-get options :bound)
-             (not (eq window-system 'ns))) ;; TODO: support others if possible
+  (when (or (plist-get options :bound)
+            (not (eq window-system 'ns))) ;; TODO: support others if possible
     (let ((bounds-left 0) ;; TODO Shall be checked
           (bounds-right (- (display-pixel-width)
                            (moom--frame-pixel-width))))
@@ -427,9 +427,9 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
                        (t posx)))))
   (unless (plist-get options :grid)
     (plist-put options :grid
-               (if (or (eq window-system 'ns)
-                       (and (eq window-system 'x)
-                            (version< "26.0" emacs-version)))
+               (if (eq window-system 'ns)
+                   ;; (and (eq window-system 'x)
+                   ;;      (version< "26.0" emacs-version))
                    'screen 'virtual)))
   (cond ((eq (plist-get options :grid) 'virtual)
          (setq posx (- posx (nth 0 (moom--screen-grid))))
@@ -448,8 +448,8 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
   (when (listp posy)
     (setq posy (nth 1 posy)))
   (setq posy (- posy (nth 1 moom--screen-grid)))
-  (when (and (plist-get options :bound)
-             (not (eq window-system 'ns))) ;; TODO: support others if possible
+  (when (or (plist-get options :bound)
+            (not (eq window-system 'ns))) ;; TODO: support others if possible
     (let ((bounds-top 0)
           (bounds-bottom (- (display-pixel-height)
                             (moom--frame-pixel-height))))
@@ -458,9 +458,9 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
                        (t posy)))))
   (unless options
     (plist-put options :grid
-               (if (or (eq window-system 'ns)
-                       (and (eq window-system 'x)
-                            (version< "26.0" emacs-version)))
+               (if (eq window-system 'ns)
+                   ;; (and (eq window-system 'x)
+                   ;;      (version< "26.0" emacs-version))
                    'screen 'virtual)))
   (cond ((eq (plist-get options :grid) 'virtual)
          (setq posy (- posy (nth 1 (moom--screen-grid))))
@@ -814,7 +814,7 @@ If PLIST is nil, `moom-fill-band-options' is used."
 (defun moom-move-frame-right (&optional pixel)
   "PIXEL move the current frame to right."
   (interactive)
-  (let* ((pos-x (moom--pos-x (moom--frame-left)))
+  (let* ((pos-x (moom--frame-left))
          (pos-y (moom--frame-top))
          (new-pos-x (+ pos-x (or pixel
                                  (moom--shift-amount 'right)))))
@@ -832,7 +832,7 @@ If PLIST is nil, `moom-fill-band-options' is used."
 (defun moom-move-frame-left (&optional pixel)
   "PIXEL move the current frame to left."
   (interactive)
-  (let* ((pos-x (moom--pos-x (moom--frame-left)))
+  (let* ((pos-x (moom--frame-left))
          (pos-y (moom--frame-top))
          (new-pos-x (- pos-x (or pixel
                                  (moom--shift-amount 'left)))))
