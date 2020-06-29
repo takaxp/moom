@@ -196,9 +196,11 @@ For function `display-line-numbers-mode',
 (defvar moom--last-status nil)
 (defvar moom--maximized nil)
 (defvar moom--screen-margin nil)
-(defvar moom--frame-origin '(0 0))
+;; (defvar moom--frame-origin '(0 0))
 (defvar moom--fill-minimum-range 256)
 (defvar moom--frame-resize-pixelwise nil)
+(defvar moom--virtual-grid nil)
+(defvar moom--screen-grid nil)
 ;; (defvar moom--pos-options '(:grid screen :bound nil))
 
 (defun moom--setup ()
@@ -206,9 +208,8 @@ For function `display-line-numbers-mode',
   (run-hooks 'moom-before-setup-hook)
   (unless moom--screen-margin
     (setq moom--screen-margin (moom--default-screen-margin)))
-  (when (equal moom--frame-origin '(0 0))
-    (when (eq window-system 'x)
-      (setq moom--frame-origin (moom--init-frame-origin))))
+  (unless moom--virtual-grid
+    (setq moom--virtual-grid (moom--virtual-grid)))
   (unless (eq (setq moom--frame-width moom-frame-width-single) 80)
     (set-frame-width nil moom--frame-width))
   (moom--make-frame-height-list)
@@ -378,17 +379,26 @@ the actual pixel width will not exceed the WIDTH."
                           (moom--frame-internal-width)))
     12)) ;; FIXME, use face-attribute
 
+(defun moom--virtual-grid ()
+  "Adjustment of `prame-parameter'."
+  (cond ((eq window-system 'w32) '(-16 0))
+        ((and (eq window-system 'x)
+              (version< emacs-version "26.0")) '(0 8))
+        ((member window-system '(ns mac)) '(0 0))
+        (t (let ((workarea (moom--frame-monitor-workarea)))
+             (list (nth 0 workarea) (nth 1 workarea))))))
+
 (defun moom--frame-left ()
   "Return outer left position."
   (let ((left (frame-parameter nil 'left)))
     (+ (if (listp left) (nth 1 left) left)
-       (nth 0 moom--frame-origin))))
+       (nth 0 moom--virtual-grid))))
 
 (defun moom--frame-top ()
   "Return outer top position."
   (let ((top (frame-parameter nil 'top)))
     (+ (if (listp top) (nth 1 top) top)
-       (nth 1 moom--frame-origin))))
+       (nth 1 moom--virtual-grid))))
 
 (defun moom--pos-x (posx &optional options)
   "Extract a value from POSX.
@@ -612,17 +622,17 @@ The frame width shall be specified with TARGET-WIDTH."
     (when (> shift 0)
       (moom-move-frame-left shift))))
 
-(defun moom--init-frame-origin ()
-  "Suggest the initial values for `moom--frame-origin'."
-  (set-frame-position nil 0 0)
-  (let* ((workarea (moom--frame-monitor-workarea))
-         (left (- (nth 0 workarea) (moom--pos-x (frame-parameter nil 'left))))
-         (top (- (nth 1 workarea) (moom--pos-y (frame-parameter nil 'top)))))
-    (if (or (< left 0) (< top 0))
-        (progn
-          (warn "Unexpected case (left top) = (%s %s). Please report" left top)
-          (list 0 0))
-      (list left top))))
+;; (defun moom--init-frame-origin ()
+;;   "Suggest the initial values for `moom--frame-origin'."
+;;   (set-frame-position nil 0 0)
+;;   (let* ((workarea (moom--frame-monitor-workarea))
+;;          (left (- (nth 0 workarea) (moom--pos-x (frame-parameter nil 'left))))
+;;          (top (- (nth 1 workarea) (moom--pos-y (frame-parameter nil 'top)))))
+;;     (if (or (< left 0) (< top 0))
+;;         (progn
+;;           (warn "Unexpected case (left top) = (%s %s). Please report" left top)
+;;           (list 0 0))
+;;       (list left top))))
 
 ;;;###autoload
 (defun moom-fill-screen ()
