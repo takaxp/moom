@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.8
+;; Version: 1.3.9
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -413,33 +413,63 @@ the actual pixel width will not exceed the WIDTH."
 
 (defun moom--pos-x (posx &optional options)
   "Extract a value from POSX.
-OPTIONS controls grid and bound. see `moom--pos-options'."
+OPTIONS controls grid and bound.  See `moom--pos-options'."
   (when (listp posx)
     (setq posx (nth 1 posx)))
-  (if (and (plist-get options :bound)
-           (not (eq window-system 'ns))) ;; TODO: support others if possible
-      (let ((bounds-left 0) ;; TODO Shall be checked
-            (bounds-right (- (display-pixel-width)
-                             (moom--frame-pixel-width))))
-        (cond ((< posx bounds-left) bounds-left)
-              ((> posx bounds-right) bounds-right)
-              (t posx)))
-    posx))
+  (setq posx (- posx (nth 0 moom--screen-grid)))
+  (when (and (plist-get options :bound)
+             (not (eq window-system 'ns))) ;; TODO: support others if possible
+    (let ((bounds-left 0) ;; TODO Shall be checked
+          (bounds-right (- (display-pixel-width)
+                           (moom--frame-pixel-width))))
+      (setq posx (cond ((< posx bounds-left) bounds-left)
+                       ((> posx bounds-right) bounds-right)
+                       (t posx)))))
+  (unless (plist-get options :grid)
+    (plist-put options :grid
+               (if (or (eq window-system 'ns)
+                       (and (eq window-system 'x)
+                            (version< "26.0" emacs-version)))
+                   'screen 'virtual)))
+  (cond ((eq (plist-get options :grid) 'virtual)
+         (setq posx (- posx (nth 0 (moom--screen-grid))))
+         (let ((pw (- (display-pixel-width) (moom--frame-pixel-width))))
+           (if (< posx 0)
+               (- posx (+ pw (nth 0 moom--virtual-grid)))
+             posx)))
+        ((eq (plist-get options :grid) 'screen)
+         posx)
+        (t
+         posx)))
 
 (defun moom--pos-y (posy &optional options)
   "Extract a value from POSY.
-OPTIONS controls grid and bound. see `moom--pos-options'."
+OPTIONS controls grid and bound.  See `moom--pos-options'."
   (when (listp posy)
     (setq posy (nth 1 posy)))
-  (if (and (plist-get options :bound)
-           (not (eq window-system 'ns))) ;; TODO: support others if possible
-      (let ((bounds-top 0)
-            (bounds-bottom (- (display-pixel-height)
-                              (moom--frame-pixel-height))))
-        (cond ((< posy bounds-top) bounds-top)
-              ((> posy bounds-bottom) bounds-bottom)
-              (t posy)))
-    posy))
+  (setq posy (- posy (nth 1 moom--screen-grid)))
+  (when (and (plist-get options :bound)
+             (not (eq window-system 'ns))) ;; TODO: support others if possible
+    (let ((bounds-top 0)
+          (bounds-bottom (- (display-pixel-height)
+                            (moom--frame-pixel-height))))
+      (setq posx (cond ((< posy bounds-top) bounds-top)
+                       ((> posy bounds-bottom) bounds-bottom)
+                       (t posy)))))
+  (unless options
+    (plist-put options :grid
+               (if (or (eq window-system 'ns)
+                       (and (eq window-system 'x)
+                            (version< "26.0" emacs-version)))
+                   'screen 'virtual)))
+  (cond ((eq (plist-get options :grid) 'virtual)
+         (setq posy (- posy (nth 1 (moom--screen-grid))))
+         (+ posy (- (nth 1 (moom--frame-monitor-workarea))
+                    (nth 1 moom--virtual-grid))))
+        ((eq (plist-get options :grid) 'screen)
+         posy)
+        (t
+         posy)))
 
 (defun moom--horizontal-center ()
   "Horizontal center position."
@@ -632,18 +662,6 @@ The frame width shall be specified with TARGET-WIDTH."
     ;; Right side border
     (when (> shift 0)
       (moom-move-frame-left shift))))
-
-;; (defun moom--init-frame-origin ()
-;;   "Suggest the initial values for `moom--frame-origin'."
-;;   (set-frame-position nil 0 0)
-;;   (let* ((workarea (moom--frame-monitor-workarea))
-;;          (left (- (nth 0 workarea) (moom--pos-x (frame-parameter nil 'left))))
-;;          (top (- (nth 1 workarea) (moom--pos-y (frame-parameter nil 'top)))))
-;;     (if (or (< left 0) (< top 0))
-;;         (progn
-;;           (warn "Unexpected case (left top) = (%s %s). Please report" left top)
-;;           (list 0 0))
-;;       (list left top))))
 
 ;;;###autoload
 (defun moom-fill-screen ()
@@ -1253,7 +1271,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.8"))
+  (let ((moom-release "1.3.9"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
