@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.11
+;; Version: 1.3.12
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -201,6 +201,7 @@ For function `display-line-numbers-mode',
 (defvar moom--frame-resize-pixelwise nil)
 (defvar moom--virtual-grid nil)
 (defvar moom--screen-grid nil)
+(defvar moom--print-status t)
 ;; (defvar moom--pos-options '(:grid screen :bound nil))
 
 (defun moom--setup ()
@@ -683,12 +684,14 @@ in order to move the frame to specific position."
 (defun moom-toggle-frame-maximized ()
   "Toggle frame maximized."
   (interactive)
-  (if (setq moom--maximized (not moom--maximized))
-      (progn
-        (moom--save-last-status)
-        (moom-fill-screen)
-        (moom-move-frame))
-    (moom-restore-last-status)))
+  (let ((moom--print-status nil))
+    (if (setq moom--maximized (not moom--maximized))
+        (progn
+          (moom--save-last-status)
+          (moom-fill-screen)
+          (moom-move-frame))
+      (moom-restore-last-status)))
+  (moom-print-status))
 
 ;;;###autoload
 (defun moom-fill-top ()
@@ -743,7 +746,8 @@ in order to move the frame to specific position."
   "Fill screen by band region.
 If PLIST is nil, `moom-fill-band-options' is applied."
   (interactive)
-  (let* ((values (or plist moom-fill-band-options))
+  (let* ((moom--print-status nil)
+         (values (or plist moom-fill-band-options))
          (direction (plist-get values :direction))
          (range (plist-get values :range))
          (band-pixel-width nil)
@@ -789,7 +793,8 @@ If PLIST is nil, `moom-fill-band-options' is applied."
     (when (and band-pixel-width
                band-pixel-height)
       (set-frame-size nil band-pixel-width band-pixel-height t)
-      (moom-move-frame-to-center))))
+      (moom-move-frame-to-center)))
+  (moom-print-status))
 
 ;;;###autoload
 (defun moom-cycle-line-spacing ()
@@ -1254,7 +1259,9 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-print-status ()
   "Print font size, frame size and origin in mini buffer."
   (interactive)
-  (when moom-verbose
+  (when (and moom-verbose
+             moom--print-status)
+    ;; (message "--- print!")
     (let ((message-log-max nil)
           (fc-width (frame-char-width))
           (fp-width (moom--frame-pixel-width))
@@ -1275,7 +1282,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.11"))
+  (let ((moom-release "1.3.12"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
