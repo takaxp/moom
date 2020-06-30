@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.8
+;; Version: 1.3.10
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -196,9 +196,10 @@ For function `display-line-numbers-mode',
 (defvar moom--last-status nil)
 (defvar moom--maximized nil)
 (defvar moom--screen-margin nil)
-(defvar moom--frame-origin '(0 0))
 (defvar moom--fill-minimum-range 256)
 (defvar moom--frame-resize-pixelwise nil)
+(defvar moom--virtual-grid nil)
+(defvar moom--screen-grid nil)
 ;; (defvar moom--pos-options '(:grid screen :bound nil))
 
 (defun moom--setup ()
@@ -206,9 +207,10 @@ For function `display-line-numbers-mode',
   (run-hooks 'moom-before-setup-hook)
   (unless moom--screen-margin
     (setq moom--screen-margin (moom--default-screen-margin)))
-  (when (equal moom--frame-origin '(0 0))
-    (when (eq window-system 'x)
-      (setq moom--frame-origin (moom--init-frame-origin))))
+  (unless moom--virtual-grid
+    (setq moom--virtual-grid (moom--virtual-grid)))
+  (unless moom--screen-grid
+    (setq moom--screen-grid (moom--screen-grid)))
   (unless (eq (setq moom--frame-width moom-frame-width-single) 80)
     (set-frame-width nil moom--frame-width))
   (moom--make-frame-height-list)
@@ -230,7 +232,9 @@ For function `display-line-numbers-mode',
   (moom-reset-line-spacing)
   (moom-reset)
   (setq frame-resize-pixelwise moom--frame-resize-pixelwise)
-  (setq moom--screen-margin nil)
+  (setq moom--screen-margin nil
+        moom--virtual-grid nil
+        moom--screen-grid nil)
   (when (fboundp 'global-display-line-numbers-mode)
     (remove-hook 'global-display-line-numbers-mode-hook
                  #'moom--update-frame-display-line-numbers)))
@@ -378,47 +382,89 @@ the actual pixel width will not exceed the WIDTH."
                           (moom--frame-internal-width)))
     12)) ;; FIXME, use face-attribute
 
+(defun moom--virtual-grid ()
+  "Alignment for pointing frame left and top position on `set-frame-position'."
+  (cond ((eq window-system 'w32) '(-16 0))
+        ((and (eq window-system 'x)
+              (version< emacs-version "26.0")) '(0 27))
+        ((member window-system '(ns mac)) '(0 0))
+        ((eq window-system 'x) '(10 8))
+        (t '(0 0))))
+
+(defun moom--screen-grid ()
+  "Alignment of frame left and top position on monitor."
+  (cond ((eq window-system 'w32) '(8 0))
+        ((and (eq window-system 'x)
+              (version< emacs-version "26.0")) '(10 -19))
+        ((member window-system '(ns mac)) '(0 0))
+        ((eq window-system 'x) '(0 0))
+        (t '(0 0))))
+
 (defun moom--frame-left ()
   "Return outer left position."
   (let ((left (frame-parameter nil 'left)))
     (+ (if (listp left) (nth 1 left) left)
-       (nth 0 moom--frame-origin))))
+       (nth 0 moom--virtual-grid)
+       (nth 0 moom--screen-grid))))
 
 (defun moom--frame-top ()
   "Return outer top position."
   (let ((top (frame-parameter nil 'top)))
     (+ (if (listp top) (nth 1 top) top)
-       (nth 1 moom--frame-origin))))
+       (nth 1 moom--virtual-grid)
+       (nth 1 moom--screen-grid))))
 
 (defun moom--pos-x (posx &optional options)
-  "Extract a value from POSX.
-OPTIONS controls grid and bound. see `moom--pos-options'."
+  "Return aligned POSX for `set-frame-position'.
+OPTIONS controls grid and bound.  See `moom--pos-options'."
   (when (listp posx)
     (setq posx (nth 1 posx)))
-  (if (and (plist-get options :bound)
-           (not (eq window-system 'ns))) ;; TODO: support others if possible
-      (let ((bounds-left 0) ;; TODO Shall be checked
-            (bounds-right (- (display-pixel-width)
-                             (moom--frame-pixel-width))))
-        (cond ((< posx bounds-left) bounds-left)
-              ((> posx bounds-right) bounds-right)
-              (t posx)))
-    posx))
+  (setq posx (- posx (nth 0 moom--screen-grid)))
+  (when (or (plist-get options :bound)
+            (not (eq window-system 'ns))) ;; TODO: support others if possible
+    (let ((bounds-left (- (nth 0 moom--screen-grid)))
+          (bounds-right (- (display-pixel-width)
+                           (moom--frame-pixel-width))))
+      (setq posx (cond ((< posx bounds-left) bounds-left)
+                       ((> posx bounds-right) bounds-right)
+                       (t posx)))))
+  (unless options
+    (setq options (if (member window-system '(ns mac))
+                      '(:grid screen) '(:grid virtual))))
+  (cond ((eq (plist-get options :grid) 'virtual)
+         (let ((pw (- (display-pixel-width) (moom--frame-pixel-width))))
+           (if (< posx 0)
+               (- posx (+ pw (nth 0 moom--virtual-grid)))
+             posx)))
+        ((eq (plist-get options :grid) 'screen)
+         posx)
+        (t
+         posx)))
 
 (defun moom--pos-y (posy &optional options)
-  "Extract a value from POSY.
-OPTIONS controls grid and bound. see `moom--pos-options'."
+  "Return aligned POSY for `set-frame-position'.
+OPTIONS controls grid and bound.  See `moom--pos-options'."
   (when (listp posy)
     (setq posy (nth 1 posy)))
-  (if (and (plist-get options :bound)
-           (not (eq window-system 'ns))) ;; TODO: support others if possible
-      (let ((bounds-top 0)
-            (bounds-bottom (- (display-pixel-height)
-                              (moom--frame-pixel-height))))
-        (cond ((< posy bounds-top) bounds-top)
-              ((> posy bounds-bottom) bounds-bottom)
-              (t posy)))
-    posy))
+  (setq posy (- posy (nth 1 moom--screen-grid)))
+  (when (or (plist-get options :bound)
+            (not (eq window-system 'ns))) ;; TODO: support others if possible
+    (let ((bounds-top 0)
+          (bounds-bottom (- (display-pixel-height)
+                            (moom--frame-pixel-height))))
+      (setq posx (cond ((< posy bounds-top) bounds-top)
+                       ((> posy bounds-bottom) bounds-bottom)
+                       (t posy)))))
+  (unless options
+    (setq options (if (member window-system '(ns mac))
+                      '(:grid screen) '(:grid virtual))))
+  (cond ((eq (plist-get options :grid) 'virtual)
+         (+ posy (- (nth 1 (moom--frame-monitor-workarea))
+                    (nth 1 moom--virtual-grid))))
+        ((eq (plist-get options :grid) 'screen)
+         posy)
+        (t
+         posy)))
 
 (defun moom--horizontal-center ()
   "Horizontal center position."
@@ -426,7 +472,6 @@ OPTIONS controls grid and bound. see `moom--pos-options'."
      (floor (/ (+ (moom--max-frame-pixel-width)
                   (moom--frame-internal-width))
                2.0))))
-
 
 (defun moom--vertical-center ()
   "Vertical center position."
@@ -440,7 +485,7 @@ OPTIONS controls grid and bound. see `moom--pos-options'."
   (+ (car moom-move-frame-pixel-offset)
      (moom--horizontal-center)
      (let ((scroll (frame-parameter nil 'scroll-bar-width)))
-       (if (and (> scroll 0) (get-scroll-bar-mode));; TBD
+       (if (and (> scroll 0) (get-scroll-bar-mode)) ;; TBD
            scroll
          (frame-parameter nil 'left-fringe)))
      (- (/ (+ (moom--frame-pixel-width)
@@ -562,7 +607,7 @@ Taken from frame.el in 26.1 to support previous Emacs versions, 25.1 or later."
   (moom--frame-monitor-attribute 'workarea frame x y))
 
 (defun moom--default-screen-margin ()
-  "Calculate screen margins."
+  "Calculate default screen margins."
   (let ((geometry (moom--frame-monitor-geometry))
         (workarea (moom--frame-monitor-workarea)))
     (list (- (nth 1 workarea) (nth 1 geometry))
@@ -611,18 +656,6 @@ The frame width shall be specified with TARGET-WIDTH."
     ;; Right side border
     (when (> shift 0)
       (moom-move-frame-left shift))))
-
-(defun moom--init-frame-origin ()
-  "Suggest the initial values for `moom--frame-origin'."
-  (set-frame-position nil 0 0)
-  (let* ((workarea (moom--frame-monitor-workarea))
-         (left (- (nth 0 workarea) (moom--pos-x (frame-parameter nil 'left))))
-         (top (- (nth 1 workarea) (moom--pos-y (frame-parameter nil 'top)))))
-    (if (or (< left 0) (< top 0))
-        (progn
-          (warn "Unexpected case (left top) = (%s %s). Please report" left top)
-          (list 0 0))
-      (list left top))))
 
 ;;;###autoload
 (defun moom-fill-screen ()
@@ -703,7 +736,7 @@ in order to move the frame to specific position."
 ;;;###autoload
 (defun moom-fill-band (&optional plist)
   "Fill screen by band region.
-If PLIST is nil, `moom-fill-band-options' is used."
+If PLIST is nil, `moom-fill-band-options' is applied."
   (interactive)
   (let* ((values (or plist moom-fill-band-options))
          (direction (plist-get values :direction))
@@ -775,7 +808,7 @@ If PLIST is nil, `moom-fill-band-options' is used."
 (defun moom-move-frame-right (&optional pixel)
   "PIXEL move the current frame to right."
   (interactive)
-  (let* ((pos-x (moom--pos-x (moom--frame-left)))
+  (let* ((pos-x (moom--frame-left))
          (pos-y (moom--frame-top))
          (new-pos-x (+ pos-x (or pixel
                                  (moom--shift-amount 'right)))))
@@ -793,7 +826,7 @@ If PLIST is nil, `moom-fill-band-options' is used."
 (defun moom-move-frame-left (&optional pixel)
   "PIXEL move the current frame to left."
   (interactive)
-  (let* ((pos-x (moom--pos-x (moom--frame-left)))
+  (let* ((pos-x (moom--frame-left))
          (pos-y (moom--frame-top))
          (new-pos-x (- pos-x (or pixel
                                  (moom--shift-amount 'left)))))
@@ -904,7 +937,8 @@ please configure the margins by `moom-screen-margin'."
 (defun moom-move-frame-to-centerline-from-bottom ()
   "Fit frame to horizontal line in the middle from below."
   (interactive)
-  (set-frame-position nil (moom--pos-x (moom--frame-left))
+  (set-frame-position nil
+                      (moom--pos-x (moom--frame-left))
                       (moom--pos-y (moom--vertical-center)))
   (moom-print-status))
 
@@ -1070,7 +1104,8 @@ This function does not effect font size."
     (setq moom--maximized nil)
     (moom--save-last-status)
     (moom-restore-last-status moom--init-status)
-    (moom--make-frame-height-list)))
+    (when moom--screen-margin
+      (moom--make-frame-height-list))))
 
 ;;;###autoload
 (defun moom-update-height-steps (arg)
@@ -1232,7 +1267,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.8"))
+  (let ((moom-release "1.3.10"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
