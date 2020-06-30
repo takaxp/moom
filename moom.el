@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.12
+;; Version: 1.3.13
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -1113,9 +1113,7 @@ This function does not effect font size."
   (let ((moom--font-module-p (require 'moom-font nil t)))
     (setq moom--maximized nil)
     (moom--save-last-status)
-    (moom-restore-last-status moom--init-status)
-    (when moom--screen-margin
-      (moom--make-frame-height-list))))
+    (moom-restore-last-status moom--init-status)))
 
 ;;;###autoload
 (defun moom-update-height-steps (arg)
@@ -1160,6 +1158,8 @@ STATUS is a list consists of font size, frame position, frame region, and pixel-
                   (+ (- (cdr (assoc "pixel-height" moom--last-status))
                         (moom--internal-border-height)))
                   t)
+  (when moom--screen-margin
+    (moom--make-frame-height-list))
   (moom-print-status))
 
 ;;;###autoload
@@ -1282,7 +1282,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.12"))
+  (let ((moom-release "1.3.13"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
