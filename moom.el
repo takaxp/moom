@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.10
+;; Version: 1.3.11
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -189,6 +189,7 @@ For function `display-line-numbers-mode',
   "The keymap for `moom'.")
 
 (defvar moom--init-status nil)
+(defvar moom--internal-border-width 0)
 (defvar moom--font-module-p (require 'moom-font nil t))
 (defvar moom--frame-width 80)
 (defvar moom--height-list nil)
@@ -211,6 +212,8 @@ For function `display-line-numbers-mode',
     (setq moom--virtual-grid (moom--virtual-grid)))
   (unless moom--screen-grid
     (setq moom--screen-grid (moom--screen-grid)))
+  (setq moom--internal-border-width
+        (alist-get 'internal-border-width (frame-geometry)))
   (unless (eq (setq moom--frame-width moom-frame-width-single) 80)
     (set-frame-width nil moom--frame-width))
   (moom--make-frame-height-list)
@@ -248,12 +251,13 @@ For function `display-line-numbers-mode',
   "Width of internal objects.
 Including fringes and border."
   (if window-system
-      (+ (frame-parameter nil 'left-fringe)
-         (frame-parameter nil 'right-fringe)
-         (if (get-scroll-bar-mode)
-             (frame-parameter nil 'scroll-bar-width)
-           0)
-         (* 2 (alist-get 'internal-border-width (frame-geometry))))
+      (let ((fp (frame-parameters)))
+        (+ (alist-get 'right-fringe fp)
+           (alist-get 'left-fringe fp)
+           (if (get-scroll-bar-mode)
+               (alist-get 'scroll-bar-width fp)
+             0)
+           (* 2 moom--internal-border-width)))
     0)) ;; TODO check this by terminal
 
 (defun moom--internal-border-height ()
@@ -264,11 +268,12 @@ Including fringes and border."
   "Height of internal objects.
 Including title-bar, menu-bar, offset depends on window system, and border."
   (if window-system
-      (+ (cdr (alist-get 'title-bar-size (frame-geometry)))
-         (cdr (alist-get 'tool-bar-size (frame-geometry)))
-         (if (memq window-system '(x w32))
-             (cdr (alist-get 'menu-bar-size (frame-geometry))) 0)
-         (moom--internal-border-height))
+      (let ((geometry (frame-geometry)))
+        (+ (cdr (alist-get 'title-bar-size geometry))
+           (cdr (alist-get 'tool-bar-size geometry))
+           (if (memq window-system '(x w32))
+               (cdr (alist-get 'menu-bar-size geometry)) 0)
+           (moom--internal-border-height)))
     0)) ;; TODO check this by terminal
 
 (defun moom--frame-pixel-width ()
@@ -1250,16 +1255,19 @@ The keybindings will be assigned when Emacs runs in GUI."
   "Print font size, frame size and origin in mini buffer."
   (interactive)
   (when moom-verbose
-    (let ((message-log-max nil))
+    (let ((message-log-max nil)
+          (fc-width (frame-char-width))
+          (fp-width (moom--frame-pixel-width))
+          (fp-height (moom--frame-pixel-height)))
       (message
        (format
         "[Moom] Font: %spt(%dpx) | Frame: c(%d, %d) p(%d, %d) | Origin: (%s, %s)"
         (if moom--font-module-p moom-font--size "**")
-        (frame-char-width)
-        (moom--frame-width)
-        (moom--frame-height)
-        (moom--frame-pixel-width)
-        (moom--frame-pixel-height)
+        fc-width
+        (/ (- fp-width (moom--frame-internal-width)) fc-width)
+        (/ (- fp-height (moom--internal-border-height)) (frame-char-height))
+        fp-width
+        fp-height
         (moom--frame-left)
         (moom--frame-top))))))
 
@@ -1267,7 +1275,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.10"))
+  (let ((moom-release "1.3.11"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
