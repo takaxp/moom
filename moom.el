@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.14
+;; Version: 1.3.15
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -217,7 +217,7 @@ For function `display-line-numbers-mode',
   (run-hooks 'moom-before-setup-hook)
   (unless moom--screen-margin
     (setq moom--screen-margin (moom--default-screen-margin))
-    (moom--idenfity-current-monitor))
+    (moom-idenfity-current-monitor))
   (unless moom--virtual-grid
     (setq moom--virtual-grid (moom--virtual-grid)))
   (unless moom--screen-grid
@@ -672,12 +672,14 @@ The frame width shall be specified with TARGET-WIDTH."
     (when (> shift 0)
       (moom-move-frame-left shift))))
 
-(defun moom--idenfity-current-monitor (&optional shift)
+;;;###autoload
+(defun moom-idenfity-current-monitor (&optional shift)
   "Update `moom--screen-margin' to identify and focus on the current monitor.
 SHIFT can control the margin, if needed.
 `moom-multi-monitors-support' shall be non-nil.
 If SHIFT is nil, `moom--common-margin' will be applied.
 Alternatively, you can manually update `moom--screen-margin' itself."
+  (interactive)
   (when moom-multi-monitors-support
     (if (> (length (display-monitor-attributes-list)) 1)
         (setq moom--screen-margin
@@ -864,7 +866,7 @@ If PLIST is nil, `moom-fill-band-options' is applied."
     (set-frame-position nil
                         (moom--pos-x new-pos-x)
                         (moom--pos-y pos-y)))
-  (moom--idenfity-current-monitor)
+  (moom-idenfity-current-monitor)
   (moom-print-status))
 
 ;;;###autoload
@@ -883,7 +885,7 @@ If PLIST is nil, `moom-fill-band-options' is applied."
     (set-frame-position nil
                         (moom--pos-x new-pos-x)
                         (moom--pos-y pos-y)))
-  (moom--idenfity-current-monitor)
+  (moom-idenfity-current-monitor)
   (moom-print-status))
 
 ;;;###autoload
@@ -1318,7 +1320,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.14"))
+  (let ((moom-release "1.3.15"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
