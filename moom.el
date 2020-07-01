@@ -143,7 +143,7 @@ For function `display-line-numbers-mode',
   :group 'moom)
 
 (defcustom moom-multi-monitors-support nil
-  "If non-nil, Multiple Monitors support will be enabled."
+  "If non-nil, multiple monitors support is enabled."
   :type 'boolean
   :group 'moom)
 
@@ -210,7 +210,7 @@ For function `display-line-numbers-mode',
 (defvar moom--common-margin
   (cond ((member window-system '(ns mac)) '(23 0 0 0))
         (t '(0 0 0 0))))
-;; (defvar moom--pos-options '(:grid screen :bound nil))
+(defvar moom--pos-options '(:grid nil :bound nil)) ;; {screen,virtual}, {nil,t}
 
 (defun moom--setup ()
   "Init function."
@@ -957,8 +957,8 @@ please configure the margins by `moom-screen-margin'."
 (defun moom-move-frame-to-centerline-from-left ()
   "Fit frame to vertical line in the middle from left side."
   (interactive)
-  (set-frame-position nil (- (moom--horizontal-center)
-                             (moom--frame-pixel-width))
+  (set-frame-position nil
+                      (- (moom--horizontal-center) (moom--frame-pixel-width))
                       (moom--pos-y (moom--frame-top)))
   (moom-print-status))
 
@@ -966,7 +966,8 @@ please configure the margins by `moom-screen-margin'."
 (defun moom-move-frame-to-centerline-from-right ()
   "Fit frame to vertical line in the middle from right side."
   (interactive)
-  (set-frame-position nil (moom--horizontal-center)
+  (set-frame-position nil
+                      (moom--horizontal-center)
                       (moom--pos-y (moom--frame-top)))
   (moom-print-status))
 
