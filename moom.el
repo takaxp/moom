@@ -216,7 +216,8 @@ For function `display-line-numbers-mode',
   "Init function."
   (run-hooks 'moom-before-setup-hook)
   (unless moom--screen-margin
-    (setq moom--screen-margin (moom--default-screen-margin)))
+    (setq moom--screen-margin (moom--default-screen-margin))
+    (moom--idenfity-current-monitor))
   (unless moom--virtual-grid
     (setq moom--virtual-grid (moom--virtual-grid)))
   (unless moom--screen-grid
