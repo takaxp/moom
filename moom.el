@@ -677,7 +677,7 @@ The frame width shall be specified with TARGET-WIDTH."
 SHIFT can control the margin, if needed.
 `moom-multi-monitors-support' shall be non-nil.
 If SHIFT is nil, `moom--common-margin' will be applied.
-Alternatively, you can update manually `moom--screen-margin' itself."
+Alternatively, you can manually update `moom--screen-margin' itself."
   (when moom-multi-monitors-support
     (if (> (length (display-monitor-attributes-list)) 1)
         (setq moom--screen-margin
