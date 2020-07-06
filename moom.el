@@ -673,7 +673,7 @@ The frame width shall be specified with TARGET-WIDTH."
       (moom-move-frame-left shift))))
 
 ;;;###autoload
-(defun moom-idenfity-current-monitor (&optional shift)
+(defun moom-identify-current-monitor (&optional shift)
   "Update `moom--screen-margin' to identify and focus on the current monitor.
 SHIFT can control the margin, if needed.
 `moom-multi-monitors-support' shall be non-nil.
