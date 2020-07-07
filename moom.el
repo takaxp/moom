@@ -866,7 +866,7 @@ If PLIST is nil, `moom-fill-band-options' is applied."
     (set-frame-position nil
                         (moom--pos-x new-pos-x)
                         (moom--pos-y pos-y)))
-  (moom-idenfity-current-monitor)
+  (moom-identify-current-monitor)
   (moom-print-status))
 
 ;;;###autoload
@@ -885,7 +885,7 @@ If PLIST is nil, `moom-fill-band-options' is applied."
     (set-frame-position nil
                         (moom--pos-x new-pos-x)
                         (moom--pos-y pos-y)))
-  (moom-idenfity-current-monitor)
+  (moom-identify-current-monitor)
   (moom-print-status))
 
 ;;;###autoload
