@@ -211,7 +211,7 @@ For function `display-line-numbers-mode',
   (cond ((member window-system '(ns mac)) '(23 0 0 0))
         (t '(0 0 0 0))))
 (defvar moom--pos-options '(:grid nil :bound nil)) ;; {screen,virtual}, {nil,t}
-(defvar moom--w32-adjust-margin '(0 8 -16 8))
+(defvar moom--w32-adjust-margin '(0 8 -16 16))
 
 (defun moom--setup ()
   "Init function."
