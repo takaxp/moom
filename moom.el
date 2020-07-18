@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.15
+;; Version: 1.3.16
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -435,6 +435,9 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
   (when (listp posx)
     (setq posx (nth 1 posx)))
   (setq posx (- posx (nth 0 moom--screen-grid)))
+  (when (and (eq system-type 'windows-nt)
+             (plist-get options :bound))
+    (setq posx (+ posx 16))) ;; FIXME
   (when (or (plist-get options :bound)
             (not (eq window-system 'ns))) ;; TODO: support others if possible
     (let ((bounds-left (- (nth 0 moom--screen-grid)))
@@ -443,8 +446,8 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
       (setq posx (cond ((< posx bounds-left) bounds-left)
                        ((> posx bounds-right) bounds-right)
                        (t posx)))))
-  (unless options
-    (setq options (if (member window-system '(ns mac))
+  (unless (plist-get options :grid)
+    (setq options (if (member window-system '(ns mac)) ;; FIXME
                       '(:grid screen) '(:grid virtual))))
   (cond ((eq (plist-get options :grid) 'virtual)
          (let ((pw (- (display-pixel-width) (moom--frame-pixel-width))))
@@ -624,13 +627,23 @@ Taken from frame.el in 26.1 to support previous Emacs versions, 25.1 or later."
 (defun moom--default-screen-margin ()
   "Calculate default screen margins."
   (let ((geometry (moom--frame-monitor-geometry))
-        (workarea (moom--frame-monitor-workarea)))
-    (list (- (nth 1 workarea) (nth 1 geometry))
-          (- (+ (nth 1 geometry) (nth 3 geometry))
-             (+ (nth 1 workarea) (nth 3 workarea)))
-          (- (nth 2 geometry) (nth 2 workarea))
-          (- (+ (nth 0 geometry) (nth 2 geometry))
-             (+ (nth 0 workarea) (nth 2 workarea))))))
+        (workarea (moom--frame-monitor-workarea))
+        (margin nil))
+    (setq margin
+          (list (- (nth 1 workarea) (nth 1 geometry))
+                (- (+ (nth 1 geometry) (nth 3 geometry))
+                   (+ (nth 1 workarea) (nth 3 workarea)))
+                (- (nth 2 geometry) (nth 2 workarea))
+                (- (+ (nth 0 geometry) (nth 2 geometry))
+                   (+ (nth 0 workarea) (nth 2 workarea)))))
+    ;; w32
+    (when (eq system-type 'windows-nt)
+      (setq margin
+            (list (+ 0 (nth 0 margin))
+                  (+ 8 (nth 1 margin))
+                  (+ (- 16) (nth 2 margin))
+                  (+ 8 (nth 3 margin)))))
+    margin))
 
 (defun moom--update-frame-display-line-numbers ()
   "Expand frame width by `moom-display-line-numbers-width'.
@@ -724,8 +737,9 @@ in order to move the frame to specific position."
     (if (setq moom--maximized (not moom--maximized))
         (progn
           (moom--save-last-status)
-          (moom-fill-screen)
-          (moom-move-frame))
+          (moom-move-frame (list (nth 2 moom--screen-margin)
+                                 (nth 0 moom--screen-margin)))
+          (moom-fill-screen))
       (moom-restore-last-status)))
   (moom-print-status))
 
@@ -1117,10 +1131,10 @@ This function does not effect font size."
   "Change the frame width to fill display horizontally.
 This function does not effect font size."
   (interactive)
+  (moom-move-frame-to-edge-left)
   (set-frame-size nil
                   (moom--max-frame-pixel-width)
-                  (frame-pixel-height) t)
-  (moom-move-frame-to-edge-left))
+                  (frame-pixel-height) t))
 
 ;;;###autoload
 (defun moom-delete-windows ()
@@ -1321,7 +1335,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.15"))
+  (let ((moom-release "1.3.16"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
