@@ -738,8 +738,7 @@ in order to move the frame to specific position."
     (if (setq moom--maximized (not moom--maximized))
         (progn
           (moom--save-last-status)
-          (moom-move-frame (list (nth 2 moom--screen-margin)
-                                 (nth 0 moom--screen-margin)))
+          (moom-move-frame)
           (moom-fill-screen))
       (moom-restore-last-status)))
   (moom-print-status))
