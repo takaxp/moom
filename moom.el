@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.17
+;; Version: 1.3.18
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -211,6 +211,7 @@ For function `display-line-numbers-mode',
   (cond ((member window-system '(ns mac)) '(23 0 0 0))
         (t '(0 0 0 0))))
 (defvar moom--pos-options '(:grid nil :bound nil)) ;; {screen,virtual}, {nil,t}
+(defvar moom--w32-adjust-margin '(0 8 -16 8))
 
 (defun moom--setup ()
   "Init function."
@@ -639,10 +640,10 @@ Taken from frame.el in 26.1 to support previous Emacs versions, 25.1 or later."
     ;; w32
     (when (eq system-type 'windows-nt)
       (setq margin
-            (list (+ 0 (nth 0 margin))
-                  (+ 8 (nth 1 margin))
-                  (+ (- 16) (nth 2 margin))
-                  (+ 8 (nth 3 margin)))))
+            (list (+ (nth 0 moom--w32-adjust-margin) (nth 0 margin))
+                  (+ (nth 1 moom--w32-adjust-margin) (nth 1 margin))
+                  (+ (nth 2 moom--w32-adjust-margin) (nth 2 margin))
+                  (+ (nth 3 moom--w32-adjust-margin) (nth 3 margin)))))
     margin))
 
 (defun moom--update-frame-display-line-numbers ()
@@ -1334,14 +1335,18 @@ The keybindings will be assigned when Emacs runs in GUI."
         (/ (- fp-height (moom--internal-border-height)) (frame-char-height))
         fp-width
         fp-height
-        (moom--frame-left)
-        (moom--frame-top))))))
+        (if (eq window-system 'w32)
+            (- (moom--frame-left) (nth 2 moom--w32-adjust-margin))
+          (moom--frame-left))
+        (if (eq window-system 'w32)
+            (- (moom--frame-top) (nth 0 moom--w32-adjust-margin))
+          (moom--frame-top)))))))
 
 ;;;###autoload
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.17"))
+  (let ((moom-release "1.3.18"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
