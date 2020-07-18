@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.16
+;; Version: 1.3.17
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -765,7 +765,9 @@ in order to move the frame to specific position."
 (defun moom-fill-right ()
   "Fill right half of screen."
   (interactive)
-  (moom--fill-display 'right))
+  (moom--fill-display 'right)
+  (when (eq system-type 'windows-nt)
+    (moom-move-frame-to-edge-right)))
 
 ;;;###autoload
 (defun moom-fill-top-left ()
@@ -777,7 +779,9 @@ in order to move the frame to specific position."
 (defun moom-fill-top-right ()
   "Fill top right quarter of screen."
   (interactive)
-  (moom--fill-display 'topr))
+  (moom--fill-display 'topr)
+  (when (eq system-type 'windows-nt)
+    (moom-move-frame-to-edge-right)))
 
 ;;;###autoload
 (defun moom-fill-bottom-left ()
@@ -789,7 +793,9 @@ in order to move the frame to specific position."
 (defun moom-fill-bottom-right ()
   "Fill bottom right quarter of screen."
   (interactive)
-  (moom--fill-display 'botr))
+  (moom--fill-display 'botr)
+  (when (eq system-type 'windows-nt)
+    (moom-move-frame-to-edge-right)))
 
 ;;;###autoload
 (defun moom-fill-band (&optional plist)
@@ -1335,7 +1341,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.16"))
+  (let ((moom-release "1.3.17"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
