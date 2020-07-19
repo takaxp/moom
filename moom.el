@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.19
+;; Version: 1.3.20
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -480,8 +480,10 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
     (setq options (if (member window-system '(ns mac))
                       '(:grid screen) '(:grid virtual))))
   (cond ((eq (plist-get options :grid) 'virtual)
-         (+ posy (- (nth 1 (moom--frame-monitor-workarea))
-                    (nth 1 moom--virtual-grid))))
+         (let ((ph (- (display-pixel-height) (moom--frame-pixel-height))))
+           (if (< posy 0)
+               (- posy (+ ph (nth 1 moom--virtual-grid)))
+             posy)))
         ((eq (plist-get options :grid) 'screen)
          posy)
         (t
@@ -1341,7 +1343,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.19"))
+  (let ((moom-release "1.3.20"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
