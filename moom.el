@@ -1341,7 +1341,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.18"))
+  (let ((moom-release "1.3.19"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
