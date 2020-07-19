@@ -29,7 +29,7 @@ or
 #+CAPTION: demo for moving and zooming, frame maximized
 [[https://github.com/takaxp/contents/blob/master/moom/demo1.gif]]
 
-Note - This module has basically been tested on [[https://www.apple.com/macos/high-sierra/][macOS High Sierra]] and [[https://www.apple.com/jp/macos/catalina/][Catalina]] with a Full HD (1920x1080) single display. Additionally, tested in Windows10 and Linux (Ubuntu 20.04, CentOS 8.2, openSUSE 15.1) with GTK, but they still have some issues.
+Note - This module has basically been tested on [[https://www.apple.com/macos/high-sierra/][macOS High Sierra]] and [[https://www.apple.com/jp/macos/catalina/][Catalina]] with a Full HD (1920x1080) single monitor. Additionally, tested in Windows 10 and Linux (Ubuntu 20.04, CentOS 8.2, and openSUSE 15.1) with GTK, but they still have some issues.
 
 ** Move
 
@@ -50,16 +50,16 @@ Note - This module has basically been tested on [[https://www.apple.com/macos/hi
 
 *** edge
 
+ - moom-move-frame-to-edge-top
  - moom-move-frame-to-edge-left
  - moom-move-frame-to-edge-right
- - moom-move-frame-to-edge-top
  - moom-move-frame-to-edge-bottom
 
 *** center line
 
+ - moom-move-frame-to-centerline-from-top
  - moom-move-frame-to-centerline-from-left
  - moom-move-frame-to-centerline-from-right
- - moom-move-frame-to-centerline-from-top
  - moom-move-frame-to-centerline-from-bottom
 
 ** Expand
@@ -83,9 +83,10 @@ These functions will not change font size.
 
 These functions normally change font size. But the behavior can be changed by =M-x moom-toggle-font-module=.
 
- - moom-fill-screen
  - moom-fill-top
+ - moom-fill-screen
  - moom-fill-bottom
+ - moom-fill-height
  - moom-fill-left
  - moom-fill-right
  - moom-fill-top-left
@@ -125,8 +126,6 @@ Just provide a list to setup screen margins. The list consists of four values to
 #+END_SRC
 
 For macOS users, the default margin is =(23 0 0 0)=, and for other system types, it is also configured using combination of =frame-monitor-geometry= and =frame-monitor-workarea= when you activate =moom-mode=. But the actual work area is probably depends on user environment. So please call =moom-screen-margin= with an appropriate list to configure the margins if needed.
-
-For Windows 10 users, =(0 50 0 10)= looks nice, but some gaps still exist on left and right edge of the screen. =(0 56 0 16)= may be suitable for Windows 8 users.
 
 * Extension to integrate font resizing
 
