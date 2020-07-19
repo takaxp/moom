@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.20
+;; Version: 1.3.21
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -1142,6 +1142,7 @@ This function does not effect font size."
   (set-frame-size nil
                   (moom--max-frame-pixel-width)
                   (frame-pixel-height) t))
+(defalias 'moom-fill-width 'moom-change-frame-width-max)
 
 ;;;###autoload
 (defun moom-delete-windows ()
@@ -1343,7 +1344,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.20"))
+  (let ((moom-release "1.3.21"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
