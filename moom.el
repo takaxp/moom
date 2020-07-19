@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.18
+;; Version: 1.3.19
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -211,7 +211,9 @@ For function `display-line-numbers-mode',
   (cond ((member window-system '(ns mac)) '(23 0 0 0))
         (t '(0 0 0 0))))
 (defvar moom--pos-options '(:grid nil :bound nil)) ;; {screen,virtual}, {nil,t}
-(defvar moom--w32-adjust-margin '(0 8 -16 16))
+(defvar moom--local-margin (cond ((eq system-type 'windows-nt) '(0 8 -16 16))
+                                 ((eq window-system 'x) '(19 0 0 0))
+                                 (t '(0 0 0 0))))
 
 (defun moom--setup ()
   "Init function."
@@ -471,10 +473,10 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
     (let ((bounds-top 0)
           (bounds-bottom (- (display-pixel-height)
                             (moom--frame-pixel-height))))
-      (setq posx (cond ((< posy bounds-top) bounds-top)
+      (setq posy (cond ((< posy bounds-top) bounds-top)
                        ((> posy bounds-bottom) bounds-bottom)
                        (t posy)))))
-  (unless options
+  (unless (plist-get options :grid)
     (setq options (if (member window-system '(ns mac))
                       '(:grid screen) '(:grid virtual))))
   (cond ((eq (plist-get options :grid) 'virtual)
@@ -637,14 +639,11 @@ Taken from frame.el in 26.1 to support previous Emacs versions, 25.1 or later."
                 (- (nth 2 geometry) (nth 2 workarea))
                 (- (+ (nth 0 geometry) (nth 2 geometry))
                    (+ (nth 0 workarea) (nth 2 workarea)))))
-    ;; w32
-    (when (eq system-type 'windows-nt)
-      (setq margin
-            (list (+ (nth 0 moom--w32-adjust-margin) (nth 0 margin))
-                  (+ (nth 1 moom--w32-adjust-margin) (nth 1 margin))
-                  (+ (nth 2 moom--w32-adjust-margin) (nth 2 margin))
-                  (+ (nth 3 moom--w32-adjust-margin) (nth 3 margin)))))
-    margin))
+    ;; Update
+    (list (+ (nth 0 moom--local-margin) (nth 0 margin))
+          (+ (nth 1 moom--local-margin) (nth 1 margin))
+          (+ (nth 2 moom--local-margin) (nth 2 margin))
+          (+ (nth 3 moom--local-margin) (nth 3 margin)))))
 
 (defun moom--update-frame-display-line-numbers ()
   "Expand frame width by `moom-display-line-numbers-width'.
@@ -1334,12 +1333,9 @@ The keybindings will be assigned when Emacs runs in GUI."
         (/ (- fp-height (moom--internal-border-height)) (frame-char-height))
         fp-width
         fp-height
-        (if (eq window-system 'w32)
-            (- (moom--frame-left) (nth 2 moom--w32-adjust-margin))
-          (moom--frame-left))
-        (if (eq window-system 'w32)
-            (- (moom--frame-top) (nth 0 moom--w32-adjust-margin))
-          (moom--frame-top)))))))
+        (- (moom--frame-left) (nth 2 moom--local-margin))
+        (- (moom--frame-top) (nth 0 moom--local-margin)))))))
+
 
 ;;;###autoload
 (defun moom-version ()
