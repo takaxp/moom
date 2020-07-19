@@ -470,7 +470,7 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
   (setq posy (- posy (nth 1 moom--screen-grid)))
   (when (or (plist-get options :bound)
             (not (eq window-system 'ns))) ;; TODO: support others if possible
-    (let ((bounds-top 0)
+    (let ((bounds-top (- (nth 1 moom--screen-grid)))
           (bounds-bottom (- (display-pixel-height)
                             (moom--frame-pixel-height))))
       (setq posy (cond ((< posy bounds-top) bounds-top)
