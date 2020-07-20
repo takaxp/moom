@@ -1222,7 +1222,9 @@ MARGIN shall be a list consists of 4 integer variables like '(10 10 20 20)."
     (let ((moom-user-margin margin))
       (moom-identify-current-monitor)
       (moom-move-frame)
-      (moom-fill-screen))))
+      (moom-fill-screen))
+    (message "[moom] Configure `moom-user-margin' to %s and reload `moom-mode'"
+             margin)))
 
 ;;;###autoload
 (defun moom-restore-last-status (&optional status)
