@@ -1023,14 +1023,14 @@ please configure the margins by `moom-screen-margin'."
 
 ;;;###autoload
 (defun moom-move-frame (&optional arg)
-  "Move the frame to somewhere (default: '(0 0)).
+  "Move the frame to somewhere (default: left top of workarea).
 When ARG is a list like '(10 10), move the frame to the position.
 When ARG is a single number like 10, shift the frame horizontally +10 pixel.
-When ARG is nil, then move to the default position '(0 0)."
+When ARG is nil, then move to the default position (i.e. left top of workarea)."
   (interactive)
   (let ((pos-x (nth 2 moom--screen-margin))
         (pos-y (nth 0 moom--screen-margin)))
-    (cond ((not arg) t) ;; (0, 0)
+    (cond ((not arg) t) ;; left top of workarea by '(pos-x, pos-y)
           ((numberp arg) ;; horizontal shift
            (setq pos-x (+ pos-x arg))
            (setq pos-y (moom--frame-top)))
