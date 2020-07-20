@@ -1220,6 +1220,7 @@ MARGIN shall be a list consists of 4 integer variables like '(10 10 20 20)."
   (when (and (listp margin)
              (eq (length margin) 4))
     (let ((moom-user-margin margin))
+      (moom-reset) ;; Added for w32 and Linux
       (moom-identify-current-monitor)
       (moom-move-frame)
       (moom-fill-screen))
