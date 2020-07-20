@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.22
+;; Version: 1.3.23
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -226,9 +226,7 @@ For function `display-line-numbers-mode',
 (defun moom--setup ()
   "Init function."
   (run-hooks 'moom-before-setup-hook)
-  (unless moom--screen-margin
-    (setq moom--screen-margin (moom--default-screen-margin))
-    (moom-identify-current-monitor))
+  (moom-identify-current-monitor)
   (unless moom--virtual-grid
     (setq moom--virtual-grid (moom--virtual-grid)))
   (unless moom--screen-grid
@@ -640,8 +638,7 @@ Taken from frame.el in 26.1 to support previous Emacs versions, 25.1 or later."
 (defun moom--default-screen-margin ()
   "Calculate default screen margins."
   (let ((geometry (moom--frame-monitor-geometry))
-        (workarea (moom--frame-monitor-workarea))
-        (margin nil))
+        (workarea (moom--frame-monitor-workarea)))
     (setq moom--screen-margin
           (list (- (nth 1 workarea) (nth 1 geometry))
                 (- (+ (nth 1 geometry) (nth 3 geometry))
@@ -947,7 +944,7 @@ If PLIST is nil, `moom-fill-band-options' is applied."
 (defun moom-move-frame-to-edge-top ()
   "Move the current frame to the top of the screen.
 If you find the frame is NOT moved to the top exactly,
-please configure the margins by `moom-screen-margin'."
+please configure the margins by variable `moom-user-margin'."
   (interactive)
   (set-frame-position nil
                       (moom--pos-x (moom--frame-left) '(:bound t))
@@ -958,7 +955,7 @@ please configure the margins by `moom-screen-margin'."
 (defun moom-move-frame-to-edge-bottom ()
   "Move the current frame to the top of the screen.
 If you find the frame is NOT moved to the bottom exactly,
-please configure the margins by `moom-screen-margin'."
+please configure the margins by variable `moom-user-margin'."
   (interactive)
   (set-frame-position nil
                       (moom--pos-x (moom--frame-left) '(:bound t))
@@ -1062,7 +1059,7 @@ When ARG is nil, then move to the default position (i.e. left top of workarea)."
 (defun moom-cycle-frame-height ()
   "Change frame height and update the internal ring.
 If you find the frame is NOT changed as expected,
-please configure the margins by `moom-screen-margin'."
+please configure the margins by variable `moom-user-margin'."
   (interactive)
   (unless moom--height-list
     (moom--make-frame-height-list))
@@ -1211,7 +1208,21 @@ If FILL is non-nil, the frame will cover the screen with given margins."
     (setq moom--screen-margin margins)
     (moom-reset)
     (when fill
-      (moom-toggle-frame-maximized))))
+      (moom-toggle-frame-maximized)))
+  (warn "Obsolate is obsolated since 2020-10-01"))
+
+(make-obsolete 'moom-screen-margin 'moom-check-user-margin "2020-10-01")
+
+;;;###autoload
+(defun moom-check-user-margin (margin)
+  "Change top, bottom, left, and right margin by provided MARGINS.
+MARGIN shall be a list consists of 4 integer variables like '(10 10 20 20)."
+  (when (and (listp margin)
+             (eq (length margin) 4))
+    (let ((moom-user-margin margin))
+      (moom-identify-current-monitor)
+      (moom-move-frame)
+      (moom-fill-screen))))
 
 ;;;###autoload
 (defun moom-restore-last-status (&optional status)
@@ -1360,7 +1371,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.22"))
+  (let ((moom-release "1.3.23"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
