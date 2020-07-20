@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.21
+;; Version: 1.3.22
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -140,6 +140,14 @@ For function `display-line-numbers-mode',
            (const :tag "Change frame width single" :value single)
            (const :tag "Change frame width double" :value double)
            (const :tag "Change frame width half again" :value half-again)))
+  :group 'moom)
+
+(defcustom moom-user-margin '(0 0 0 0)
+  "User specified margin to adjust to the local environment."
+  :type '(list (integer :tag "Top margin")
+               (integer :tag "Bottom margin")
+               (integer :tag "Left margin")
+               (integer :tag "Right margin"))
   :group 'moom)
 
 (defcustom moom-multi-monitors-support nil
@@ -634,7 +642,7 @@ Taken from frame.el in 26.1 to support previous Emacs versions, 25.1 or later."
   (let ((geometry (moom--frame-monitor-geometry))
         (workarea (moom--frame-monitor-workarea))
         (margin nil))
-    (setq margin
+    (setq moom--screen-margin
           (list (- (nth 1 workarea) (nth 1 geometry))
                 (- (+ (nth 1 geometry) (nth 3 geometry))
                    (+ (nth 1 workarea) (nth 3 workarea)))
@@ -642,10 +650,17 @@ Taken from frame.el in 26.1 to support previous Emacs versions, 25.1 or later."
                 (- (+ (nth 0 geometry) (nth 2 geometry))
                    (+ (nth 0 workarea) (nth 2 workarea)))))
     ;; Update
-    (list (+ (nth 0 moom--local-margin) (nth 0 margin))
-          (+ (nth 1 moom--local-margin) (nth 1 margin))
-          (+ (nth 2 moom--local-margin) (nth 2 margin))
-          (+ (nth 3 moom--local-margin) (nth 3 margin)))))
+    (moom--update-screen-margin moom--local-margin)))
+
+(defun moom--update-screen-margin (&optional margin)
+  "Add MARGIN to `moom--screen-margin'.
+If MARGIN is nil, then `moom-user-margin' is applied."
+  (let ((mg (or margin moom-user-margin)))
+    (setq moom--screen-margin
+          (list (+ (nth 0 mg) (nth 0 moom--screen-margin))
+                (+ (nth 1 mg) (nth 1 moom--screen-margin))
+                (+ (nth 2 mg) (nth 2 moom--screen-margin))
+                (+ (nth 3 mg) (nth 3 moom--screen-margin))))))
 
 (defun moom--update-frame-display-line-numbers ()
   "Expand frame width by `moom-display-line-numbers-width'.
@@ -712,7 +727,8 @@ Alternatively, you can manually update `moom--screen-margin' itself."
                             (nth 0 geometry)
                             (nth 2 geometry))
                          (nth 3 shift)))))
-      (setq moom--screen-margin (moom--default-screen-margin)))))
+      (setq moom--screen-margin (moom--default-screen-margin))))
+  (moom--update-screen-margin))
 
 ;;;###autoload
 (defun moom-fill-screen ()
@@ -1344,7 +1360,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.21"))
+  (let ((moom-release "1.3.22"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
