@@ -261,6 +261,11 @@ For function `display-line-numbers-mode',
     (remove-hook 'global-display-line-numbers-mode-hook
                  #'moom--update-frame-display-line-numbers)))
 
+(defun moom--reload ()
+  "Reload."
+  (moom--abort)
+  (moom--setup))
+
 (defun moom--lighter ()
   "Lighter."
   (when moom-lighter
