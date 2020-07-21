@@ -31,6 +31,8 @@ or
 
 Note - This module has basically been tested on [[https://www.apple.com/macos/high-sierra/][macOS High Sierra]] and [[https://www.apple.com/jp/macos/catalina/][Catalina]] with a Full HD (1920x1080) single monitor. Additionally, tested in Windows 10 and Linux (Ubuntu 20.04, CentOS 8.2, and openSUSE 15.1) with GTK, but they still have some issues.
 
+Note - This module partially supports multi monitors for macOS. To enable the feature, please configure =moom-multi-monitors-support= to non-nil and call =moom-identify-current-monitor=. The method will be automatically called in =moom-move-frame-right= and =moom-move-frame-left=. see https://github.com/takaxp/moom/issues/12#issuecomment-652237962.
+
 ** Move
 
  - moom-move-frame
@@ -106,7 +108,9 @@ Note - If you find any problems around font settings when resizing the Emacs fra
 
  - moom-reset
  - moom-update-height-steps
- - moom-screen-margin
+ - moom-check-user-margin
+ - moom-screen-margin (obsolete)
+ - moom-identify-current-monitor
  - moom-restore-last-status
  - moom-toggle-font-module
  - moom-toggle-frame-maximized
@@ -235,6 +239,7 @@ Here is an example. ~Monaco~ is used for ASCII font and ~Migu 2M~ is used for Ja
 | moom-command-with-centering          | '(split delete)                    | list    |
 | moom-verbose                         | nil                                | boolean |
 | moom-lighter                         | Moom                               | string  |
+| moom-multi-monitors-support          | nil                                | boolean |
 | moom-user-margin                     | '(0 0 0 0)                         | list    |
 
 *** moom-command-with-centering
