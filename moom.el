@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.27
+;; Version: 1.3.28
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -907,11 +907,13 @@ If PLIST is nil, `moom-fill-band-options' is applied."
 (defun moom-move-frame-right (&optional pixel)
   "PIXEL move the current frame to right."
   (interactive)
+  (moom-identify-current-monitor)
   (let* ((pos-x (moom--frame-left))
          (pos-y (moom--frame-top))
          (new-pos-x (+ pos-x (or pixel
                                  (moom--shift-amount 'right)))))
-    (when (>= new-pos-x (display-pixel-width))
+    (when (>= new-pos-x (- (display-pixel-width)
+                           (nth 3 moom--screen-margin)))
       (setq new-pos-x (- new-pos-x
                          (display-pixel-width)
                          (moom--frame-pixel-width)
@@ -919,18 +921,19 @@ If PLIST is nil, `moom-fill-band-options' is applied."
     (set-frame-position nil
                         (moom--pos-x new-pos-x)
                         (moom--pos-y pos-y)))
-  (moom-identify-current-monitor)
   (moom-print-status))
 
 ;;;###autoload
 (defun moom-move-frame-left (&optional pixel)
   "PIXEL move the current frame to left."
   (interactive)
+  (moom-identify-current-monitor)
   (let* ((pos-x (moom--frame-left))
          (pos-y (moom--frame-top))
          (new-pos-x (- pos-x (or pixel
                                  (moom--shift-amount 'left)))))
-    (when (<= new-pos-x (- (moom--frame-pixel-width)))
+    (when (<= new-pos-x (- (nth 2 moom--screen-margin)
+                           (moom--frame-pixel-width)))
       (setq new-pos-x (+ new-pos-x
                          (display-pixel-width)
                          (moom--frame-pixel-width)
@@ -938,7 +941,6 @@ If PLIST is nil, `moom-fill-band-options' is applied."
     (set-frame-position nil
                         (moom--pos-x new-pos-x)
                         (moom--pos-y pos-y)))
-  (moom-identify-current-monitor)
   (moom-print-status))
 
 ;;;###autoload
@@ -1395,7 +1397,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.27"))
+  (let ((moom-release "1.3.28"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload

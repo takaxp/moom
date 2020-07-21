@@ -31,7 +31,7 @@ or
 
 Note - This module has basically been tested on [[https://www.apple.com/macos/high-sierra/][macOS High Sierra]] and [[https://www.apple.com/jp/macos/catalina/][Catalina]] with a Full HD (1920x1080) single monitor. Additionally, tested in Windows 10 and Linux (Ubuntu 20.04, CentOS 8.2, and openSUSE 15.1) with GTK, but they still have some issues.
 
-Note - This module partially supports multi monitors for macOS. To enable the feature, please configure =moom-multi-monitors-support= to non-nil and call =moom-identify-current-monitor=. The method will be automatically called in =moom-move-frame-right= and =moom-move-frame-left=. see [[https://github.com/takaxp/moom/issues/12#issuecomment-652237962][issue-12]].
+Note - This module supports multi monitors for macOS. To enable the feature, please configure =moom-multi-monitors-support= to non-nil and call =moom-identify-current-monitor=. The method will be automatically called in =moom-move-frame-right= and =moom-move-frame-left=. see [[https://github.com/takaxp/moom/issues/12#issuecomment-652237962][issue-12]].
 
 ** Move
 
