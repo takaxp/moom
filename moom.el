@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.24
+;; Version: 1.3.25
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -222,6 +222,10 @@ For function `display-line-numbers-mode',
 (defvar moom--local-margin (cond ((eq system-type 'windows-nt) '(0 12 -16 16))
                                  ((eq window-system 'x) '(-19 0 0 0))
                                  (t '(0 0 0 0))))
+(defvar moom--autoreset-hooks '(menu-bar-mode-hook
+                                tool-bar-mode-hook tab-bar-mode-hook
+                                horizontal-scroll-bar-mode-hook
+                                scroll-bar-mode-hook))
 
 (defun moom--setup ()
   "Init function."
@@ -247,7 +251,9 @@ For function `display-line-numbers-mode',
   ;; display-line-numbers-mode
   (when (fboundp 'global-display-line-numbers-mode)
     (add-hook 'global-display-line-numbers-mode-hook
-              #'moom--update-frame-display-line-numbers)))
+              #'moom--update-frame-display-line-numbers))
+  (mapcar (lambda (hook) (add-hook hook #'moom-reset))
+          moom--autoreset-hooks))
 
 (defun moom--abort ()
   "Abort."
@@ -259,7 +265,9 @@ For function `display-line-numbers-mode',
         moom--screen-grid nil)
   (when (fboundp 'global-display-line-numbers-mode)
     (remove-hook 'global-display-line-numbers-mode-hook
-                 #'moom--update-frame-display-line-numbers)))
+                 #'moom--update-frame-display-line-numbers))
+  (mapcar (lambda (hook) (remove-hook hook #'moom-reset))
+          moom--autoreset-hooks))
 
 (defun moom--reload ()
   "Reload."
@@ -1379,7 +1387,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.24"))
+  (let ((moom-release "1.3.25"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
