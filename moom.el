@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.26
+;; Version: 1.3.27
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -742,6 +742,8 @@ Alternatively, you can manually update `moom--screen-margin' itself."
     (moom--update-screen-margin)
     (unless (equal moom--last-monitor geometry)
       (setq moom--last-monitor geometry)
+      (when moom-verbose
+        (message "[moom] The current monitor has been changed to %s" geometry))
       (moom--make-frame-height-list))))
 
 ;;;###autoload
@@ -964,7 +966,7 @@ If you find the frame is NOT moved to the top exactly,
 please configure the margins by variable `moom-user-margin'."
   (interactive)
   (set-frame-position nil
-                      (moom--pos-x (moom--frame-left) '(:bound t))
+                      (moom--pos-x (moom--frame-left))
                       (moom--pos-y (nth 0 moom--screen-margin) '(:bound t)))
   (moom-print-status))
 
@@ -991,7 +993,7 @@ please configure the margins by variable `moom-user-margin'."
   (set-frame-position nil
                       (moom--pos-x (- (display-pixel-width)
                                       (moom--frame-pixel-width)
-                                      (nth 3 moom--screen-margin)) '(:bound t))
+                                      (nth 3 moom--screen-margin)))
                       (moom--pos-y (moom--frame-top) '(:bound t)))
   (moom-print-status))
 
@@ -1000,7 +1002,7 @@ please configure the margins by variable `moom-user-margin'."
   "Move the current frame to the left edge of the screen."
   (interactive)
   (set-frame-position nil
-                      (moom--pos-x (nth 2 moom--screen-margin) '(:bound t))
+                      (moom--pos-x (nth 2 moom--screen-margin))
                       (moom--pos-y (moom--frame-top) '(:bound t)))
   (moom-print-status))
 
@@ -1391,7 +1393,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.26"))
+  (let ((moom-release "1.3.27"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
