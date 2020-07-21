@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.25
+;; Version: 1.3.26
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -226,6 +226,7 @@ For function `display-line-numbers-mode',
                                 tool-bar-mode-hook tab-bar-mode-hook
                                 horizontal-scroll-bar-mode-hook
                                 scroll-bar-mode-hook))
+(defvar moom--last-monitor nil)
 
 (defun moom--setup ()
   "Init function."
@@ -720,25 +721,28 @@ SHIFT can control the margin, if needed.
 If SHIFT is nil, `moom--common-margin' will be applied.
 Alternatively, you can manually update `moom--screen-margin' itself."
   (interactive)
-  (if (and moom-multi-monitors-support
-           (> (length (display-monitor-attributes-list)) 1))
-      (setq moom--screen-margin
-            (let ((geometry (moom--frame-monitor-geometry))
-                  (shift (or shift moom--common-margin)))
-              (list (+ (nth 1 geometry)
-                       (nth 0 shift))
-                    (+ (- (display-pixel-height)
-                          (nth 1 geometry)
-                          (nth 3 geometry))
-                       (nth 1 shift))
-                    (+ (nth 0 geometry)
-                       (nth 2 shift))
-                    (+ (- (display-pixel-width)
-                          (nth 0 geometry)
-                          (nth 2 geometry))
-                       (nth 3 shift)))))
-    (setq moom--screen-margin (moom--default-screen-margin)))
-  (moom--update-screen-margin))
+  (let ((geometry (moom--frame-monitor-geometry)))
+    (if (and moom-multi-monitors-support
+             (> (length (display-monitor-attributes-list)) 1))
+        (setq moom--screen-margin
+              (let ((shift (or shift moom--common-margin)))
+                (list (+ (nth 1 geometry)
+                         (nth 0 shift))
+                      (+ (- (display-pixel-height)
+                            (nth 1 geometry)
+                            (nth 3 geometry))
+                         (nth 1 shift))
+                      (+ (nth 0 geometry)
+                         (nth 2 shift))
+                      (+ (- (display-pixel-width)
+                            (nth 0 geometry)
+                            (nth 2 geometry))
+                         (nth 3 shift)))))
+      (setq moom--screen-margin (moom--default-screen-margin)))
+    (moom--update-screen-margin)
+    (unless (equal moom--last-monitor geometry)
+      (setq moom--last-monitor geometry)
+      (moom--make-frame-height-list))))
 
 ;;;###autoload
 (defun moom-fill-screen ()
@@ -1387,7 +1391,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.25"))
+  (let ((moom-release "1.3.26"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
