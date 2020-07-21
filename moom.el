@@ -993,7 +993,9 @@ please configure the margins by variable `moom-user-margin'."
   (set-frame-position nil
                       (moom--pos-x (- (display-pixel-width)
                                       (moom--frame-pixel-width)
-                                      (nth 3 moom--screen-margin)))
+                                      (nth 3 moom--screen-margin))
+                                   (when (eq system-type 'windows-nt)
+                                     '(:bound t))) ;; FIXME
                       (moom--pos-y (moom--frame-top) '(:bound t)))
   (moom-print-status))
 
