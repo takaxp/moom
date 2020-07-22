@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.28
+;; Version: 1.3.29
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -747,6 +747,30 @@ Alternatively, you can manually update `moom--screen-margin' itself."
       (moom--make-frame-height-list))))
 
 ;;;###autoload
+(defun moom-print-monitors ()
+  "Print available monitors with index number.
+`moom-jump-to-monitor' could be useful to jump to a monitor."
+  (interactive)
+  (let ((msg nil)
+        (dma-list (display-monitor-attributes-list)))
+    (dotimes (i (length dma-list))
+      (let ((workarea (alist-get 'workarea (nth i dma-list))))
+        (push (format "%s: %s" i workarea) msg)))
+    (message "%s" (mapconcat 'concat (reverse msg) "\n"))))
+
+;;;###autoload
+(defun moom-jump-to-monitor (id)
+  "Jump to a monitor by specifying ID."
+  (interactive (list (read-number "Target monitor: " 0)))
+  (let ((dma-list (display-monitor-attributes-list)))
+    (if (< id (length dma-list))
+        (let ((workarea (alist-get 'workarea (nth id dma-list))))
+          (set-frame-position nil (nth 0 workarea) (nth 1 workarea))
+          (moom-identify-current-monitor)
+          (moom-move-frame-to-center))
+      (user-error "Target index shall be less than %s" id (length dma-list)))))
+
+;;;###autoload
 (defun moom-fill-screen ()
   "Expand frame width and height to fill the screen.
 The font size in buffers will be increased so that the frame width could be
@@ -1397,7 +1421,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.28"))
+  (let ((moom-release "1.3.29"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
