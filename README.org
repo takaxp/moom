@@ -111,6 +111,8 @@ Note - If you find any problems around font settings when resizing the Emacs fra
  - moom-check-user-margin
  - moom-screen-margin (obsolete)
  - moom-identify-current-monitor
+ - moom-print-monitors
+ - moom-jump-to-monitor
  - moom-restore-last-status
  - moom-toggle-font-module
  - moom-toggle-frame-maximized
@@ -424,6 +426,7 @@ Run =org-redisplay-inline-images= after font resizing to synchronize the image w
  - moom-split-window-hook
  - moom-delete-window-hook
  - moom-before-setup-hook
+ - moom-after-select-monitor-hook
  - moom-font-before-resize-hook (in moom-font.el)
  - moom-font-after-resize-hook (in moom-font.el)
 
