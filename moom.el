@@ -195,6 +195,11 @@ For function `display-line-numbers-mode',
   :type 'hook
   :group 'moom)
 
+(defcustom moom-after-select-monitor-hook nil
+  "Hook runs after selecting and jumping to a monitor."
+  :type 'hook
+  :group 'moom)
+
 (defvar moom-mode-map
   (let ((map (make-sparse-keymap)))
     ;; No keybindings are configured as default. It's open for users.
@@ -751,11 +756,12 @@ Alternatively, you can manually update `moom--screen-margin' itself."
   "Print available monitors with index number.
 `moom-jump-to-monitor' could be useful to jump to a monitor."
   (interactive)
-  (let ((msg nil)
-        (dma-list (display-monitor-attributes-list)))
+  (let ((dma-list (display-monitor-attributes-list))
+        (msg nil))
     (dotimes (i (length dma-list))
-      (let ((workarea (alist-get 'workarea (nth i dma-list))))
-        (push (format "%s: %s" i workarea) msg)))
+      (let ((gm (alist-get 'geometry (nth i dma-list))))
+        (push (format "[%s] W:%04s H:%04s (%05s,%05s)"
+                      i (nth 2 gm) (nth 3 gm) (nth 0 gm) (nth 1 gm)) msg)))
     (message "%s" (mapconcat 'concat (reverse msg) "\n"))))
 
 ;;;###autoload
@@ -767,7 +773,7 @@ Alternatively, you can manually update `moom--screen-margin' itself."
         (let ((workarea (alist-get 'workarea (nth id dma-list))))
           (set-frame-position nil (nth 0 workarea) (nth 1 workarea))
           (moom-identify-current-monitor)
-          (moom-move-frame-to-center))
+          (run-hooks 'moom-after-select-monitor-hook))
       (user-error "Target index shall be less than %s" id (length dma-list)))))
 
 ;;;###autoload
