@@ -467,7 +467,7 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
              (plist-get options :bound))
     (setq posx (+ posx 16))) ;; FIXME
   (when (or (plist-get options :bound)
-            (not (eq window-system 'ns))) ;; TODO: support others if possible
+            (not (eq system-type 'darwin))) ;; TODO: support others if possible
     (let ((bounds-left (- (nth 0 moom--screen-grid)))
           (bounds-right (- (display-pixel-width)
                            (moom--frame-pixel-width))))
@@ -494,7 +494,7 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
     (setq posy (nth 1 posy)))
   (setq posy (- posy (nth 1 moom--screen-grid)))
   (when (or (plist-get options :bound)
-            (not (eq window-system 'ns))) ;; TODO: support others if possible
+            (not (eq system-type 'darwin))) ;; TODO: support others if possible
     (let ((bounds-top (- (nth 1 moom--screen-grid)))
           (bounds-bottom (- (display-pixel-height)
                             (moom--frame-pixel-height))))
