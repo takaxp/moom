@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.30
+;; Version: 1.3.31
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -467,7 +467,7 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
              (plist-get options :bound))
     (setq posx (+ posx 16))) ;; FIXME
   (when (or (plist-get options :bound)
-            (not (eq window-system 'ns))) ;; TODO: support others if possible
+            (not (member window-system '(ns mac)))) ;; TODO: support others if possible
     (let ((bounds-left (- (nth 0 moom--screen-grid)))
           (bounds-right (- (display-pixel-width)
                            (moom--frame-pixel-width))))
@@ -475,7 +475,7 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
                        ((> posx bounds-right) bounds-right)
                        (t posx)))))
   (unless (plist-get options :grid)
-    (setq options (if (member window-system '(ns mac)) ;; FIXME
+    (setq options (if (eq window-system 'ns)
                       '(:grid screen) '(:grid virtual))))
   (cond ((eq (plist-get options :grid) 'virtual)
          (let ((pw (- (display-pixel-width) (moom--frame-pixel-width))))
@@ -494,7 +494,7 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
     (setq posy (nth 1 posy)))
   (setq posy (- posy (nth 1 moom--screen-grid)))
   (when (or (plist-get options :bound)
-            (not (eq window-system 'ns))) ;; TODO: support others if possible
+            (not (member window-system '(ns mac)))) ;; TODO: support others if possible
     (let ((bounds-top (- (nth 1 moom--screen-grid)))
           (bounds-bottom (- (display-pixel-height)
                             (moom--frame-pixel-height))))
@@ -502,7 +502,7 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
                        ((> posy bounds-bottom) bounds-bottom)
                        (t posy)))))
   (unless (plist-get options :grid)
-    (setq options (if (member window-system '(ns mac))
+    (setq options (if (eq window-system 'ns)
                       '(:grid screen) '(:grid virtual))))
   (cond ((eq (plist-get options :grid) 'virtual)
          (let ((ph (- (display-pixel-height) (moom--frame-pixel-height))))
@@ -749,7 +749,9 @@ Alternatively, you can manually update `moom--screen-margin' itself."
       (setq moom--last-monitor geometry)
       (when moom-verbose
         (message "[moom] The current monitor has been changed to %s" geometry))
-      (moom--make-frame-height-list))))
+      (moom--make-frame-height-list)))
+  (when (eq window-system 'mac) ;; To avoid visual error
+    (redraw-frame)))
 
 ;;;###autoload
 (defun moom-print-monitors ()
@@ -1427,7 +1429,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.30"))
+  (let ((moom-release "1.3.31"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
