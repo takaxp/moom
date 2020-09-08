@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.31
+;; Version: 1.3.32
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -1000,7 +1000,7 @@ If you find the frame is NOT moved to the top exactly,
 please configure the margins by variable `moom-user-margin'."
   (interactive)
   (set-frame-position nil
-                      (moom--pos-x (moom--frame-left))
+                      (moom--pos-x (moom--frame-left) '(:bound t))
                       (moom--pos-y (nth 0 moom--screen-margin) '(:bound t)))
   (moom-print-status))
 
@@ -1429,7 +1429,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.31"))
+  (let ((moom-release "1.3.32"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
