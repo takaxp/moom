@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.32
+;; Version: 1.3.33
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -1216,9 +1216,11 @@ This function does not effect font size."
 (defun moom-delete-windows ()
   "Delete all window and make frame width single."
   (interactive)
-  (let ((buffer (buffer-name)))
+  (let ((buffer (buffer-name))
+        (p (point)))
     (delete-windows-on)
-    (switch-to-buffer buffer))
+    (switch-to-buffer buffer)
+    (goto-char p))
   (moom-change-frame-width)
   (when (moom--centerize-p 'delete)
     (moom-move-frame-to-horizontal-center))
@@ -1429,7 +1431,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.32"))
+  (let ((moom-release "1.3.33"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
