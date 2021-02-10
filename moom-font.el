@@ -1,10 +1,10 @@
 ;;; moom-font.el --- A module for resizing Japanese fonts for Moom
 
-;; Copyright (C) 2017-2018 Takaaki ISHIKAWA
+;; Copyright (C) 2017-2021 Takaaki ISHIKAWA
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.0
+;; Version: 1.4.0
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Twitter: @takaxp

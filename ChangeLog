@@ -1,3 +1,22 @@
+2021-02-11  Takaaki ISHIKAWA  <takaxp@ieee.org>
+
+	* moom-font.el version 1.4.0
+	- Count up just to sync the version of moom.el
+
+	* moom.el: version 1.4.0
+	- [breaking change] moom-screen-margin is obsoleted
+	- [new] moom-change-frame-width-max
+	- [new] moom-change-frame-height-max
+	- [new] moom-before-setup-hook
+	- [new] moom-user-margin
+	- [new] moom-print-monitors
+	- [new] moom-jump-to-monitor
+	- [improve] Disable some hooks when restoring the last status
+	- [improve] User friendly format to show frame status in mini buffer
+	- [improve] Keep the current buffer when deleting a window
+	- [new feature] Support Linux (GTK) and Windows
+	- [new feature] Support multi monitors on macOS and Windows 10
+
 2020-05-31  Takaaki ISHIKAWA  <takaxp@ieee.org>
 
 	* moom-font.el: version 1.3.0

@@ -29,20 +29,20 @@ or
 #+caption: demo for moving and zooming, frame maximized
 [[https://github.com/takaxp/contents/blob/master/moom/demo1.gif]]
 
-Note - This module has basically been tested on [[https://www.apple.com/macos/high-sierra/][macOS High Sierra]], [[https://www.apple.com/jp/macos/catalina/][Catalina]], and [[https://www.apple.com/jp/macos/big-sur/][BigSur]] with a Full HD (1920x1080) single monitor or two Full HD monitors. Additionally, tested in Windows 10 and Linux (Ubuntu 20.04, CentOS 8.2, and openSUSE 15.1) with GTK, but they still have some issues.
+Note 1 - This module has basically been tested on [[https://www.apple.com/macos/high-sierra/][macOS High Sierra]], [[https://www.apple.com/jp/macos/catalina/][Catalina]], and [[https://www.apple.com/jp/macos/big-sur/][BigSur]] with a Full HD (1920x1080) single monitor or two Full HD monitors. Additionally, tested in Windows 10 and Linux (Ubuntu 20.04, CentOS 8.2, and openSUSE 15.1) with GTK, but they still have some issues.
 
-Note - This module supports multi monitors for macOS and Windows 10. To enable the feature, please configure =moom-multi-monitors-support= to non-nil and call =moom-identify-current-monitor=. The method will be automatically called in =moom-move-frame-right= and =moom-move-frame-left=. see [[https://github.com/takaxp/moom/issues/12#issuecomment-652237962][issue-12]].
+Note 2 - This module supports multi monitors for macOS and Windows 10. To enable the feature, please configure =moom-multi-monitors-support= to non-nil and call =moom-identify-current-monitor=. The method will be automatically called in =moom-move-frame-right= and =moom-move-frame-left=. see [[https://github.com/takaxp/moom/issues/12#issuecomment-652237962][issue-12]].
 
 ** Move
 
  - moom-move-frame
 
-*** Horizontal
+*** Horizontal shift
 
  - moom-move-frame-left
  - moom-move-frame-right
 
-*** Center
+*** Centering
 
  - moom-move-frame-to-center
  - moom-move-frame-to-vertical-center
@@ -66,7 +66,7 @@ Note - This module supports multi monitors for macOS and Windows 10. To enable t
 
 ** Expand
 
-These functions will not change font size.
+These functions will not change font size in a frame.
 
  - moom-change-frame-width-single
  - moom-change-frame-width-double
@@ -83,7 +83,7 @@ These functions will not change font size.
 
 ** Fill screen
 
-These functions normally change font size. But the behavior can be changed by =M-x moom-toggle-font-module=.
+These functions normally change font size in a frame. But the behavior can be changed by =M-x moom-toggle-font-module=.
 
  - moom-fill-top
  - moom-fill-screen
@@ -97,7 +97,7 @@ These functions normally change font size. But the behavior can be changed by =M
  - moom-fill-bottom-right
  - moom-fill-band
 
-Note - If you find any problems around font settings when resizing the Emacs frame, you can easily disable =moom-font.el=. Just toggle =moom-toggle-font-module= in your init.el
+Note - If you find any problems around font settings when resizing the Emacs frame, you can easily disable the feature in =moom-font.el=. Just toggle =moom-toggle-font-module= in your init.el
 
 #+begin_src emacs-lisp
 (with-eval-after-load "moom"
@@ -109,7 +109,6 @@ Note - If you find any problems around font settings when resizing the Emacs fra
  - moom-reset
  - moom-update-height-steps
  - moom-check-user-margin
- - moom-screen-margin (obsolete)
  - moom-identify-current-monitor
  - moom-print-monitors
  - moom-jump-to-monitor
@@ -122,24 +121,25 @@ Note - If you find any problems around font settings when resizing the Emacs fra
  - moom-print-status
  - moom-version
 
+(obsoleted)
+ - moom-screen-margin
+
 *** How to setup screen margins
 
-For macOS users, the default margin is =(23 0 0 0)=. And for other system types, it is also automatically configured using combination of =frame-monitor-geometry= and =frame-monitor-workarea= when you activate =moom-mode=. But the actual work area is probably depends on user environment.
-
-You can control the actual active region on your screen by setting =moom-user-margin=.
+For macOS users, the default margin is =(23 0 0 0)=. And for other system types, it is also automatically configured using combination of =frame-monitor-geometry= and =frame-monitor-workarea= when =moom-mode= is activated. But the actual work area is probably depends on user environment. Therefore, =moom.el= provides a capability that you can control the actual active region on your screen by setting =moom-user-margin=.
 
 #+begin_src emacs-lisp
 (setq moom-user-margin '(50 50 50 50)) ;; {top, bottom, left, right}
 (moom-mode 1)
 #+end_src
 
-Each value means a margin from the ~top~, ~bottom~, ~left~, and ~right~ edge of your screen. If you want to test some combination of the margins, then =moom-check-user-margin= could be helpful.
+Each value means a margin from the ~top~, ~bottom~, ~left~, and ~right~ edge of your screen. If you want to test some combinations of the margins, then =moom-check-user-margin= could be helpful since the frame will be expanded to the actual region on a screen. To reset the frame, =M-x moom-reset= can be used.
 
 #+begin_src emacs-lisp
 (moom-check-user-margin '(50 50 50 50)) ;; {top, bottom, left, right}
 #+end_src
 
-=moom-check-user-margin= will fill your screen with the provided margins. The tested margins will not be immediately applied so please configure the margins in your init.el.
+The =moom-check-user-margin= will fill your screen with the provided margins. The tested margins will NOT be immediately applied so please configure the margins in your init.el explicitly.
 
 *** How to setup screen margins (obsolete)
 

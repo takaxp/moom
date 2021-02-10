@@ -1,10 +1,10 @@
 ;;; moom.el --- Commands to control frame position and size -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2017-2020 Takaaki ISHIKAWA
+;; Copyright (C) 2017-2021 Takaaki ISHIKAWA
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.34
+;; Version: 1.4.0
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -1290,7 +1290,7 @@ If FILL is non-nil, the frame will cover the screen with given margins."
     (moom-reset)
     (when fill
       (moom-toggle-frame-maximized)))
-  (warn "Obsolate is obsolated since 2020-10-01"))
+  (warn "`moom-screen-margin' is obsolated since 2020-10-01"))
 
 (make-obsolete 'moom-screen-margin 'moom-check-user-margin "2020-10-01")
 
@@ -1454,7 +1454,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.34"))
+  (let ((moom-release "1.4.0"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
