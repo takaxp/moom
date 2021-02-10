@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.3.33
+;; Version: 1.3.34
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -232,6 +232,7 @@ For function `display-line-numbers-mode',
                                 horizontal-scroll-bar-mode-hook
                                 scroll-bar-mode-hook))
 (defvar moom--last-monitor nil)
+(defvar moom--display-border '(0 0))
 
 (defun moom--setup ()
   "Init function."
@@ -467,10 +468,12 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
              (plist-get options :bound))
     (setq posx (+ posx 16))) ;; FIXME
   (when (or (plist-get options :bound)
-            (not (member window-system '(ns mac)))) ;; TODO: support others if possible
-    (let ((bounds-left (- (nth 0 moom--screen-grid)))
-          (bounds-right (- (display-pixel-width)
-                           (moom--frame-pixel-width))))
+            (not (member window-system '(ns mac w32)))) ;; TODO: support others if possible
+    (let ((bounds-left (- (nth 0 moom--last-monitor)
+                          (nth 0 moom--screen-grid)))
+          (bounds-right (+ (nth 0 moom--last-monitor)
+                           (nth 2 moom--last-monitor)
+                           (- (moom--frame-pixel-width)))))
       (setq posx (cond ((< posx bounds-left) bounds-left)
                        ((> posx bounds-right) bounds-right)
                        (t posx)))))
@@ -478,7 +481,8 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
     (setq options (if (eq window-system 'ns)
                       '(:grid screen) '(:grid virtual))))
   (cond ((eq (plist-get options :grid) 'virtual)
-         (let ((pw (- (display-pixel-width) (moom--frame-pixel-width))))
+         (let ((pw (- (nth 0 moom--display-border)
+                      (moom--frame-pixel-width))))
            (if (< posx 0)
                (- posx (+ pw (nth 0 moom--virtual-grid)))
              posx)))
@@ -494,10 +498,12 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
     (setq posy (nth 1 posy)))
   (setq posy (- posy (nth 1 moom--screen-grid)))
   (when (or (plist-get options :bound)
-            (not (member window-system '(ns mac)))) ;; TODO: support others if possible
-    (let ((bounds-top (- (nth 1 moom--screen-grid)))
-          (bounds-bottom (- (display-pixel-height)
-                            (moom--frame-pixel-height))))
+            (not (member window-system '(ns mac w32)))) ;; TODO: support others if possible
+    (let ((bounds-top (- (nth 1 moom--last-monitor)
+                         (nth 1 moom--screen-grid)))
+          (bounds-bottom (+ (nth 1 moom--last-monitor)
+                            (nth 3 moom--last-monitor)
+                            (- (moom--frame-pixel-height)))))
       (setq posy (cond ((< posy bounds-top) bounds-top)
                        ((> posy bounds-bottom) bounds-bottom)
                        (t posy)))))
@@ -505,7 +511,8 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
     (setq options (if (eq window-system 'ns)
                       '(:grid screen) '(:grid virtual))))
   (cond ((eq (plist-get options :grid) 'virtual)
-         (let ((ph (- (display-pixel-height) (moom--frame-pixel-height))))
+         (let ((ph (- (nth 1 moom--display-border)
+                      (moom--frame-pixel-height))))
            (if (< posy 0)
                (- posy (+ ph (nth 1 moom--virtual-grid)))
              posy)))
@@ -718,6 +725,21 @@ The frame width shall be specified with TARGET-WIDTH."
     (when (> shift 0)
       (moom-move-frame-left shift))))
 
+(defun moom--update-display-border ()
+  "Update right and bottom border for negative coordinate value on windows-nt."
+  (let ((dma-list (display-monitor-attributes-list))
+        (rb 0)
+	      (lb 0))
+    (dotimes (i (length dma-list))
+      (let ((gm (alist-get 'geometry (nth i dma-list))))
+	      (when (< (nth 0 gm) 0)
+	        (setq rb (nth 0 gm)))
+	      (when (< (nth 1 gm) 0)
+	        (setq lb (nth 1 gm)))))
+    (setq moom--display-border
+          (list (+ (display-pixel-width) rb)
+	              (+ (display-pixel-height) lb)))))
+
 ;;;###autoload
 (defun moom-identify-current-monitor (&optional shift)
   "Update `moom--screen-margin' to identify and focus on the current monitor.
@@ -745,6 +767,7 @@ Alternatively, you can manually update `moom--screen-margin' itself."
                          (nth 3 shift)))))
       (setq moom--screen-margin (moom--default-screen-margin)))
     (moom--update-screen-margin)
+    (moom--update-display-border)
     (unless (equal moom--last-monitor geometry)
       (setq moom--last-monitor geometry)
       (when moom-verbose
@@ -1431,7 +1454,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.3.33"))
+  (let ((moom-release "1.3.34"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
