@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.4.0
+;; Version: 1.4.1
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -150,7 +150,7 @@ For function `display-line-numbers-mode',
                (integer :tag "Right margin"))
   :group 'moom)
 
-(defcustom moom-multi-monitors-support nil
+(defcustom moom-multi-monitors-support t
   "If non-nil, multiple monitors support is enabled."
   :type 'boolean
   :group 'moom)
@@ -1460,7 +1460,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.4.0"))
+  (let ((moom-release "1.4.1"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload

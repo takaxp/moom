@@ -31,7 +31,7 @@ or
 
 Note 1 - This module has basically been tested on [[https://www.apple.com/macos/high-sierra/][macOS High Sierra]], [[https://www.apple.com/jp/macos/catalina/][Catalina]], and [[https://www.apple.com/jp/macos/big-sur/][BigSur]] with a Full HD (1920x1080) single monitor or two Full HD monitors. Additionally, tested in Windows 10 and Linux (Ubuntu 20.04, CentOS 8.2, and openSUSE 15.1) with GTK, but they still have some issues.
 
-Note 2 - This module supports multi monitors for macOS and Windows 10. To enable the feature, please configure =moom-multi-monitors-support= to non-nil and call =moom-identify-current-monitor=. The method will be automatically called in =moom-move-frame-right= and =moom-move-frame-left=. see [[https://github.com/takaxp/moom/issues/12#issuecomment-652237962][issue-12]].
+Note 2 - This module supports multi monitors for macOS, Windows 10 and Ubuntu 20.04. From version 1.4.1, =moom-multi-monitors-support= is non-nil as default so no need to change the setting in your init.el.
 
 ** Move
 
@@ -241,7 +241,7 @@ Here is an example. ~Monaco~ is used for ASCII font and ~Migu 2M~ is used for Ja
 | moom-command-with-centering          | '(split delete)                    | list    |
 | moom-verbose                         | nil                                | boolean |
 | moom-lighter                         | Moom                               | string  |
-| moom-multi-monitors-support          | nil                                | boolean |
+| moom-multi-monitors-support          | t                                  | boolean |
 | moom-user-margin                     | '(0 0 0 0)                         | list    |
 
 *** moom-command-with-centering
