@@ -600,10 +600,14 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
     (when (memq area '(bottom botl botr))
       (setq pos-y (moom--vertical-center)))
     (when (memq area '(top bottom left right topl topr botl botr))
-      (set-frame-position nil
-                          (moom--pos-x pos-x)
-                          (moom--pos-y pos-y))
-      (set-frame-size nil pixel-width pixel-height t)))
+      (let ((flag (memq window-system '(ns mac))))
+        (unless flag
+          (set-frame-size nil pixel-width pixel-height t))
+        (set-frame-position nil
+                            (moom--pos-x pos-x)
+                            (moom--pos-y pos-y))
+        (when flag
+          (set-frame-size nil pixel-width pixel-height t)))))
   (moom-print-status))
 
 (defun moom--shift-amount (direction)
@@ -797,6 +801,8 @@ Alternatively, you can manually update `moom--screen-margin' itself."
     (if (< id (length dma-list))
         (let ((workarea (alist-get 'workarea (nth id dma-list))))
           (set-frame-position nil (nth 0 workarea) (nth 1 workarea))
+          (when (memq window-system '(x))
+            (sleep-for 0.2)) ;; FIXME
           (moom-identify-current-monitor)
           (run-hooks 'moom-after-select-monitor-hook))
       (user-error "Target index shall be less than %s" id (length dma-list)))))
