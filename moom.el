@@ -221,7 +221,7 @@ For function `display-line-numbers-mode',
 (defvar moom--screen-grid nil)
 (defvar moom--print-status t)
 (defvar moom--common-margin
-  (cond ((member window-system '(ns mac)) '(23 0 0 0))
+  (cond ((memq window-system '(ns mac)) '(23 0 0 0))
         (t '(0 0 0 0))))
 (defvar moom--pos-options '(:grid nil :bound nil)) ;; {screen,virtual}, {nil,t}
 (defvar moom--local-margin (cond ((eq system-type 'windows-nt) '(0 12 -16 16))
@@ -431,7 +431,7 @@ the actual pixel width will not exceed the WIDTH."
   (cond ((eq window-system 'w32) '(-16 0))
         ((and (eq window-system 'x)
               (version< emacs-version "26.0")) '(0 27))
-        ((member window-system '(ns mac)) '(0 0))
+        ((memq window-system '(ns mac)) '(0 0))
         ((eq window-system 'x) '(10 8))
         (t '(0 0))))
 
@@ -440,7 +440,7 @@ the actual pixel width will not exceed the WIDTH."
   (cond ((eq window-system 'w32) '(8 0))
         ((and (eq window-system 'x)
               (version< emacs-version "26.0")) '(10 -19))
-        ((member window-system '(ns mac)) '(0 0))
+        ((memq window-system '(ns mac)) '(0 0))
         ((eq window-system 'x) '(0 0))
         (t '(0 0))))
 
@@ -468,7 +468,7 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
              (plist-get options :bound))
     (setq posx (+ posx 16))) ;; FIXME
   (when (or (plist-get options :bound)
-            (not (member window-system '(ns mac w32)))) ;; TODO: support others if possible
+            (not (memq window-system '(ns mac w32)))) ;; TODO: support others if possible
     (let ((bounds-left (- (nth 0 moom--last-monitor)
                           (nth 0 moom--screen-grid)))
           (bounds-right (+ (nth 0 moom--last-monitor)
@@ -498,7 +498,7 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
     (setq posy (nth 1 posy)))
   (setq posy (- posy (nth 1 moom--screen-grid)))
   (when (or (plist-get options :bound)
-            (not (member window-system '(ns mac w32)))) ;; TODO: support others if possible
+            (not (memq window-system '(ns mac w32)))) ;; TODO: support others if possible
     (let ((bounds-top (- (nth 1 moom--last-monitor)
                          (nth 1 moom--screen-grid)))
           (bounds-bottom (+ (nth 1 moom--last-monitor)
