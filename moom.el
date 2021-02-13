@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.4.1
+;; Version: 1.4.2
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -744,6 +744,15 @@ The frame width shall be specified with TARGET-WIDTH."
           (list (+ (display-pixel-width) rb)
 	              (+ (display-pixel-height) lb)))))
 
+(defun moom--current-monitor-id ()
+  "Provide id of the current monitor."
+  (let ((dma-list (display-monitor-attributes-list))
+	      (id 0))
+    (dotimes (i (length dma-list))
+      (when (equal (alist-get 'geometry (nth i dma-list)) moom--last-monitor)
+	      (setq id i)))
+    id))
+
 ;;;###autoload
 (defun moom-identify-current-monitor (&optional shift)
   "Update `moom--screen-margin' to identify and focus on the current monitor.
@@ -789,14 +798,17 @@ Alternatively, you can manually update `moom--screen-margin' itself."
         (msg nil))
     (dotimes (i (length dma-list))
       (let ((gm (alist-get 'geometry (nth i dma-list))))
-        (push (format "[%s] W:%04s H:%04s (%05s,%05s)"
-                      i (nth 2 gm) (nth 3 gm) (nth 0 gm) (nth 1 gm)) msg)))
+        (push (format "[%s] W:%04s H:%04s (%05s,%05s) %s"
+                      i (nth 2 gm) (nth 3 gm) (nth 0 gm) (nth 1 gm)
+                      (if (equal gm moom--last-monitor) "<current>" "")) msg)))
     (message "%s" (mapconcat 'concat (reverse msg) "\n"))))
 
 ;;;###autoload
 (defun moom-jump-to-monitor (id)
   "Jump to a monitor by specifying ID."
-  (interactive (list (read-number "Target monitor: " 0)))
+  (interactive (list
+                (read-number
+                 "Target monitor: " (moom--current-monitor-id))))
   (let ((dma-list (display-monitor-attributes-list)))
     (if (< id (length dma-list))
         (let ((workarea (alist-get 'workarea (nth id dma-list))))
@@ -806,6 +818,15 @@ Alternatively, you can manually update `moom--screen-margin' itself."
           (moom-identify-current-monitor)
           (run-hooks 'moom-after-select-monitor-hook))
       (user-error "Target index shall be less than %s" id (length dma-list)))))
+
+;;;###autoload
+(defun moom-cycle-monitors ()
+  "Cycle monitors."
+  (interactive)
+  (let ((dma-list (display-monitor-attributes-list)))
+    (moom-jump-to-monitor (let ((v (+ (moom--current-monitor-id) 1)))
+			                      (if (equal v (length dma-list)) 0 v))))
+  (moom-print-monitors))
 
 ;;;###autoload
 (defun moom-fill-screen ()
@@ -1460,7 +1481,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.4.1"))
+  (let ((moom-release "1.4.2"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
