@@ -821,11 +821,14 @@ Alternatively, you can manually update `moom--screen-margin' itself."
 
 ;;;###autoload
 (defun moom-cycle-monitors ()
-  "Cycle monitors."
+  "Cycle monitors.
+`moom-after-select-monitor-hook' could be useful to add some additional
+actions when selecting a monitor."
   (interactive)
   (let ((dma-list (display-monitor-attributes-list)))
-    (moom-jump-to-monitor (let ((v (+ (moom--current-monitor-id) 1)))
-			                      (if (equal v (length dma-list)) 0 v))))
+    (moom-jump-to-monitor
+     (let ((v (+ (moom--current-monitor-id) 1)))
+			 (if (equal v (length dma-list)) 0 v))))
   (moom-print-monitors))
 
 ;;;###autoload
