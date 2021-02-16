@@ -69,7 +69,7 @@ These functions will not change font size in a frame.
  - moom-change-frame-width-single
  - moom-change-frame-width-double
  - moom-change-frame-width-half-again
- - moom-change-frame-width-max
+ - moom-change-frame-width-max (alias of moom-fill-width)
  - moom-change-frame-width
  - moom-change-frame-height
  - moom-cycle-frame-height
@@ -86,13 +86,14 @@ These functions normally change font size in a frame. But the behavior can be ch
  - moom-fill-top
  - moom-fill-screen
  - moom-fill-bottom
- - moom-fill-height
  - moom-fill-left
  - moom-fill-right
  - moom-fill-top-left
  - moom-fill-top-right
  - moom-fill-bottom-left
  - moom-fill-bottom-right
+ - moom-fill-width
+ - moom-fill-height
  - moom-fill-band
 
 Note - If you find any problems around font settings when resizing the Emacs frame, you can easily disable the feature in =moom-font.el=. Just toggle =moom-toggle-font-module= in your init.el

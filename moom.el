@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.4.2
+;; Version: 1.4.3
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -1186,6 +1186,7 @@ please configure the margins by variable `moom-user-margin'."
 ;;;###autoload
 (defun moom-fill-height ()
   "Expand frame height to fill screen vertically without changing frame width."
+  (interactive)
   (moom-change-frame-height (moom--max-frame-pixel-height) t))
 
 ;;;###autoload
@@ -1484,7 +1485,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.4.2"))
+  (let ((moom-release "1.4.3"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
