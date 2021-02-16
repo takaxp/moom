@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.4.4
+;; Version: 1.4.5
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -1302,8 +1302,7 @@ This function does not effect font size."
 (defun moom-reset ()
   "Reset associated parameters."
   (interactive)
-  (let ((moom--font-module-p (and moom-use-font-module
-                                  (require 'moom-font nil t))))
+  (let ((moom--font-module-p (require 'moom-font nil t)))
     (setq moom--maximized nil)
     (moom--save-last-status)
     (moom-identify-current-monitor)
@@ -1493,7 +1492,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.4.4"))
+  (let ((moom-release "1.4.5"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
