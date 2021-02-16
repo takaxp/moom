@@ -154,7 +154,7 @@ Just provide a list to setup screen margins. The list consists of four values to
 
 * Extension to integrate font resizing
 
-No need to load =moom-font.el= explicitly. If the package is installed in your system, then it will be activated automatically. The package is basically provided for the users who rely on Japanese fonts.
+No need to load =moom-font.el= explicitly. If the package is installed in your system, then it will be activated automatically. The package is basically provided for the users who rely on Japanese fonts. And if you will never user the font module without deleting =moom-font.el=, please configure =moom-use-font-module= to nil before activating =moom-mode= by =(moom-mode 1)=.
 
 #+caption: demo for increasing and decreasing fonts, frame maximized
 [[https://github.com/takaxp/contents/blob/master/moom/demo2.gif]]
@@ -243,6 +243,7 @@ Here is an example. ~Monaco~ is used for ASCII font and ~Migu 2M~ is used for Ja
 | moom-lighter                         | Moom                               | string  |
 | moom-multi-monitors-support          | t                                  | boolean |
 | moom-user-margin                     | '(0 0 0 0)                         | list    |
+| moom-use-font-module                 | t                                  | boolean |
 
 *** moom-command-with-centering
 

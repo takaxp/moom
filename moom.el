@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.4.3
+;; Version: 1.4.4
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -155,6 +155,11 @@ For function `display-line-numbers-mode',
   :type 'boolean
   :group 'moom)
 
+(defcustom moom-use-font-module t
+  "If non-nil, font module will not integrated even if the module is available."
+  :type 'boolean
+  :group 'moom)
+
 (defcustom moom-verbose nil
   "Show responses from \"moom\"."
   :type 'boolean
@@ -237,6 +242,8 @@ For function `display-line-numbers-mode',
 (defun moom--setup ()
   "Init function."
   (run-hooks 'moom-before-setup-hook)
+  (unless moom-use-font-module
+    (setq moom--font-module-p nil))
   (moom-identify-current-monitor)
   (unless moom--virtual-grid
     (setq moom--virtual-grid (moom--virtual-grid)))
@@ -1295,7 +1302,8 @@ This function does not effect font size."
 (defun moom-reset ()
   "Reset associated parameters."
   (interactive)
-  (let ((moom--font-module-p (require 'moom-font nil t)))
+  (let ((moom--font-module-p (and moom-use-font-module
+                                  (require 'moom-font nil t))))
     (setq moom--maximized nil)
     (moom--save-last-status)
     (moom-identify-current-monitor)
@@ -1485,7 +1493,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.4.3"))
+  (let ((moom-release "1.4.4"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
