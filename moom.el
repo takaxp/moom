@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.4.7
+;; Version: 1.4.8
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -156,7 +156,9 @@ For function `display-line-numbers-mode',
   :group 'moom)
 
 (defcustom moom-use-font-module t
-  "If non-nil, font module will not integrated even if the module is available."
+  "If non-nil, font module will not integrated even if the module is available.
+Configure this variable before activating moom mode.
+`moom-toggle-font-module' could be also useful."
   :type 'boolean
   :group 'moom)
 
@@ -1493,7 +1495,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.4.7"))
+  (let ((moom-release "1.4.8"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
