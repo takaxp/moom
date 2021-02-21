@@ -100,7 +100,7 @@ Note - If you find any problems around font settings when resizing the Emacs fra
 
 #+begin_src emacs-lisp
 (with-eval-after-load "moom"
-  (moom-toggle-font-module))
+  (setq moom-use-font-module nil))
 #+end_src
 
 ** Other functions
