@@ -29,7 +29,7 @@ or
 #+caption: demo for moving and zooming, frame maximized
 [[https://github.com/takaxp/contents/blob/master/moom/demo1.gif]]
 
-Note - This module has basically been tested on [[https://www.apple.com/macos/high-sierra/][macOS High Sierra]], [[https://www.apple.com/jp/macos/catalina/][Catalina]], and [[https://www.apple.com/jp/macos/big-sur/][BigSur]] with combinations with two Full HD (1920x1080) monitors and one 4K monitor. Additionally, tested in Windows 10 and Linux (Ubuntu 20.04 with Emacs 26.3, CentOS 8.2, and openSUSE 15.1) with GTK, but they may still have some issues. From version 1.4.1, =moom-multi-monitors-support= is non-nil as default so no need to change the setting in your init.el.
+Note - This module has basically been tested on [[https://www.apple.com/macos/high-sierra/][macOS High Sierra]], [[https://www.apple.com/jp/macos/catalina/][Catalina]], and [[https://www.apple.com/jp/macos/big-sur/][BigSur]] with combinations of two Full HD (1920x1080) monitors and one 4K monitor. Additionally, tested in Windows 10 and Linux (Ubuntu 20.04 with Emacs 26.3, CentOS 8.2, and openSUSE 15.1) with GTK, but they may still have some issues. From version 1.4.1, =moom-multi-monitors-support= is non-nil as default so no need to change the setting in your init.el.
 
 ** Move
 
@@ -96,7 +96,7 @@ These functions normally change font size in a frame. But the behavior can be ch
  - moom-fill-height
  - moom-fill-band
 
-Note - If you find any problems around font settings when resizing the Emacs frame, you can easily disable the feature in =moom-font.el=. Just toggle =moom-toggle-font-module= in your init.el
+Note - If you find any problems around font settings when resizing the Emacs frame, you can easily disable the feature in =moom-font.el=. Just change =moom-use-font-module= to nil in your init.el. =M-x moom-toggle-font-module= can also control if the font module is utilized or not.
 
 #+begin_src emacs-lisp
 (with-eval-after-load "moom"
