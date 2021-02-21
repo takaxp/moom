@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.4.9
+;; Version: 1.4.10
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -842,15 +842,19 @@ actions when selecting a monitor."
 
 ;;;###autoload
 (defun moom-fill-screen ()
-  "Expand frame width and height to fill the screen.
+  "Expand frame width and height to fill screen.
 The font size in buffers will be increased so that the frame width could be
-maintained at 80. Add appropriate functions to `moom-before-fill-screen-hook'
-in order to move the frame to specific position."
+maintained at 80. The top left corner of the frame is moved to that of screen.
+`moom-before-fill-screen-hook' and `moom-after-fill-screen-hook' could be
+used to add additional actions."
   (interactive)
   (run-hooks 'moom-before-fill-screen-hook)
   (moom--font-resize (moom--fullscreen-font-size)
                      (+ (moom--max-frame-pixel-width)
                         (moom--frame-internal-width)))
+  (set-frame-position nil
+                      (moom--pos-x (nth 2 moom--screen-margin))
+                      (moom--pos-y (nth 0 moom--screen-margin)))
   (set-frame-size nil
                   (moom--max-frame-pixel-width)
                   (moom--max-frame-pixel-height) t)
@@ -865,7 +869,6 @@ in order to move the frame to specific position."
     (if (setq moom--maximized (not moom--maximized))
         (progn
           (moom--save-last-status)
-          (moom-move-frame)
           (moom-fill-screen))
       (moom-restore-last-status)))
   (moom-print-status))
@@ -1185,7 +1188,7 @@ please configure the margins by variable `moom-user-margin'."
       (moom--cycle-frame-height-list)
       (setq height (car moom--height-list)))
     (cond ((equal height (moom--max-frame-height))
-           (moom-fill-height))
+           (moom-change-frame-height (moom--max-frame-pixel-height) t))
           ((equal height (/ (moom--max-frame-height) 2))
            (moom-change-frame-height (moom--max-half-frame-pixel-height) t))
           (t (moom-change-frame-height height))))
@@ -1196,6 +1199,7 @@ please configure the margins by variable `moom-user-margin'."
 (defun moom-fill-height ()
   "Expand frame height to fill screen vertically without changing frame width."
   (interactive)
+  (moom-move-frame-to-edge-top)
   (moom-change-frame-height (moom--max-frame-pixel-height) t))
 
 ;;;###autoload
@@ -1494,7 +1498,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.4.9"))
+  (let ((moom-release "1.4.10"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
