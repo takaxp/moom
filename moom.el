@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.4.10
+;; Version: 1.4.11
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -845,7 +845,7 @@ actions when selecting a monitor."
   "Expand frame width and height to fill screen.
 The font size in buffers will be increased so that the frame width could be
 maintained at 80. The top left corner of the frame is moved to that of screen.
-`moom-before-fill-screen-hook' and `moom-after-fill-screen-hook' could be
+`moom-before-fill-screen-hook' and `moom-after-fill-screen-hook' can be
 used to add additional actions."
   (interactive)
   (run-hooks 'moom-before-fill-screen-hook)
@@ -1285,7 +1285,7 @@ This function does not effect font size."
   (interactive)
   (let ((buffer (buffer-name))
         (p (point)))
-    (delete-windows-on)
+    (delete-other-windows)
     (switch-to-buffer buffer)
     (goto-char p))
   (moom-change-frame-width)
@@ -1498,7 +1498,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.4.10"))
+  (let ((moom-release "1.4.11"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
