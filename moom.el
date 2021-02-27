@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.4.11
+;; Version: 1.4.12
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -231,7 +231,7 @@ Configure this variable before activating moom mode.
   (cond ((memq window-system '(ns mac)) '(23 0 0 0))
         (t '(0 0 0 0))))
 (defvar moom--pos-options '(:grid nil :bound nil)) ;; {screen,virtual}, {nil,t}
-(defvar moom--local-margin (cond ((eq system-type 'windows-nt) '(0 12 -16 16))
+(defvar moom--local-margin (cond ((eq system-type 'windows-nt) '(0 9 -16 16))
                                  ((eq window-system 'x) '(-19 0 0 0))
                                  (t '(0 0 0 0))))
 (defvar moom--autoreset-hooks '(menu-bar-mode-hook
@@ -1498,7 +1498,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.4.11"))
+  (let ((moom-release "1.4.12"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
