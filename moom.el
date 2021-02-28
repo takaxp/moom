@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.4.12
+;; Version: 1.4.13
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -997,7 +997,8 @@ If PLIST is nil, `moom-fill-band-options' is applied."
   "Reset to the defaut value for line spacing."
   (interactive)
   (setq line-spacing moom-init-line-spacing)
-  (when moom-verbose
+  (when (and moom-verbose
+             line-spacing)
     (message "[Moom] %.1f" line-spacing)))
 
 ;;;###autoload
@@ -1498,7 +1499,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.4.12"))
+  (let ((moom-release "1.4.13"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
