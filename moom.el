@@ -612,7 +612,7 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
       (let ((flag (memq window-system '(ns mac w32))))
         (unless flag
           (set-frame-size nil pixel-width pixel-height t))
-        (when (and moom--font-module-p
+        (when (and (not moom--font-module-p)
                    (eq window-system 'w32))
           (set-frame-width nil moom-frame-width-single)) ;; FIXME
         (set-frame-position nil
