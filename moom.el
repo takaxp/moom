@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.4.13
+;; Version: 1.4.16
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -609,9 +609,12 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
     (when (memq area '(bottom botl botr))
       (setq pos-y (moom--vertical-center)))
     (when (memq area '(top bottom left right topl topr botl botr))
-      (let ((flag (memq window-system '(ns mac))))
+      (let ((flag (memq window-system '(ns mac w32))))
         (unless flag
           (set-frame-size nil pixel-width pixel-height t))
+        (when (and (not moom--font-module-p)
+                   (eq window-system 'w32))
+          (set-frame-width nil moom-frame-width-single)) ;; FIXME
         (set-frame-position nil
                             (moom--pos-x pos-x)
                             (moom--pos-y pos-y))
@@ -724,7 +727,7 @@ is utilized."
 
 (defun moom--stay-in-region (&optional target-width)
   "Shift the frame to try to keep the frame staying in the display.
-The frame width shall be specified with TARGET-WIDTH."
+The frame width may be specified with TARGET-WIDTH."
   (let ((shift (- (+ (* (frame-char-width) (or target-width
                                                (moom--frame-width)))
                      (moom--frame-internal-width)
@@ -1228,16 +1231,20 @@ If PIXELWISE is non-nil, the frame height will be changed by pixel value."
   (moom-print-status))
 
 ;;;###autoload
-(defun moom-change-frame-width (&optional frame-width)
+(defun moom-change-frame-width (&optional frame-width pixelwise)
   "Change the frame width by the FRAME-WIDTH argument.
 This function does not effect font size.
-If FRAME-WIDTH is nil, `moom-frame-width-single' will be used."
+If FRAME-WIDTH is nil, `moom-frame-width-single' will be used.
+If PIXELWISE is non-nil, the frame width will be changed by pixel value.
+In that case, variable `moom--frame-width' will keep the same value."
   (interactive
    (list (read-number "New Width: " (moom--frame-width))))
-  (let ((width (or frame-width
-                   moom-frame-width-single)))
-    (setq moom--frame-width width)
-    (set-frame-width nil width))
+  (unless frame-width
+    (setq frame-width moom-frame-width-single))
+  (if pixelwise
+      (set-frame-width nil frame-width nil pixelwise)
+    (set-frame-width nil frame-width)
+    (setq moom--frame-width frame-width))
   (moom-print-status))
 
 ;;;###autoload
@@ -1275,9 +1282,7 @@ This function does not effect font size."
 This function does not effect font size."
   (interactive)
   (moom-move-frame-to-edge-left)
-  (set-frame-size nil
-                  (moom--max-frame-pixel-width)
-                  (frame-pixel-height) t))
+  (moom-change-frame-width (moom--max-frame-pixel-width) t))
 (defalias 'moom-fill-width 'moom-change-frame-width-max)
 
 ;;;###autoload
@@ -1499,7 +1504,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.4.13"))
+  (let ((moom-release "1.4.16"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
