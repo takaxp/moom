@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.4.15
+;; Version: 1.4.16
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -612,9 +612,12 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
       (let ((flag (memq window-system '(ns mac w32))))
         (unless flag
           (set-frame-size nil pixel-width pixel-height t))
-        (modify-frame-parameters nil
-                                 `((left . ,(+ (moom--pos-x pos-x)))
-                                   (top . ,(+ (moom--pos-y pos-y)))))
+        (when (and moom--font-module-p
+                   (eq window-system 'w32))
+          (set-frame-width nil moom-frame-width-single)) ;; FIXME
+        (set-frame-position nil
+                            (moom--pos-x pos-x)
+                            (moom--pos-y pos-y))
         (when flag
           (set-frame-size nil pixel-width pixel-height t)))))
   (moom-print-status))
@@ -1501,7 +1504,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.4.15"))
+  (let ((moom-release "1.4.16"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
