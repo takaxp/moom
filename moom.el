@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.4.13
+;; Version: 1.4.14
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -609,12 +609,12 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
     (when (memq area '(bottom botl botr))
       (setq pos-y (moom--vertical-center)))
     (when (memq area '(top bottom left right topl topr botl botr))
-      (let ((flag (memq window-system '(ns mac))))
+      (let ((flag (memq window-system '(ns mac w32))))
         (unless flag
           (set-frame-size nil pixel-width pixel-height t))
-        (set-frame-position nil
-                            (moom--pos-x pos-x)
-                            (moom--pos-y pos-y))
+        (modify-frame-parameters nil
+                                 `((left . ,(+ (moom--pos-x pos-x)))
+                                   (top . ,(+ (moom--pos-y pos-y)))))
         (when flag
           (set-frame-size nil pixel-width pixel-height t)))))
   (moom-print-status))
@@ -724,7 +724,7 @@ is utilized."
 
 (defun moom--stay-in-region (&optional target-width)
   "Shift the frame to try to keep the frame staying in the display.
-The frame width shall be specified with TARGET-WIDTH."
+The frame width may be specified with TARGET-WIDTH."
   (let ((shift (- (+ (* (frame-char-width) (or target-width
                                                (moom--frame-width)))
                      (moom--frame-internal-width)
@@ -1499,7 +1499,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.4.13"))
+  (let ((moom-release "1.4.14"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
