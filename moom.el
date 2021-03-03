@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.4.17
+;; Version: 1.4.18
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -1167,6 +1167,9 @@ When ARG is nil, then move to the default position (i.e. left top of workarea)."
   (interactive)
   (let ((pos-x (nth 2 moom--screen-margin))
         (pos-y (nth 0 moom--screen-margin)))
+    (when (eq system-type 'windows-nt)
+      (setq pos-x (+ pos-x (nth 0 moom--screen-grid)))
+      (setq pos-y (+ pos-y (nth 1 moom--screen-grid))))
     (cond ((not arg) t) ;; left top of workarea by '(pos-x, pos-y)
           ((numberp arg) ;; horizontal shift
            (setq pos-x (+ pos-x arg))
@@ -1174,9 +1177,12 @@ When ARG is nil, then move to the default position (i.e. left top of workarea)."
           ((listp arg) ;; move to '(x, y)
            (setq pos-x (+ pos-x (nth 0 arg)))
            (setq pos-y (+ pos-y (nth 1 arg)))))
-    (unless (and (eq pos-x (moom--frame-left))
-                 (eq pos-y (moom--frame-top)))
-      (set-frame-position nil (moom--pos-x pos-x) (moom--pos-y pos-y))))
+    (if (eq system-type 'windows-nt)
+        (modify-frame-parameters
+         nil `((left . (+ ,pos-x)) (top . (+ ,pos-y))))
+      (unless (and (eq pos-x (moom--frame-left))
+                   (eq pos-y (moom--frame-top)))
+        (set-frame-position nil (moom--pos-x pos-x) (moom--pos-y pos-y)))))
   (moom-print-status))
 
 ;;;###autoload
@@ -1504,7 +1510,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.4.17"))
+  (let ((moom-release "1.4.18"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
