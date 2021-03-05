@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.4.19
+;; Version: 1.4.20
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -685,24 +685,19 @@ Taken from frame.el in 26.1 to support previous Emacs versions, 25.1 or later."
           (list (- (nth 1 workarea) (nth 1 geometry))
                 (- (+ (nth 1 geometry) (nth 3 geometry))
                    (+ (nth 1 workarea) (nth 3 workarea)))
-                (- (nth 2 geometry) (nth 2 workarea))
+                (- (nth 0 workarea) (nth 0 geometry))
                 (- (+ (nth 0 geometry) (nth 2 geometry))
                    (+ (nth 0 workarea) (nth 2 workarea)))))
     ;; Update
     (moom--merge-screen-margin moom--local-margin)))
 
-(defun moom--user-margin ()
-  "Return `moom-user-margin'."
-  moom-user-margin)
-
 (defun moom--merge-screen-margin (margin)
   "Add MARGIN to `moom--screen-margin'."
-  (let ((mg (or margin (moom--user-margin))))
-    (setq moom--screen-margin
-          (list (+ (nth 0 mg) (nth 0 moom--screen-margin))
-                (+ (nth 1 mg) (nth 1 moom--screen-margin))
-                (+ (nth 2 mg) (nth 2 moom--screen-margin))
-                (+ (nth 3 mg) (nth 3 moom--screen-margin))))))
+  (setq moom--screen-margin
+        (list (+ (nth 0 margin) (nth 0 moom--screen-margin))
+              (+ (nth 1 margin) (nth 1 moom--screen-margin))
+              (+ (nth 2 margin) (nth 2 moom--screen-margin))
+              (+ (nth 3 margin) (nth 3 moom--screen-margin)))))
 
 (defun moom--update-frame-display-line-numbers ()
   "Expand frame width by `moom-display-line-numbers-width'.
@@ -774,26 +769,27 @@ The frame width may be specified with TARGET-WIDTH."
 SHIFT can control the margin, if needed.
 If SHIFT is nil, `moom--common-margin' will be applied."
   (interactive)
-  (let ((geometry (moom--frame-monitor-geometry)))
+  (let ((geometry (moom--frame-monitor-geometry))
+        (workarea (moom--frame-monitor-workarea)))
     (if (not (and moom-multi-monitors-support
                   (> (length (display-monitor-attributes-list)) 1)))
         (setq moom--screen-margin (moom--default-screen-margin))
       (setq moom--screen-margin
             (let ((shift (or shift moom--common-margin)))
-              (list (+ (nth 1 geometry)
+              (list (+ (nth 1 workarea)
                        (nth 0 shift))
                     (+ (- (display-pixel-height)
-                          (nth 1 geometry)
-                          (nth 3 geometry))
+                          (nth 1 workarea)
+                          (nth 3 workarea))
                        (nth 1 shift))
-                    (+ (nth 0 geometry)
+                    (+ (nth 0 workarea)
                        (nth 2 shift))
                     (+ (- (display-pixel-width)
-                          (nth 0 geometry)
-                          (nth 2 geometry))
+                          (nth 0 workarea)
+                          (nth 2 workarea))
                        (nth 3 shift)))))
       (moom--merge-screen-margin moom--local-margin))
-    (moom--merge-screen-margin (moom--user-margin))
+    (moom--merge-screen-margin moom-user-margin)
     (moom--update-display-border)
     (unless (equal moom--last-monitor geometry)
       (setq moom--last-monitor geometry)
@@ -1352,6 +1348,16 @@ If FILL is non-nil, the frame will cover the screen with given margins."
 
 (make-obsolete 'moom-screen-margin 'moom-check-user-margin "2020-10-01")
 
+(defun moom--user-margin (margin)
+  "Update variable `moom-user-margin' and apply it to internal margin.
+MARGIN is a list with 4 integers in order of {top, down, left, right}."
+  (let ((margin (or margin moom-user-margin)))
+    (if (not (and (listp margin)
+                  (eq 4 (length margin))))
+        (user-error "[moom] Format error, check specified argument: %s" margin)
+      (setq moom-user-margin margin)
+      (moom-identify-current-monitor))))
+
 ;;;###autoload
 (defun moom-check-user-margin (margin)
   "Change top, bottom, left, and right margin by provided MARGINS.
@@ -1512,7 +1518,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.4.19"))
+  (let ((moom-release "1.4.20"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
