@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.4.18
+;; Version: 1.4.19
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -231,7 +231,7 @@ Configure this variable before activating moom mode.
   (cond ((memq window-system '(ns mac)) '(23 0 0 0))
         (t '(0 0 0 0))))
 (defvar moom--pos-options '(:grid nil :bound nil)) ;; {screen,virtual}, {nil,t}
-(defvar moom--local-margin (cond ((eq system-type 'windows-nt) '(0 9 -16 16))
+(defvar moom--local-margin (cond ((eq window-system 'w32) '(0 9 -16 16))
                                  ((eq window-system 'x) '(-19 0 0 0))
                                  (t '(0 0 0 0))))
 (defvar moom--autoreset-hooks '(menu-bar-mode-hook
@@ -474,7 +474,7 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
   (when (listp posx)
     (setq posx (nth 1 posx)))
   (setq posx (- posx (nth 0 moom--screen-grid)))
-  (when (eq system-type 'windows-nt)
+  (when (eq window-system 'w32)
     (setq posx (+ posx 16))) ;; FIXME
   (when (or (plist-get options :bound)
             (not (memq window-system '(ns mac w32)))) ;; TODO: support others if possible
@@ -689,12 +689,15 @@ Taken from frame.el in 26.1 to support previous Emacs versions, 25.1 or later."
                 (- (+ (nth 0 geometry) (nth 2 geometry))
                    (+ (nth 0 workarea) (nth 2 workarea)))))
     ;; Update
-    (moom--update-screen-margin moom--local-margin)))
+    (moom--merge-screen-margin moom--local-margin)))
 
-(defun moom--update-screen-margin (&optional margin)
-  "Add MARGIN to `moom--screen-margin'.
-If MARGIN is nil, then `moom-user-margin' is applied."
-  (let ((mg (or margin moom-user-margin)))
+(defun moom--user-margin ()
+  "Return `moom-user-margin'."
+  moom-user-margin)
+
+(defun moom--merge-screen-margin (margin)
+  "Add MARGIN to `moom--screen-margin'."
+  (let ((mg (or margin (moom--user-margin))))
     (setq moom--screen-margin
           (list (+ (nth 0 mg) (nth 0 moom--screen-margin))
                 (+ (nth 1 mg) (nth 1 moom--screen-margin))
@@ -769,29 +772,28 @@ The frame width may be specified with TARGET-WIDTH."
 (defun moom-identify-current-monitor (&optional shift)
   "Update `moom--screen-margin' to identify and focus on the current monitor.
 SHIFT can control the margin, if needed.
-`moom-multi-monitors-support' shall be non-nil.
-If SHIFT is nil, `moom--common-margin' will be applied.
-Alternatively, you can manually update `moom--screen-margin' itself."
+If SHIFT is nil, `moom--common-margin' will be applied."
   (interactive)
   (let ((geometry (moom--frame-monitor-geometry)))
-    (if (and moom-multi-monitors-support
-             (> (length (display-monitor-attributes-list)) 1))
-        (setq moom--screen-margin
-              (let ((shift (or shift moom--common-margin)))
-                (list (+ (nth 1 geometry)
-                         (nth 0 shift))
-                      (+ (- (display-pixel-height)
-                            (nth 1 geometry)
-                            (nth 3 geometry))
-                         (nth 1 shift))
-                      (+ (nth 0 geometry)
-                         (nth 2 shift))
-                      (+ (- (display-pixel-width)
-                            (nth 0 geometry)
-                            (nth 2 geometry))
-                         (nth 3 shift)))))
-      (setq moom--screen-margin (moom--default-screen-margin)))
-    (moom--update-screen-margin)
+    (if (not (and moom-multi-monitors-support
+                  (> (length (display-monitor-attributes-list)) 1)))
+        (setq moom--screen-margin (moom--default-screen-margin))
+      (setq moom--screen-margin
+            (let ((shift (or shift moom--common-margin)))
+              (list (+ (nth 1 geometry)
+                       (nth 0 shift))
+                    (+ (- (display-pixel-height)
+                          (nth 1 geometry)
+                          (nth 3 geometry))
+                       (nth 1 shift))
+                    (+ (nth 0 geometry)
+                       (nth 2 shift))
+                    (+ (- (display-pixel-width)
+                          (nth 0 geometry)
+                          (nth 2 geometry))
+                       (nth 3 shift)))))
+      (moom--merge-screen-margin moom--local-margin))
+    (moom--merge-screen-margin (moom--user-margin))
     (moom--update-display-border)
     (unless (equal moom--last-monitor geometry)
       (setq moom--last-monitor geometry)
@@ -899,7 +901,7 @@ used to add additional actions."
   "Fill right half of screen."
   (interactive)
   (moom--fill-display 'right)
-  (when (eq system-type 'windows-nt)
+  (when (eq window-system 'w32)
     (moom-move-frame-to-edge-right)))
 
 ;;;###autoload
@@ -913,7 +915,7 @@ used to add additional actions."
   "Fill top right quarter of screen."
   (interactive)
   (moom--fill-display 'topr)
-  (when (eq system-type 'windows-nt)
+  (when (eq window-system 'w32)
     (moom-move-frame-to-edge-right)))
 
 ;;;###autoload
@@ -927,7 +929,7 @@ used to add additional actions."
   "Fill bottom right quarter of screen."
   (interactive)
   (moom--fill-display 'botr)
-  (when (eq system-type 'windows-nt)
+  (when (eq window-system 'w32)
     (moom-move-frame-to-edge-right)))
 
 ;;;###autoload
@@ -1097,7 +1099,7 @@ please configure the margins by variable `moom-user-margin'."
                       (moom--pos-x (- (display-pixel-width)
                                       (moom--frame-pixel-width)
                                       (nth 3 moom--screen-margin))
-                                   (when (eq system-type 'windows-nt)
+                                   (when (eq window-system 'w32)
                                      '(:bound t))) ;; FIXME
                       (moom--pos-y (moom--frame-top) '(:bound t)))
   (moom-print-status))
@@ -1167,7 +1169,7 @@ When ARG is nil, then move to the default position (i.e. left top of workarea)."
   (interactive)
   (let ((pos-x (nth 2 moom--screen-margin))
         (pos-y (nth 0 moom--screen-margin)))
-    (when (eq system-type 'windows-nt)
+    (when (eq window-system 'w32)
       (setq pos-x (+ pos-x (nth 0 moom--screen-grid)))
       (setq pos-y (+ pos-y (nth 1 moom--screen-grid))))
     (cond ((not arg) t) ;; left top of workarea by '(pos-x, pos-y)
@@ -1177,7 +1179,7 @@ When ARG is nil, then move to the default position (i.e. left top of workarea)."
           ((listp arg) ;; move to '(x, y)
            (setq pos-x (+ pos-x (nth 0 arg)))
            (setq pos-y (+ pos-y (nth 1 arg)))))
-    (if (eq system-type 'windows-nt)
+    (if (eq window-system 'w32)
         (modify-frame-parameters
          nil `((left . (+ ,pos-x)) (top . (+ ,pos-y))))
       (unless (and (eq pos-x (moom--frame-left))
@@ -1357,7 +1359,7 @@ MARGIN shall be a list consists of 4 integer variables like '(10 10 20 20)."
   (when (and (listp margin)
              (eq (length margin) 4))
     (let ((moom-user-margin margin))
-      (moom-reset) ;; Added for w32 and Linux
+      (moom-reset)
       (moom-move-frame)
       (moom-fill-screen))
     (message "[moom] Configure `moom-user-margin' to %s and reload `moom-mode'"
@@ -1510,7 +1512,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.4.18"))
+  (let ((moom-release "1.4.19"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
