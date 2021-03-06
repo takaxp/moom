@@ -83,8 +83,11 @@ These functions will not change font size in a frame.
 
 These functions normally change font size in a frame. But the behavior can be changed by =M-x moom-toggle-font-module=.
 
- - moom-fill-top
+ - moom-fill-width
+ - moom-fill-height
  - moom-fill-screen
+ - moom-fill-band
+ - moom-fill-top
  - moom-fill-bottom
  - moom-fill-left
  - moom-fill-right
@@ -92,9 +95,6 @@ These functions normally change font size in a frame. But the behavior can be ch
  - moom-fill-top-right
  - moom-fill-bottom-left
  - moom-fill-bottom-right
- - moom-fill-width
- - moom-fill-height
- - moom-fill-band
 
 Note - If you find any problems around font settings when resizing the Emacs frame, you can easily disable the feature in =moom-font.el=. Just change =moom-use-font-module= to nil in your init.el. =M-x moom-toggle-font-module= can also control if the font module is utilized or not.
 
@@ -108,6 +108,7 @@ Note - If you find any problems around font settings when resizing the Emacs fra
  - moom-reset
  - moom-update-height-steps
  - moom-check-user-margin
+ - moom-update-user-margin
  - moom-identify-current-monitor
  - moom-print-monitors
  - moom-jump-to-monitor
@@ -126,31 +127,26 @@ Note - If you find any problems around font settings when resizing the Emacs fra
 
 *** How to setup screen margins
 
-For macOS users, the default margin is =(23 0 0 0)=. And for other system types, it is also automatically configured using combination of =frame-monitor-geometry= and =frame-monitor-workarea= when =moom-mode= is activated. But the actual work area is probably depends on user environment. Therefore, =moom.el= provides a capability that you can control the actual active region on your screen by setting =moom-user-margin=.
+For macOS users, the default margin is =(23 0 0 0)=. And for other system types, it is also automatically configured using combination of =frame-monitor-geometry= and =frame-monitor-workarea= when =moom-mode= is activated. But the actual work area is probably depends on user environment. Therefore, =moom.el= provides a capability that you can control the actual active region on your screen by setting =moom-user-margin= in init.el.
 
 #+begin_src emacs-lisp
 (setq moom-user-margin '(50 50 50 50)) ;; {top, bottom, left, right}
 (moom-mode 1)
 #+end_src
 
-Each value means a margin from the ~top~, ~bottom~, ~left~, and ~right~ edge of your screen. If you want to test some combinations of the margins, then =moom-check-user-margin= could be helpful since the frame will be expanded to the actual region on a screen. To reset the frame, =M-x moom-reset= can be used.
+Each value means a margin from the ~top~, ~bottom~, ~left~, and ~right~ edge of your screen. If you want to test some combinations of the margins, then =M-x moom-check-user-margin= could be helpful since it provides an interactive way to check the actual region on a screen and save the tested value for the Emacs session.
+
+It is also useful to use =moom-update-user-margin= directly by putting new margin or interactively. Note that =moom-check-user-margin= internally calls =moom-update-user-margin=.
 
 #+begin_src emacs-lisp
-(moom-check-user-margin '(50 50 50 50)) ;; {top, bottom, left, right}
+(moom-update-user-margin '(50 50 50 50)) ;; {top, bottom, left, right}
 #+end_src
 
-The =moom-check-user-margin= will fill your screen with the provided margins. The tested margins will NOT be immediately applied so please configure the margins in your init.el explicitly.
+The =moom-check-user-margin= and =moom-update-user-margin= will change =moom-user-margin= in an Emacs session, however, the updated margins will NOT be saved as a permanent value, so please configure the margins in your init.el explicitly for the next session.
 
 *** How to setup screen margins (obsolete)
 
 =moom-screen-margin= was replaced with =moom-check-user-margin=, see above section.
-
-Just provide a list to setup screen margins. The list consists of four values to control screen margins from the ~top~, ~bottom~, ~left~, and ~right~ edge. When you set the optional 2nd argument as =t=, then the frame will be automatically resized for filling screen with given margins.
-
-#+begin_src emacs-lisp
-(with-eval-after-load "moom"
-  (moom-screen-margin '(100 50 20 20) t)) ;; {top, bottom, left, right}
-#+end_src
 
 * Extension to integrate font resizing
 

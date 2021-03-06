@@ -1,6 +1,24 @@
+2021-03-06  Takaaki ISHIKAWA  <takaxp@ieee.org>
+
+	* moom-font.el: version 1.5.0
+	- no changes
+
+	* moom.el: version 1.5.0
+	- [breaking change] moom-multi-monitors-support is t as default
+	- [new] moom-use-font-module
+	- [new] moom-update-user-margin
+	- [new] moom-cycle-monitors
+	- [improve] moom-check-user-margin
+	- [improve] Support Windows 10 and dual monitors
+	- [improve] Management of local margins in Windows 10
+	  - moom-fill-screen
+	  - moom-fill-width
+	  - moom-fill-height
+	- [new feature] disable font module by configuration
+
 2021-02-11  Takaaki ISHIKAWA  <takaxp@ieee.org>
 
-	* moom-font.el version 1.4.0
+	* moom-font.el: version 1.4.0
 	- Count up just to sync the version of moom.el
 
 	* moom.el: version 1.4.0
