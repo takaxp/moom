@@ -106,6 +106,7 @@ Note - If you find any problems around font settings when resizing the Emacs fra
 ** Other functions
 
  - moom-reset
+ - moom-undo
  - moom-update-height-steps
  - moom-check-user-margin
  - moom-update-user-margin
@@ -235,6 +236,7 @@ Here is an example. ~Monaco~ is used for ASCII font and ~Migu 2M~ is used for Ja
 | moom-scaling-gradient                | 1.66                               | float   |
 | moom-moom-display-line-numbers-width | 6                                  | integer |
 | moom-command-with-centering          | '(split delete)                    | list    |
+| moom-command-history-length          | 100                                | integer |
 | moom-verbose                         | nil                                | boolean |
 | moom-lighter                         | Moom                               | string  |
 | moom-multi-monitors-support          | t                                  | boolean |
