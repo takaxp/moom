@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.4.20
+;; Version: 1.4.21
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -763,6 +763,15 @@ The frame width may be specified with TARGET-WIDTH."
 	      (setq id i)))
     id))
 
+(defun moom--read-user-margin ()
+  "Read new user margin."
+  (mapcar #'string-to-number
+          (split-string
+           (read-string "New user margin: "
+                        (mapconcat #'identity (mapcar
+                                               #'number-to-string
+                                               moom-user-margin) " ")))))
+
 ;;;###autoload
 (defun moom-identify-current-monitor (&optional shift)
   "Update `moom--screen-margin' to identify and focus on the current monitor.
@@ -1348,28 +1357,34 @@ If FILL is non-nil, the frame will cover the screen with given margins."
 
 (make-obsolete 'moom-screen-margin 'moom-check-user-margin "2020-10-01")
 
-(defun moom--user-margin (margin)
+;;;###autoload
+(defun moom-update-user-margin (margin)
   "Update variable `moom-user-margin' and apply it to internal margin.
 MARGIN is a list with 4 integers in order of {top, down, left, right}."
-  (let ((margin (or margin moom-user-margin)))
-    (if (not (and (listp margin)
-                  (eq 4 (length margin))))
-        (user-error "[moom] Format error, check specified argument: %s" margin)
-      (setq moom-user-margin margin)
-      (moom-identify-current-monitor))))
+  (interactive (list (moom--read-user-margin)))
+  (if (not (eq 4 (length margin)))
+      (user-error "[moom] Format error...%s" margin)
+    (setq moom-user-margin margin)
+    (moom-identify-current-monitor)
+    (message "[moom] `moom-user-margin' is updated to %s." moom-user-margin)))
 
 ;;;###autoload
 (defun moom-check-user-margin (margin)
   "Change top, bottom, left, and right margin by provided MARGINS.
 MARGIN shall be a list consists of 4 integer variables like '(10 10 20 20)."
-  (when (and (listp margin)
-             (eq (length margin) 4))
-    (let ((moom-user-margin margin))
-      (moom-reset)
-      (moom-move-frame)
-      (moom-fill-screen))
-    (message "[moom] Configure `moom-user-margin' to %s and reload `moom-mode'"
-             margin)))
+  (interactive (list (moom--read-user-margin)))
+  (let ((last (moom--save-last-status))
+        (sm moom--screen-margin))
+    (when (eq 4 (length margin))
+      (let ((moom-user-margin margin))
+        (moom-reset)
+        (moom-move-frame)
+        (moom-fill-screen))
+      (if (y-or-n-p "[moom] Update `moom-user-margin' for this session? ")
+          (moom-update-user-margin margin)
+        (message "[moom] Abort.")
+        (setq moom--screen-margin sm))
+      (moom-restore-last-status last))))
 
 ;;;###autoload
 (defun moom-restore-last-status (&optional status)
@@ -1518,7 +1533,7 @@ The keybindings will be assigned when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.4.20"))
+  (let ((moom-release "1.4.21"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
