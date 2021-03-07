@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.5.1
+;; Version: 1.5.2
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -246,6 +246,7 @@ Configure this variable before activating moom mode.
 (defvar moom--last-monitor nil)
 (defvar moom--display-border '(0 0))
 (defvar moom--command-history nil)
+(defvar moom--non-interactive-history nil)
 
 (defun moom--setup ()
   "Init function."
@@ -626,7 +627,8 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
                               (moom--pos-y pos-y))
           (when flag
             (set-frame-size nil pixel-width pixel-height t)))))
-    (moom--add-command-history last))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last)))
   (moom-print-status))
 
 (defun moom--shift-amount (direction)
@@ -900,11 +902,13 @@ used to add additional actions."
                     (moom--max-frame-pixel-height) t)
     (moom-print-status)
     (run-hooks 'moom-after-fill-screen-hook)
-    (moom--add-command-history last)))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last))))
 
 ;;;###autoload
 (defun moom-toggle-frame-maximized ()
-  "Toggle frame maximized."
+  "Toggle frame maximized.
+No information is stored for undo."
   (interactive)
   (let ((moom--print-status nil))
     (if (setq moom--maximized (not moom--maximized))
@@ -1022,7 +1026,8 @@ If PLIST is nil, `moom-fill-band-options' is applied."
                  band-pixel-height)
         (set-frame-size nil band-pixel-width band-pixel-height t)
         (moom-move-frame-to-center)))
-    (moom--add-command-history last))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last)))
   (moom-print-status))
 
 ;;;###autoload
@@ -1063,7 +1068,8 @@ If PLIST is nil, `moom-fill-band-options' is applied."
       (set-frame-position nil
                           (moom--pos-x new-pos-x)
                           (moom--pos-y pos-y)))
-    (moom--add-command-history last))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last)))
   (moom-print-status))
 
 ;;;###autoload
@@ -1085,7 +1091,8 @@ If PLIST is nil, `moom-fill-band-options' is applied."
       (set-frame-position nil
                           (moom--pos-x new-pos-x)
                           (moom--pos-y pos-y)))
-    (moom--add-command-history last))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last)))
   (moom-print-status))
 
 ;;;###autoload
@@ -1096,7 +1103,8 @@ If PLIST is nil, `moom-fill-band-options' is applied."
     (set-frame-position nil
                         (moom--pos-x (moom--horizontal-center-pos) '(:bound t))
                         (moom--pos-y (moom--frame-top) '(:bound t)))
-    (moom--add-command-history last))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last)))
   (moom-print-status))
 
 ;;;###autoload
@@ -1107,7 +1115,8 @@ If PLIST is nil, `moom-fill-band-options' is applied."
     (set-frame-position nil
                         (moom--pos-x (moom--frame-left) '(:bound t))
                         (moom--pos-y (moom--vertical-center-pos) '(:bound t)))
-    (moom--add-command-history last))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last)))
   (moom-print-status))
 
 ;;;###autoload
@@ -1120,7 +1129,8 @@ please configure the margins by variable `moom-user-margin'."
     (set-frame-position nil
                         (moom--pos-x (moom--frame-left) '(:bound t))
                         (moom--pos-y (nth 0 moom--screen-margin) '(:bound t)))
-    (moom--add-command-history last))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last)))
   (moom-print-status))
 
 ;;;###autoload
@@ -1138,7 +1148,8 @@ please configure the margins by variable `moom-user-margin'."
                             (moom--frame-internal-height)
                             (- (moom--internal-border-height))
                             (nth 1 moom--screen-margin)) '(:bound t)))
-    (moom--add-command-history last))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last)))
   (moom-print-status))
 
 ;;;###autoload
@@ -1153,7 +1164,8 @@ please configure the margins by variable `moom-user-margin'."
                                      (when (eq window-system 'w32)
                                        '(:bound t))) ;; FIXME
                         (moom--pos-y (moom--frame-top) '(:bound t)))
-    (moom--add-command-history last))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last)))
   (moom-print-status))
 
 ;;;###autoload
@@ -1164,7 +1176,8 @@ please configure the margins by variable `moom-user-margin'."
     (set-frame-position nil
                         (moom--pos-x (nth 2 moom--screen-margin))
                         (moom--pos-y (moom--frame-top) '(:bound t)))
-    (moom--add-command-history last))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last)))
   (moom-print-status))
 
 ;;;###autoload
@@ -1175,7 +1188,8 @@ please configure the margins by variable `moom-user-margin'."
     (set-frame-position nil
                         (- (moom--horizontal-center) (moom--frame-pixel-width))
                         (moom--pos-y (moom--frame-top)))
-    (moom--add-command-history last))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last)))
   (moom-print-status))
 
 ;;;###autoload
@@ -1186,7 +1200,8 @@ please configure the margins by variable `moom-user-margin'."
     (set-frame-position nil
                         (moom--horizontal-center)
                         (moom--pos-y (moom--frame-top)))
-    (moom--add-command-history last))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last)))
   (moom-print-status))
 
 ;;;###autoload
@@ -1199,7 +1214,8 @@ please configure the margins by variable `moom-user-margin'."
                         (moom--pos-y (- (moom--vertical-center)
                                         (moom--frame-internal-height)
                                         (moom--frame-pixel-height))))
-    (moom--add-command-history last))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last)))
   (moom-print-status))
 
 ;;;###autoload
@@ -1210,7 +1226,8 @@ please configure the margins by variable `moom-user-margin'."
     (set-frame-position nil
                         (moom--pos-x (moom--frame-left))
                         (moom--pos-y (moom--vertical-center)))
-    (moom--add-command-history last))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last)))
   (moom-print-status))
 
 ;;;###autoload
@@ -1221,7 +1238,8 @@ please configure the margins by variable `moom-user-margin'."
     (set-frame-position nil
                         (moom--pos-x (moom--horizontal-center-pos))
                         (moom--pos-y (moom--vertical-center-pos) '(:bound t)))
-    (moom--add-command-history last))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last)))
   (moom-print-status))
 
 ;;;###autoload
@@ -1250,14 +1268,16 @@ When ARG is nil, then move to the default position (i.e. left top of workarea)."
         (unless (and (eq pos-x (moom--frame-left))
                      (eq pos-y (moom--frame-top)))
           (set-frame-position nil (moom--pos-x pos-x) (moom--pos-y pos-y)))))
-    (moom--add-command-history last))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last)))
   (moom-print-status))
 
 ;;;###autoload
 (defun moom-cycle-frame-height ()
   "Change frame height and update the internal ring.
 If you find the frame is NOT changed as expected,
-please configure the margins by variable `moom-user-margin'."
+please configure the margins by variable `moom-user-margin'.
+No information is stored for undo."
   (interactive)
   (unless moom--height-list
     (moom--make-frame-height-list))
@@ -1280,7 +1300,8 @@ please configure the margins by variable `moom-user-margin'."
   (let ((last (moom--save-last-status)))
     (moom-move-frame-to-edge-top)
     (moom-change-frame-height (moom--max-frame-pixel-height) t)
-    (moom--add-command-history last)))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last))))
 
 ;;;###autoload
 (defun moom-change-frame-height (&optional frame-height pixelwise)
@@ -1305,7 +1326,8 @@ If PIXELWISE is non-nil, the frame height will be changed by pixel value."
           (when moom-verbose
             (message "[Moom] Force set the height %s." frame-height)))
         (set-frame-height nil (floor frame-height))))
-    (moom--add-command-history last))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last)))
   (moom-print-status))
 
 ;;;###autoload
@@ -1324,7 +1346,8 @@ In that case, variable `moom--frame-width' will keep the same value."
         (set-frame-width nil frame-width nil pixelwise)
       (set-frame-width nil frame-width)
       (setq moom--frame-width frame-width))
-    (moom--add-command-history last))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last)))
   (moom-print-status))
 
 ;;;###autoload
@@ -1336,7 +1359,8 @@ This function does not effect font size."
     (moom-change-frame-width)
     (when (moom--centerize-p 'single)
       (moom-move-frame-to-horizontal-center))
-    (moom--add-command-history last)))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last))))
 
 ;;;###autoload
 (defun moom-change-frame-width-double ()
@@ -1348,7 +1372,8 @@ This function does not effect font size."
     (if (moom--centerize-p 'double)
         (moom-move-frame-to-horizontal-center)
       (moom--stay-in-region))
-    (moom--add-command-history last)))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last))))
 
 ;;;###autoload
 (defun moom-change-frame-width-half-again ()
@@ -1360,7 +1385,8 @@ This function does not effect font size."
     (if (moom--centerize-p 'half-again)
         (moom-move-frame-to-horizontal-center)
       (moom--stay-in-region))
-    (moom--add-command-history last)))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last))))
 
 ;;;###autoload
 (defun moom-change-frame-width-max ()
@@ -1370,12 +1396,14 @@ This function does not effect font size."
   (let ((last (moom--save-last-status)))
     (moom-move-frame-to-edge-left)
     (moom-change-frame-width (moom--max-frame-pixel-width) t)
-    (moom--add-command-history last)))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last))))
 (defalias 'moom-fill-width 'moom-change-frame-width-max)
 
 ;;;###autoload
 (defun moom-delete-windows ()
-  "Delete all window and make frame width single."
+  "Delete all window and make frame width single.
+No information is stored for undo."
   (interactive)
   (let ((buffer (buffer-name))
         (p (point)))
@@ -1389,7 +1417,8 @@ This function does not effect font size."
 
 ;;;###autoload
 (defun moom-split-window ()
-  "Split window and make frame width double."
+  "Split window and make frame width double.
+No information is stored for undo."
   (interactive)
   (moom-change-frame-width moom-frame-width-double)
   (if (moom--centerize-p 'split)
@@ -1405,7 +1434,8 @@ This function does not effect font size."
   (let ((moom--font-module-p (require 'moom-font nil t)))
     (setq moom--maximized nil)
     (setq moom--command-history nil)
-    (moom--add-command-history (moom--save-last-status))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history (moom--save-last-status)))
     (moom-restore-last-status moom--init-status)
     (moom-identify-current-monitor)))
 
@@ -1611,7 +1641,7 @@ The keybindings will be assigned only when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.5.1"))
+  (let ((moom-release "1.5.2"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
