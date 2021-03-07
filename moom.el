@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.5.3
+;; Version: 1.5.4
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -588,47 +588,44 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
   "Move the frame to AREA.
 Font size will be changed appropriately.
 AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
-  (let ((last (moom--save-last-status)))
-    (let* ((align-width (+ (moom--max-frame-pixel-width)
-                           (moom--frame-internal-width)))
-           (pixel-width
-            (- (floor (/ align-width 2.0))
-               (moom--frame-internal-width)))
-           (pixel-height (moom--max-half-frame-pixel-height))
-           (pos-x (nth 2 moom--screen-margin))
-           (pos-y (nth 0 moom--screen-margin)))
-      ;; Region
-      (cond ((memq area '(top bottom))
-             (setq pixel-width (moom--max-frame-pixel-width)))
-            ((memq area '(left right))
-             (setq pixel-height (moom--max-frame-pixel-height))
-             (setq align-width (floor (/ align-width 2.0))))
-            ((memq area '(topl topr botl botr))
-             (setq align-width (floor (/ align-width 2.0))))
-            (nil t))
-      ;; Font size
-      (let ((moom-font-before-resize-hook nil)
-            (moom-font-after-resize-hook nil))
-        (moom--font-resize (moom--font-size align-width) align-width))
-      ;; Position
-      (when (memq area '(right topr botr))
-        (setq pos-x (moom--horizontal-center)))
-      (when (memq area '(bottom botl botr))
-        (setq pos-y (moom--vertical-center)))
-      (when (memq area '(top bottom left right topl topr botl botr))
-        (let ((flag (memq window-system '(ns mac w32))))
-          (unless flag
-            (set-frame-size nil pixel-width pixel-height t))
-          (when (and (not moom--font-module-p)
-                     (eq window-system 'w32))
-            (set-frame-width nil moom-frame-width-single)) ;; FIXME
-          (set-frame-position nil
-                              (moom--pos-x pos-x)
-                              (moom--pos-y pos-y))
-          (when flag
-            (set-frame-size nil pixel-width pixel-height t)))))
-    (when (or moom--non-interactive-history (called-interactively-p 'any))
-      (moom--add-command-history last)))
+  (let* ((align-width (+ (moom--max-frame-pixel-width)
+                         (moom--frame-internal-width)))
+         (pixel-width
+          (- (floor (/ align-width 2.0))
+             (moom--frame-internal-width)))
+         (pixel-height (moom--max-half-frame-pixel-height))
+         (pos-x (nth 2 moom--screen-margin))
+         (pos-y (nth 0 moom--screen-margin)))
+    ;; Region
+    (cond ((memq area '(top bottom))
+           (setq pixel-width (moom--max-frame-pixel-width)))
+          ((memq area '(left right))
+           (setq pixel-height (moom--max-frame-pixel-height))
+           (setq align-width (floor (/ align-width 2.0))))
+          ((memq area '(topl topr botl botr))
+           (setq align-width (floor (/ align-width 2.0))))
+          (nil t))
+    ;; Font size
+    (let ((moom-font-before-resize-hook nil)
+          (moom-font-after-resize-hook nil))
+      (moom--font-resize (moom--font-size align-width) align-width))
+    ;; Position
+    (when (memq area '(right topr botr))
+      (setq pos-x (moom--horizontal-center)))
+    (when (memq area '(bottom botl botr))
+      (setq pos-y (moom--vertical-center)))
+    (when (memq area '(top bottom left right topl topr botl botr))
+      (let ((flag (memq window-system '(ns mac w32))))
+        (unless flag
+          (set-frame-size nil pixel-width pixel-height t))
+        (when (and (not moom--font-module-p)
+                   (eq window-system 'w32))
+          (set-frame-width nil moom-frame-width-single)) ;; FIXME
+        (set-frame-position nil
+                            (moom--pos-x pos-x)
+                            (moom--pos-y pos-y))
+        (when flag
+          (set-frame-size nil pixel-width pixel-height t)))))
   (moom-print-status))
 
 (defun moom--shift-amount (direction)
@@ -925,55 +922,79 @@ No information is stored for undo."
 (defun moom-fill-top ()
   "Fill upper half of screen."
   (interactive)
-  (moom--fill-display 'top))
+  (let ((last (moom--save-last-status)))
+    (moom--fill-display 'top)
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last))))
 
 ;;;###autoload
 (defun moom-fill-bottom ()
   "Fill lower half of screen."
   (interactive)
-  (moom--fill-display 'bottom))
+  (let ((last (moom--save-last-status)))
+    (moom--fill-display 'bottom)
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last))))
 
 ;;;###autoload
 (defun moom-fill-left ()
   "Fill left half of screen."
   (interactive)
-  (moom--fill-display 'left))
+  (let ((last (moom--save-last-status)))
+    (moom--fill-display 'left)
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last))))
 
 ;;;###autoload
 (defun moom-fill-right ()
   "Fill right half of screen."
   (interactive)
-  (moom--fill-display 'right)
-  (when (eq window-system 'w32)
-    (moom-move-frame-to-edge-right)))
+  (let ((last (moom--save-last-status)))
+    (moom--fill-display 'right)
+    (when (eq window-system 'w32)
+      (moom-move-frame-to-edge-right))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last))))
 
 ;;;###autoload
 (defun moom-fill-top-left ()
   "Fill top left quarter of screen."
   (interactive)
-  (moom--fill-display 'topl))
+  (let ((last (moom--save-last-status)))
+    (moom--fill-display 'topl)
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last))))
 
 ;;;###autoload
 (defun moom-fill-top-right ()
   "Fill top right quarter of screen."
   (interactive)
-  (moom--fill-display 'topr)
-  (when (eq window-system 'w32)
-    (moom-move-frame-to-edge-right)))
+  (let ((last (moom--save-last-status)))
+    (moom--fill-display 'topr)
+    (when (eq window-system 'w32)
+      (moom-move-frame-to-edge-right))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last))))
 
 ;;;###autoload
 (defun moom-fill-bottom-left ()
   "Fill bottom left quarter of screen."
   (interactive)
-  (moom--fill-display 'botl))
+  (let ((last (moom--save-last-status)))
+    (moom--fill-display 'botl)
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last))))
 
 ;;;###autoload
 (defun moom-fill-bottom-right ()
   "Fill bottom right quarter of screen."
   (interactive)
-  (moom--fill-display 'botr)
-  (when (eq window-system 'w32)
-    (moom-move-frame-to-edge-right)))
+  (let ((last (moom--save-last-status)))
+    (moom--fill-display 'botr)
+    (when (eq window-system 'w32)
+      (moom-move-frame-to-edge-right))
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (moom--add-command-history last))))
 
 ;;;###autoload
 (defun moom-fill-band (&optional plist)
@@ -1644,7 +1665,7 @@ The keybindings will be assigned only when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.5.3"))
+  (let ((moom-release "1.5.4"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
