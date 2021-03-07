@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.5.2
+;; Version: 1.5.3
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -800,8 +800,10 @@ If INDEX is non-nil, revert to the provided id of history."
       (let ((previous (nth index moom--command-history)))
         (moom-restore-last-status previous)
         (setq moom--command-history (nthcdr (1+ index) moom--command-history))
-        (message "[moom] %s available history" (length moom--command-history)))
-    (user-error "[moom] No corresponding history")))
+        (when moom-verbose
+          (message "[moom] %s undo available" (length moom--command-history))))
+    (when moom-verbose
+      (message "[moom] Undo unavailable"))))
 
 ;;;###autoload
 (defun moom-identify-current-monitor (&optional shift)
@@ -851,7 +853,8 @@ If SHIFT is nil, `moom--common-margin' will be applied."
         (push (format "[%s] W:%04s H:%04s (%05s,%05s) %s"
                       i (nth 2 gm) (nth 3 gm) (nth 0 gm) (nth 1 gm)
                       (if (equal gm moom--last-monitor) "<current>" "")) msg)))
-    (message "%s" (mapconcat 'concat (reverse msg) "\n"))))
+    (when moom-verbose
+      (message "%s" (mapconcat 'concat (reverse msg) "\n")))))
 
 ;;;###autoload
 (defun moom-jump-to-monitor (id)
@@ -1641,7 +1644,7 @@ The keybindings will be assigned only when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.5.2"))
+  (let ((moom-release "1.5.3"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
