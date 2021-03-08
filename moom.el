@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.5.4
+;; Version: 1.5.5
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -911,11 +911,12 @@ used to add additional actions."
 No information is stored for undo."
   (interactive)
   (let ((moom--print-status nil))
-    (if (setq moom--maximized (not moom--maximized))
+    (if moom--maximized
         (progn
-          (moom--save-last-status)
-          (moom-fill-screen))
-      (moom-restore-last-status)))
+          (moom-restore-last-status moom--maximized)
+          (setq moom--maximized nil))
+      (setq moom--maximized (moom--save-last-status))
+      (moom-fill-screen)))
   (moom-print-status))
 
 ;;;###autoload
@@ -1665,7 +1666,7 @@ The keybindings will be assigned only when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.5.4"))
+  (let ((moom-release "1.5.5"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
