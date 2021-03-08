@@ -123,7 +123,8 @@ Note - If you find any problems around font settings when resizing the Emacs fra
  - moom-version
 
 (obsoleted)
- - moom-screen-margin
+ - moom-screen-margin (was replaced with moom-check-user-margin)
+ - moom-change-frame-width-max (was replaced with moom-fill-width)
 
 *** How to setup screen margins
 
@@ -143,10 +144,6 @@ It is also useful to use =moom-update-user-margin= directly by putting new margi
 #+end_src
 
 The =moom-check-user-margin= and =moom-update-user-margin= will change =moom-user-margin= in an Emacs session, however, the updated margins will NOT be saved as a permanent value, so please configure the margins in your init.el explicitly for the next session.
-
-*** How to setup screen margins (obsolete)
-
-=moom-screen-margin= was replaced with =moom-check-user-margin=, see above section.
 
 * Extension to integrate font resizing
 

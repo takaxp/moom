@@ -799,7 +799,7 @@ If INDEX is non-nil, revert to the provided id of history."
         (setq moom--command-history (nthcdr (1+ index) moom--command-history))
         (when moom-verbose
           (message "[moom] %s undo available" (length moom--command-history))))
-    (message "[moom] Undo unavailable")))
+    (message "[moom] No further undo")))
 
 ;;;###autoload
 (defun moom-identify-current-monitor (&optional shift)
