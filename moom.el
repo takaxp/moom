@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.5.5
+;; Version: 1.5.6
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -799,8 +799,7 @@ If INDEX is non-nil, revert to the provided id of history."
         (setq moom--command-history (nthcdr (1+ index) moom--command-history))
         (when moom-verbose
           (message "[moom] %s undo available" (length moom--command-history))))
-    (when moom-verbose
-      (message "[moom] Undo unavailable"))))
+    (message "[moom] Undo unavailable")))
 
 ;;;###autoload
 (defun moom-identify-current-monitor (&optional shift)
@@ -1414,7 +1413,7 @@ This function does not effect font size."
       (moom--add-command-history last))))
 
 ;;;###autoload
-(defun moom-change-frame-width-max ()
+(defun moom-fill-width ()
   "Change the frame width to fill display horizontally.
 This function does not effect font size."
   (interactive)
@@ -1423,7 +1422,9 @@ This function does not effect font size."
     (moom-change-frame-width (moom--max-frame-pixel-width) t)
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last))))
-(defalias 'moom-fill-width 'moom-change-frame-width-max)
+(defalias 'moom-change-frame-width-max 'moom-fill-width)
+
+(make-obsolete 'moom-change-frame-width-max 'moom-fill-width "2021-03-09")
 
 ;;;###autoload
 (defun moom-delete-windows ()
@@ -1546,7 +1547,8 @@ STATUS is a list consists of font size, frame position, frame region, and pixel-
 ;;;###autoload
 (defun moom-toggle-font-module ()
   "Toggle `moom--font-module-p'.
-When `moom--font-module-p' is nil, font size is fixed except for `moom-reset' even if \"moom-font.el\" is loaded."
+When `moom--font-module-p' is nil, font size is fixed except for `moom-reset'
+even if \"moom-font.el\" is loaded."
   (interactive)
   (if (require 'moom-font nil t)
       (progn
@@ -1610,7 +1612,6 @@ The keybindings will be assigned only when Emacs runs in GUI."
       (define-key moom-mode-map (kbd "<f2>") 'moom-cycle-frame-height)
       (define-key moom-mode-map (kbd "C-c f s") 'moom-change-frame-width-single)
       (define-key moom-mode-map (kbd "C-c f d") 'moom-change-frame-width-double)
-      (define-key moom-mode-map (kbd "C-c f m") 'moom-change-frame-width-max)
       (define-key moom-mode-map (kbd "C-c f S") 'moom-delete-windows)
       (define-key moom-mode-map (kbd "C-c f D") 'moom-split-window)
       (define-key moom-mode-map (kbd "C-c f a")
@@ -1625,6 +1626,8 @@ The keybindings will be assigned only when Emacs runs in GUI."
       (define-key moom-mode-map (kbd "C-c f f 3") 'moom-fill-bottom-left)
       (define-key moom-mode-map (kbd "C-c f f 4") 'moom-fill-bottom-right)
       (define-key moom-mode-map (kbd "C-c f f m") 'moom-fill-band)
+      (define-key moom-mode-map (kbd "C-c f f w") 'moom-fill-width)
+      (define-key moom-mode-map (kbd "C-c f f h") 'moom-fill-height)
       (define-key moom-mode-map (kbd "M-<f2>") 'moom-toggle-frame-maximized))
     (when (memq 'font options)
       (define-key moom-mode-map (kbd "C--") 'moom-font-decrease)
@@ -1661,12 +1664,11 @@ The keybindings will be assigned only when Emacs runs in GUI."
         (- (moom--frame-left) (nth 2 moom--local-margin))
         (- (moom--frame-top) (nth 0 moom--local-margin)))))))
 
-
 ;;;###autoload
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.5.5"))
+  (let ((moom-release "1.5.6"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
@@ -1676,22 +1678,10 @@ This mode provides a set of commands to control frame position and size.
 The font size in buffers will be changed with synchronization of the updated
 frame geometry so that the frame width could be maintained at 80.
 
-No keybindings are configured as default but recommended as follows:
-
-(with-eval-after-load \"moom\"
-  (define-key moom-mode-map (kbd \"M-0\") 'moom-move-frame) ;; move to top-left
-  (define-key moom-mode-map (kbd \"M-1\") 'moom-move-frame-left)
-  (define-key moom-mode-map (kbd \"M-2\") 'moom-move-frame-to-center)
-  (define-key moom-mode-map (kbd \"M-3\") 'moom-move-frame-right)
-  (define-key moom-mode-map (kbd \"<f2>\") 'moom-cycle-frame-height)
-  (define-key moom-mode-map (kbd \"M-<f2>\") 'moom-toggle-frame-maximized)
-  (define-key moom-mode-map (kbd \"C-c f s\") 'moom-change-frame-width-single)
-  (define-key moom-mode-map (kbd \"C-c f d\") 'moom-change-frame-width-double)
-  (define-key moom-mode-map (kbd \"C-c f m\") 'moom-change-frame-width-max)
-  (define-key moom-mode-map (kbd \"C-c f S\") 'moom-delete-windows)
-  (define-key moom-mode-map (kbd \"C-c f D\") 'moom-split-window))
-
-You can use `moom-recommended-keybindings' to apply recommended keybindings in your init.el.
+No keybindings are configured as default but recommended keybindings are
+implemented in `moom-mode', thus user setting is very easy.
+You just use `moom-recommended-keybindings' to apply the recommended
+keybindings.
 
 To see more details and examples, please visit https://github.com/takaxp/moom.
 "
