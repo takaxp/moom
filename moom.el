@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.5.6
+;; Version: 1.5.7
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -392,6 +392,14 @@ Including title-bar, menu-bar, offset depends on window system, and border."
   "Return the minimum height of frame."
   moom-min-frame-height)
 
+(defun moom--max-in-hiehgt-list ()
+  "Return the maximum value in `moom--height-list'."
+  (let ((mhv 0))
+    (dolist (v moom--height-list)
+      (when (> v mhv)
+        (setq mhv v)))
+    mhv))
+
 (defun moom--make-frame-height-list ()
   "Create an internal ring to change frame height."
   (let ((max-height (moom--max-frame-height))
@@ -626,6 +634,10 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
                             (moom--pos-y pos-y))
         (when flag
           (set-frame-size nil pixel-width pixel-height t)))))
+  (moom--make-frame-height-list)
+  (when (eq (car moom--height-list)
+            (moom--max-in-hiehgt-list))
+    (moom--cycle-frame-height-list))
   (moom-print-status))
 
 (defun moom--shift-amount (direction)
@@ -1668,7 +1680,7 @@ The keybindings will be assigned only when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.5.6"))
+  (let ((moom-release "1.5.7"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
