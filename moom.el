@@ -392,14 +392,6 @@ Including title-bar, menu-bar, offset depends on window system, and border."
   "Return the minimum height of frame."
   moom-min-frame-height)
 
-(defun moom--max-in-hiehgt-list ()
-  "Return the maximum value in `moom--height-list'."
-  (let ((mhv 0))
-    (dolist (v moom--height-list)
-      (when (> v mhv)
-        (setq mhv v)))
-    mhv))
-
 (defun moom--make-frame-height-list ()
   "Create an internal ring to change frame height."
   (let ((max-height (moom--max-frame-height))
@@ -636,7 +628,7 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
           (set-frame-size nil pixel-width pixel-height t)))))
   (moom--make-frame-height-list)
   (when (eq (car moom--height-list)
-            (moom--max-in-hiehgt-list))
+            (moom--frame-height))
     (moom--cycle-frame-height-list))
   (moom-print-status))
 
