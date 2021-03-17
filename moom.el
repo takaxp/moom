@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.5.7
+;; Version: 1.5.8
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -403,7 +403,11 @@ Including title-bar, menu-bar, offset depends on window system, and border."
                        (/ (* steps max-height) moom--height-steps))
                   heights))
     (cl-pushnew (max min-height max-height) heights)
-    (setq moom--height-list (copy-sequence heights))))
+    (setq moom--height-list (copy-sequence heights))
+    ;; Skip the current height
+    (when (eq (car moom--height-list)
+              (moom--frame-height))
+      (moom--cycle-frame-height-list))))
 
 (defun moom--cycle-frame-height-list ()
   "Rotate `moom--height-list'."
@@ -627,9 +631,6 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
         (when flag
           (set-frame-size nil pixel-width pixel-height t)))))
   (moom--make-frame-height-list)
-  (when (eq (car moom--height-list)
-            (moom--frame-height))
-    (moom--cycle-frame-height-list))
   (moom-print-status))
 
 (defun moom--shift-amount (direction)
@@ -1310,9 +1311,11 @@ No information is stored for undo."
   (unless moom--height-list
     (moom--make-frame-height-list))
   (let ((height (car moom--height-list)))
+    ;; Skip the current height
     (when (equal height (moom--frame-height))
       (moom--cycle-frame-height-list)
       (setq height (car moom--height-list)))
+    ;; Align to center or bottom line
     (cond ((equal height (moom--max-frame-height))
            (moom-change-frame-height (moom--max-frame-pixel-height) t))
           ((equal height (/ (moom--max-frame-height) 2))
@@ -1672,7 +1675,7 @@ The keybindings will be assigned only when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.5.7"))
+  (let ((moom-release "1.5.8"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
