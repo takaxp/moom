@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.5.8
+;; Version: 1.5.9
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -1054,7 +1054,8 @@ If PLIST is nil, `moom-fill-band-options' is applied."
       (when (and band-pixel-width
                  band-pixel-height)
         (set-frame-size nil band-pixel-width band-pixel-height t)
-        (moom-move-frame-to-center)))
+        (moom-move-frame-to-center)
+        (moom--make-frame-height-list)))
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last)))
   (moom-print-status))
@@ -1331,6 +1332,7 @@ No information is stored for undo."
   (let ((last (moom--save-last-status)))
     (moom-move-frame-to-edge-top)
     (moom-change-frame-height (moom--max-frame-pixel-height) t)
+    (moom--make-frame-height-list)
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last))))
 
@@ -1505,6 +1507,7 @@ MARGIN is a list with 4 integers in order of {top, down, left, right}."
       (user-error "[moom] Format error...%s" margin)
     (setq moom-user-margin margin)
     (moom-identify-current-monitor)
+    (moom--make-frame-height-list)
     (message "[moom] `moom-user-margin' is updated to %s." moom-user-margin)))
 
 ;;;###autoload
@@ -1675,7 +1678,7 @@ The keybindings will be assigned only when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.5.8"))
+  (let ((moom-release "1.5.9"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
