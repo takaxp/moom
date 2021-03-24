@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.5.9
+;; Version: 1.6.0
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -881,7 +881,7 @@ actions when selecting a monitor."
   (interactive)
   (let ((dma-list (display-monitor-attributes-list)))
     (moom-jump-to-monitor
-     (let ((v (+ (moom--current-monitor-id) 1)))
+     (let ((v (1+ (moom--current-monitor-id))))
 			 (if (equal v (length dma-list)) 0 v))))
   (moom-print-monitors))
 
@@ -1045,11 +1045,6 @@ If PLIST is nil, `moom-fill-band-options' is applied."
              (moom--font-resize (moom--fullscreen-font-size)
                                 (+ (moom--max-frame-pixel-width)
                                    (moom--frame-internal-width)))
-             ;; (set-frame-width nil moom-frame-width-single)
-             ;; (when (and moom--font-module-p
-             ;;            (floatp range))
-             ;;   (setq band-pixel-width (- (moom--frame-pixel-width)
-             ;;                             (moom--frame-internal-width))))
              (setq band-pixel-width (moom--max-frame-pixel-width))))
       (when (and band-pixel-width
                  band-pixel-height)
@@ -1678,7 +1673,7 @@ The keybindings will be assigned only when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.5.9"))
+  (let ((moom-release "1.6.0"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload

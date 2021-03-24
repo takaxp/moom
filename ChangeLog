@@ -1,3 +1,16 @@
+2021-03-24  Takaaki ISHIKAWA  <takaxp@ieee.org>
+
+	* moom-font.el: version 1.6.0
+	- no changes
+
+	* moom.el: version 1.6.0
+	- [breaking change] moom-change-frame-width-max is obsoleted
+	- [breaking change] moom-change-frame-height-max has been removed
+	- [improve] management of cycle height
+	- [new] keybindings for moom-fill-width and moom-fill-height
+	- [new] moom-command-history-length
+	- [new feature] Undo
+
 2021-03-06  Takaaki ISHIKAWA  <takaxp@ieee.org>
 
 	* moom-font.el: version 1.5.0
