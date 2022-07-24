@@ -837,7 +837,7 @@ If SHIFT is nil, `moom--common-margin' will be applied."
     (unless (equal moom--last-monitor geometry)
       (setq moom--last-monitor geometry)
       (when moom-verbose
-        (message "[moom] The current monitor has been changed to %s" geometry))
+        (message "[Moom] The current monitor has been changed to %s" geometry))
       (moom--make-frame-height-list)))
   (when (eq window-system 'mac) ;; To avoid visual error
     (redraw-frame)))
@@ -1588,9 +1588,9 @@ The last frame position and size will be restored."
 OPTIONS is a list of moom API types.  If you want to set all recommemded
 keybindings, put the following code in your init.el.
  (with-eval-after-load \"moom\"
-   (moom-recommended-keybindings 'all))
-'all is identical to '(move fit expand fill font reset undo).
-If you give only '(reset) as the argument, then \\[moom-reset] is activated.
+   (moom-recommended-keybindings \='all))
+\='all is identical to \='(move fit expand fill font reset undo).
+If you give only \='(reset) as the argument, then \\[moom-reset] is activated.
 The keybindings will be assigned only when Emacs runs in GUI."
   (when window-system
     (when (eq 'all options)
