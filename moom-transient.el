@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 0.9.0
+;; Version: 0.9.1
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1") (transient "0.3.7"))
@@ -38,9 +38,13 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'moom)
-  (require 'transient))
+(require 'moom)
+(require 'transient)
+
+(defcustom moom-transient-dispatch-sticky t
+  "If Non-nil, keep showing the dispatcher right after executing a command."
+  :type 'boolean
+  :group 'moom)
 
 (defvar moom-transient--last-command nil)
 (defun moom-transient--dispatch-description ()
@@ -55,7 +59,7 @@
       moom-transient--last-command)))
 
 (defun moom-transient--insert-groups ()
-  "Enable to shrink a frame vertically."
+  "Enable to shrink a frame horizontally."
   (setq window-size-fixed nil))
 (advice-add 'transient--insert-groups :after #'moom-transient--insert-groups)
 
@@ -64,10 +68,14 @@
   (let ((transient-enable-popup-navigation nil))
     (funcall f)))
 
+(defun moom-transient--do-stay ()
+  "Return a status for 'transient-suffix."
+  (if moom-transient-dispatch-sticky 'transient--do-stay nil))
+
 ;;;###autoload
 (transient-define-prefix moom-transient-dispatch ()
   "Command list of `moom'."
-  :transient-suffix 'transient--do-stay
+  :transient-suffix 'moom-transient--do-stay
   [:description
    moom-transient--dispatch-description
    ["Move the frame"
@@ -113,24 +121,24 @@
 
 ;;;###autoload
 (transient-define-prefix moom-transient-config ()
-  "Command list to configure `moom'."
-  :transient-suffix 'transient--do-stay
-  ["[moom] Configuration"
-   [("m p" "monitor print" moom-print-monitors)
-    ("m j" "monitor jump" moom-jump-to-monitor)
-    ("m c" "monitor cycle" moom-cycle-monitors)
-    ("m i" "monitor id" moom-identify-current-monitor)]
-   [("w s" "window split" moom-split-window)
-    ("w d" "window delete" moom-delete-windows)]
-   [("s c" "spacing cycle" moom-cycle-line-spacing)
-    ("s r" "spacing reset" moom-reset-line-spacing)]]
-  [[("f t" "font table" moom-generate-font-table)
-    ("t f" "toggle font" moom-toggle-font-module)
-    ("t m" "toggle maximized" moom-toggle-frame-maximized)]
-   [("u" "update margin" moom-update-user-margin)
-    ("c" "check margin" moom-check-user-margin)
-    ("p" "print" moom-print-status)
-    ("r" "restore last" moom-restore-last-status)]])
+"Command list to configure `moom'."
+:transient-suffix 'transient--do-stay
+["[moom] Configuration"
+ [("m p" "monitor print" moom-print-monitors)
+  ("m j" "monitor jump" moom-jump-to-monitor)
+  ("m c" "monitor cycle" moom-cycle-monitors)
+  ("m i" "monitor id" moom-identify-current-monitor)]
+ [("w s" "window split" moom-split-window)
+  ("w d" "window delete" moom-delete-windows)]
+ [("s c" "spacing cycle" moom-cycle-line-spacing)
+  ("s r" "spacing reset" moom-reset-line-spacing)]]
+[[("f t" "font table" moom-generate-font-table)
+  ("t f" "toggle font" moom-toggle-font-module)
+  ("t m" "toggle maximized" moom-toggle-frame-maximized)]
+ [("u" "update margin" moom-update-user-margin)
+  ("c" "check margin" moom-check-user-margin)
+  ("p" "print" moom-print-status)
+  ("r" "restore last" moom-restore-last-status)]])
 
 ;;;###autoload
 (defun moom-transient-hide-cursor ()
