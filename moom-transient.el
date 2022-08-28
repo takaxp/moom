@@ -1,10 +1,10 @@
-;;; moom-transient.el --- Command dispatcher by transient -*- lexical-binding: t; -*-
+;;; moom-transient.el --- Moom command dispatcher by transient -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2022 Takaaki ISHIKAWA
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 0.9.1
+;; Version: 0.9.2
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1") (transient "0.3.7"))
@@ -27,8 +27,10 @@
 
 ;;; Commentary:
 
-;; This package provides a moom command dispatcher powered by transient.el.
-;; To use this package, put the following code to your init.el
+;; This package provides an example of moom command dispatcher powered
+;; by transient.el (see https://github.com/magit/transient).
+;;
+;; To use this package, put the following code to your init.el.
 ;; (with-eval-after-load "moom"
 ;;   (when (require 'moom-transient nil t)
 ;;     (moom-transient-hide-cursor) ;; if needed
@@ -78,16 +80,18 @@
   :transient-suffix 'moom-transient--do-stay
   [:description
    moom-transient--dispatch-description
-   ["Move the frame"
-    ("0" "move top-left" moom-move-frame)
-    ("1" "move left" moom-move-frame-left)
-    ("2" "move center" moom-move-frame-to-center)
-    ("3" "move right" moom-move-frame-right)]
+   ["Move"
+    ("0" "top-left" moom-move-frame)
+    ("1" "left" moom-move-frame-left)
+    ("2" "center" moom-move-frame-to-center)
+    ("3" "right" moom-move-frame-right)]
    ["Expand"
-    ("w s" "single" moom-change-frame-width-single)
-    ("w d" "double" moom-change-frame-width-double)
-    ("w a" "3/2" moom-change-frame-width-half-again)
-    ("c h" "height" moom-cycle-frame-height)]
+    ("s" "single" moom-change-frame-width-single)
+    ("d" "double" moom-change-frame-width-double)
+    ("a" "3/2" moom-change-frame-width-half-again)
+    ("w" "width (full)" moom-fill-width)
+    ("h" "height (full)" moom-fill-height)
+    ("H" "height (cycle)" moom-cycle-frame-height)]
    ["Fit (edge)"
     ("e l" "edge left" moom-move-frame-to-edge-left)
     ("e r" "edge right" moom-move-frame-to-edge-right)
@@ -98,53 +102,66 @@
     ("c r" "center right" moom-move-frame-to-centerline-from-right)
     ("c t" "center top" moom-move-frame-to-centerline-from-top)
     ("c b" "center bottom" moom-move-frame-to-centerline-from-bottom)]]
-  [["Fill screen"
-    ("f s" "screen" moom-fill-screen)
-    ("f w" "width" moom-fill-width)
-    ("f h" "height" moom-fill-height)
-    ("f m" "band" moom-fill-band)]
-   ["Fill screen (half)"
-    ("f t" "top" moom-fill-top)
-    ("f b" "bottom" moom-fill-bottom)
+  [["Fill (font resize)"
+    ("f 1" "top-left" moom-fill-top-left)
+    ("f 2" "top-right" moom-fill-top-right)
+    ("f 3" "bottom-left" moom-fill-bottom-left)
+    ("f 4" "bottom-right" moom-fill-bottom-right)]
+   [""
     ("f l" "left" moom-fill-left)
-    ("f r" "right" moom-fill-right)]
-   ["Fill screen (quarter)"
-    ("f 1" "top left" moom-fill-top-left)
-    ("f 2" "top right" moom-fill-top-right)
-    ("f 3" "bottom left" moom-fill-bottom-left)
-    ("f 4" "bottom right" moom-fill-bottom-right)]
+    ("f r" "right" moom-fill-right)
+    ("f t" "top" moom-fill-top)
+    ("f b" "bottom" moom-fill-bottom)]
+   [""
+    ("f s" "screen" moom-fill-screen)
+    ("f m" "band" moom-fill-band)]
+   ["Split"
+    ("S" "split window" moom-split-window)
+    ("D" "delete windows" moom-delete-windows)]
    ["Utilities"
     ("r" "reset" moom-reset)
     ("u" "undo" moom-undo)
-    ("v" "version" moom-version)
+    ("v" "version" (lambda () (interactive)
+                     (message "%s\n%s"
+                              (moom-version) (moom-transient-version))))
     ("q" "quit" transient-quit-all)]])
 
 ;;;###autoload
 (transient-define-prefix moom-transient-config ()
-"Command list to configure `moom'."
-:transient-suffix 'transient--do-stay
-["[moom] Configuration"
- [("m p" "monitor print" moom-print-monitors)
-  ("m j" "monitor jump" moom-jump-to-monitor)
-  ("m c" "monitor cycle" moom-cycle-monitors)
-  ("m i" "monitor id" moom-identify-current-monitor)]
- [("w s" "window split" moom-split-window)
-  ("w d" "window delete" moom-delete-windows)]
- [("s c" "spacing cycle" moom-cycle-line-spacing)
-  ("s r" "spacing reset" moom-reset-line-spacing)]]
-[[("f t" "font table" moom-generate-font-table)
-  ("t f" "toggle font" moom-toggle-font-module)
-  ("t m" "toggle maximized" moom-toggle-frame-maximized)]
- [("u" "update margin" moom-update-user-margin)
-  ("c" "check margin" moom-check-user-margin)
-  ("p" "print" moom-print-status)
-  ("r" "restore last" moom-restore-last-status)]])
+  "Command list to configure `moom'."
+  :transient-suffix 'transient--do-stay
+  ["[moom] Configuration"
+   [("m p" "monitor print" moom-print-monitors)
+    ("m j" "monitor jump" moom-jump-to-monitor)
+    ("m c" "monitor cycle" moom-cycle-monitors)
+    ("m i" "monitor id" moom-identify-current-monitor)]
+   [("s c" "spacing cycle" moom-cycle-line-spacing)
+    ("s r" "spacing reset" moom-reset-line-spacing)]]
+  [[("f t" "font table" moom-generate-font-table) ;; should be added moom-reset
+    ("t f" "toggle font" moom-toggle-font-module)
+    ("t m" "toggle maximized" moom-toggle-frame-maximized)]
+   [("=" "++" moom-font-increase)
+    ("-" "--" moom-font-decrease)
+    ("R" "reset" moom-font-size-reset)
+    ("P" "print" moom-font-print-name-at-point :transient nil)]
+   [("u" "update margin" moom-update-user-margin)
+    ("c" "check margin" moom-check-user-margin)
+    ("p" "print" moom-print-status)
+    ("r" "restore last" moom-restore-last-status)
+    ("q" "quit" transient-quit-all)]])
 
 ;;;###autoload
 (defun moom-transient-hide-cursor ()
   "Hide cursor in transient buffer."
   (advice-add 'moom-transient-config :around #'moom-transient--hide-cursor)
   (advice-add 'moom-transient-dispatch :around #'moom-transient--hide-cursor))
+
+;;;###autoload
+(defun moom-transient-version ()
+  "The release version of Moom-transient."
+  (interactive)
+  (let ((alpha "0.9.2"))
+    (message "[Moom-transient] v%s" alpha)))
 
 (provide 'moom-transient)
 
