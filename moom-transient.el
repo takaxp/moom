@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 0.9.2
+;; Version: 0.9.3
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1") (transient "0.3.7"))
@@ -121,9 +121,7 @@
    ["Utilities"
     ("r" "reset" moom-reset)
     ("u" "undo" moom-undo)
-    ("v" "version" (lambda () (interactive)
-                     (message "%s\n%s"
-                              (moom-version) (moom-transient-version))))
+    ("v" "version" moom-transient-version)
     ("q" "quit" transient-quit-all)]])
 
 ;;;###autoload
@@ -158,10 +156,10 @@
 
 ;;;###autoload
 (defun moom-transient-version ()
-  "The release version of Moom-transient."
+  "Printing version of `moom' and `moom-transient'."
   (interactive)
-  (let ((alpha "0.9.2"))
-    (message "[Moom-transient] v%s" alpha)))
+  (let ((alpha "0.9.3"))
+    (message "%s" (concat (moom-version) "\n" "[Moom-transient] v" alpha))))
 
 (provide 'moom-transient)
 
