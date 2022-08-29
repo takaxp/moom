@@ -95,8 +95,8 @@
    ["Fit (edge)"
     ("e l" "edge left" moom-move-frame-to-edge-left)
     ("e r" "edge right" moom-move-frame-to-edge-right)
-    ("e t", "edge top" moom-move-frame-to-edge-top)
-    ("e b", "edge bottom" moom-move-frame-to-edge-bottom)]
+    ("e t" "edge top" moom-move-frame-to-edge-top)
+    ("e b" "edge bottom" moom-move-frame-to-edge-bottom)]
    ["Fit (center)"
     ("c l" "center left" moom-move-frame-to-centerline-from-left)
     ("c r" "center right" moom-move-frame-to-centerline-from-right)
