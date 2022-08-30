@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.6.1
+;; Version: 1.6.2
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -207,8 +207,8 @@ Configure this variable before activating moom mode.
   :type 'hook
   :group 'moom)
 
-(defcustom moom-reset-hook nil
-  "Hook runs when reset of internal parameters."
+(defcustom moom-after-reset-hook nil
+  "Hook runs after reset of internal parameters."
   :type 'hook
   :group 'moom)
 
@@ -1470,10 +1470,11 @@ No information is stored for undo."
     (setq moom--maximized nil)
     (setq moom--command-history nil)
     (when (or moom--non-interactive-history (called-interactively-p 'any))
-      (moom--add-command-history (moom--save-last-status))
-      (run-hooks 'moom-reset-hook))
+      (moom--add-command-history (moom--save-last-status)))
     (moom-restore-last-status moom--init-status)
-    (moom-identify-current-monitor)))
+    (moom-identify-current-monitor)
+    (when (or moom--non-interactive-history (called-interactively-p 'any))
+      (run-hooks 'moom-after-reset-hook))))
 
 ;;;###autoload
 (defun moom-update-height-steps (arg)
@@ -1679,7 +1680,7 @@ The keybindings will be assigned only when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.6.1"))
+  (let ((moom-release "1.6.2"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
