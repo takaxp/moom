@@ -1,10 +1,10 @@
 ;;; moom.el --- Commands to control frame position and size -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2017-2021 Takaaki ISHIKAWA
+;; Copyright (C) 2017-2022 Takaaki ISHIKAWA
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.6.0
+;; Version: 1.6.1
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -204,6 +204,11 @@ Configure this variable before activating moom mode.
 
 (defcustom moom-before-setup-hook nil
   "Hook runs before enabling this package."
+  :type 'hook
+  :group 'moom)
+
+(defcustom moom-reset-hook nil
+  "Hook runs when reset of internal parameters."
   :type 'hook
   :group 'moom)
 
@@ -1465,7 +1470,8 @@ No information is stored for undo."
     (setq moom--maximized nil)
     (setq moom--command-history nil)
     (when (or moom--non-interactive-history (called-interactively-p 'any))
-      (moom--add-command-history (moom--save-last-status)))
+      (moom--add-command-history (moom--save-last-status))
+      (run-hooks 'moom-reset-hook))
     (moom-restore-last-status moom--init-status)
     (moom-identify-current-monitor)))
 
@@ -1673,7 +1679,7 @@ The keybindings will be assigned only when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.6.0"))
+  (let ((moom-release "1.6.1"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
