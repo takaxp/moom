@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.6.2
+;; Version: 1.6.3
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -1585,9 +1585,9 @@ The last frame position and size will be restored."
   (interactive)
   (if (not (fboundp 'moom-font--generate-font-table))
       (warn "moom-font.el is NOT installed.")
-    (moom--save-last-status)
-    (moom-font--generate-font-table)
-    (moom-restore-last-status)))
+    (let ((last (moom--save-last-status)))
+      (moom-font--generate-font-table)
+      (moom-restore-last-status last))))
 
 ;;;###autoload
 (defun moom-recommended-keybindings (options)
@@ -1680,7 +1680,7 @@ The keybindings will be assigned only when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.6.2"))
+  (let ((moom-release "1.6.3"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
