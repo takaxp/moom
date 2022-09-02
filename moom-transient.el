@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 0.9.4
+;; Version: 0.9.5
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1") (transient "0.3.7"))
@@ -34,7 +34,7 @@
 ;; (with-eval-after-load "moom"
 ;;   (when (require 'moom-transient nil t)
 ;;     (moom-transient-hide-cursor) ;; if needed
-;;     (define-key moom-mode-map (kbd "C-c d") #'moom-transient-dispatch)))
+;;     (define-key moom-mode-map (kbd "C-c o") #'moom-transient-dispatch)))
 
 ;;; Change Log:
 
@@ -44,7 +44,8 @@
 (require 'transient)
 
 (defcustom moom-transient-dispatch-sticky t
-  "If Non-nil, keep showing the dispatcher right after executing a command."
+  "If Non-nil, keep showing the dispatcher right after executing a command.
+This option is used in `moom-transient-dispatch'."
   :type 'boolean
   :group 'moom)
 
@@ -87,6 +88,17 @@
           (moom-transient--font-module-status)
           (propertize ")" 'face 'transient-heading)))
 
+(defun moom-transient--font-api-status-description ()
+  "Update description on whether font api is available."
+  (format "%s%s"
+          (propertize "Font " 'face 'transient-heading)
+          (if moom--font-module-p
+              ""
+            (concat
+             (propertize "(" 'face 'transient-heading)
+             (propertize "disabled" 'face 'font-lock-warning-face)
+             (propertize ")" 'face 'transient-heading)))))
+
 ;;;###autoload
 (transient-define-prefix moom-transient-dispatch ()
   "Command list of `moom'."
@@ -95,7 +107,7 @@
    moom-transient--dispatch-description
    ["Move"
     ("0" "top-left" moom-move-frame)
-    ("1" "left" moom-move-frame-left) ;; possible to show as left (200px)?
+    ("1" "left" moom-move-frame-left)
     ("2" "center" moom-move-frame-to-center)
     ("3" "right" moom-move-frame-right)
     ("4" "center (hol)" moom-move-frame-to-horizontal-center)
@@ -119,7 +131,7 @@
     ("c b" "center bottom" moom-move-frame-to-centerline-from-bottom)]]
   [:description
    moom-transient--font-module-status-description
-   [("f 1" "top-left" moom-fill-top-left) ;; "Fill (font resize)"
+   [("f 1" "top-left" moom-fill-top-left)
     ("f 2" "top-right" moom-fill-top-right)
     ("f 3" "bottom-left" moom-fill-bottom-left)
     ("f 4" "bottom-right" moom-fill-bottom-right)]
@@ -129,17 +141,18 @@
     ("f b" "bottom" moom-fill-bottom)]
    [("f s" "screen" moom-fill-screen)
     ("f m" "band" moom-fill-band)
-    ("" "" ignore)
-    ("T" "toggle font resizing" moom-toggle-font-module)]]
+    ""
+    ("T" "toggle font resizing" moom-transient-toggle-font-module)]]
   [["Monitors"
     ;; ("m j" "monitor jump" moom-jump-to-monitor)
-    ;; ("m i" "monitor id" moom-identify-current-monitor)
     ("m c" "monitor cycle" moom-cycle-monitors)
     ("m p" "monitor print" moom-print-monitors)]
    ["Window"
     ("S" "split" moom-split-window)
     ("D" "delete" moom-delete-windows)]
-   ["Font"
+   [:description
+    moom-transient--font-api-status-description
+    :if (lambda () moom--font-module-p)
     ("=" "increase" moom-font-increase)
     ("-" "decrease" moom-font-decrease)
     ("R" "reset" moom-font-size-reset)]
@@ -148,17 +161,26 @@
     ("u" "undo" moom-undo)
     ("p" "print" moom-print-status)]
    [""
+    ("C" "config" moom-transient-config)
     ("v" "version" moom-transient-version)
     ("q" "quit" transient-quit-all)]])
 
 ;;;###autoload
 (transient-define-prefix moom-transient-config ()
-  "Command list to configure `moom'."
+  "Command list of `moom' configuration."
   ["[moom] Configuration"
    [("t" "generate font table" moom-generate-font-table)
     ("c" "check margin" moom-check-user-margin)
     ("p" "print font name" moom-font-print-name-at-point)
+    ("D" "dispatch" moom-transient-dispatch)
     ("q" "quit" transient-quit-all)]])
+
+;;;###autoload
+(defun moom-transient-toggle-font-module ()
+  "Call `moom-toggle-font-module' with `moom-transient-dispatch'."
+  (interactive)
+  (moom-toggle-font-module)
+  (call-interactively 'moom-transient-dispatch))
 
 ;;;###autoload
 (defun moom-transient-hide-cursor ()
@@ -170,7 +192,7 @@
 (defun moom-transient-version ()
   "Printing version of `moom' and `moom-transient'."
   (interactive)
-  (let ((alpha "0.9.4"))
+  (let ((alpha "0.9.5"))
     (message "%s" (concat (moom-version) "\n" "[Moom-transient] v" alpha))))
 
 (provide 'moom-transient)
