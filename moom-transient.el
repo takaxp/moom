@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 0.9.3
+;; Version: 0.9.4
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1") (transient "0.3.7"))
@@ -74,6 +74,19 @@
   "Return a status for 'transient-suffix."
   (if moom-transient-dispatch-sticky 'transient--do-stay nil))
 
+(defun moom-transient--font-module-status ()
+  "Return whether `moom-module' is activating or not."
+  (format "%s" (if moom--font-module-p
+                   (propertize "on" 'face 'font-lock-type-face)
+                 (propertize "off" 'face 'font-lock-warning-face))))
+
+(defun moom-transient--font-module-status-description ()
+  "Update description on whether `moom-font' is activating or not."
+  (format "%s%s%s"
+          (propertize "Fill (font resizing: " 'face 'transient-heading)
+          (moom-transient--font-module-status)
+          (propertize ")" 'face 'transient-heading)))
+
 ;;;###autoload
 (transient-define-prefix moom-transient-dispatch ()
   "Command list of `moom'."
@@ -82,9 +95,11 @@
    moom-transient--dispatch-description
    ["Move"
     ("0" "top-left" moom-move-frame)
-    ("1" "left" moom-move-frame-left)
+    ("1" "left" moom-move-frame-left) ;; possible to show as left (200px)?
     ("2" "center" moom-move-frame-to-center)
-    ("3" "right" moom-move-frame-right)]
+    ("3" "right" moom-move-frame-right)
+    ("4" "center (hol)" moom-move-frame-to-horizontal-center)
+    ("5" "center (ver)" moom-move-frame-to-vertical-center)]
    ["Expand"
     ("s" "single" moom-change-frame-width-single)
     ("d" "double" moom-change-frame-width-double)
@@ -95,57 +110,54 @@
    ["Fit (edge)"
     ("e l" "edge left" moom-move-frame-to-edge-left)
     ("e r" "edge right" moom-move-frame-to-edge-right)
-    ("e t" "edge top" moom-move-frame-to-edge-top)
-    ("e b" "edge bottom" moom-move-frame-to-edge-bottom)]
+    ("e t", "edge top" moom-move-frame-to-edge-top)
+    ("e b", "edge bottom" moom-move-frame-to-edge-bottom)]
    ["Fit (center)"
     ("c l" "center left" moom-move-frame-to-centerline-from-left)
     ("c r" "center right" moom-move-frame-to-centerline-from-right)
     ("c t" "center top" moom-move-frame-to-centerline-from-top)
     ("c b" "center bottom" moom-move-frame-to-centerline-from-bottom)]]
-  [["Fill (font resize)"
-    ("f 1" "top-left" moom-fill-top-left)
+  [:description
+   moom-transient--font-module-status-description
+   [("f 1" "top-left" moom-fill-top-left) ;; "Fill (font resize)"
     ("f 2" "top-right" moom-fill-top-right)
     ("f 3" "bottom-left" moom-fill-bottom-left)
     ("f 4" "bottom-right" moom-fill-bottom-right)]
-   [""
-    ("f l" "left" moom-fill-left)
+   [("f l" "left" moom-fill-left)
     ("f r" "right" moom-fill-right)
     ("f t" "top" moom-fill-top)
     ("f b" "bottom" moom-fill-bottom)]
-   [""
-    ("f s" "screen" moom-fill-screen)
-    ("f m" "band" moom-fill-band)]
-   ["Split"
-    ("S" "split window" moom-split-window)
-    ("D" "delete windows" moom-delete-windows)]
+   [("f s" "screen" moom-fill-screen)
+    ("f m" "band" moom-fill-band)
+    ("" "" ignore)
+    ("T" "toggle font resizing" moom-toggle-font-module)]]
+  [["Monitors"
+    ;; ("m j" "monitor jump" moom-jump-to-monitor)
+    ;; ("m i" "monitor id" moom-identify-current-monitor)
+    ("m c" "monitor cycle" moom-cycle-monitors)
+    ("m p" "monitor print" moom-print-monitors)]
+   ["Window"
+    ("S" "split" moom-split-window)
+    ("D" "delete" moom-delete-windows)]
+   ["Font"
+    ("=" "increase" moom-font-increase)
+    ("-" "decrease" moom-font-decrease)
+    ("R" "reset" moom-font-size-reset)]
    ["Utilities"
     ("r" "reset" moom-reset)
     ("u" "undo" moom-undo)
+    ("p" "print" moom-print-status)]
+   [""
     ("v" "version" moom-transient-version)
     ("q" "quit" transient-quit-all)]])
 
 ;;;###autoload
 (transient-define-prefix moom-transient-config ()
   "Command list to configure `moom'."
-  :transient-suffix 'transient--do-stay
   ["[moom] Configuration"
-   [("m p" "monitor print" moom-print-monitors)
-    ("m j" "monitor jump" moom-jump-to-monitor)
-    ("m c" "monitor cycle" moom-cycle-monitors)
-    ("m i" "monitor id" moom-identify-current-monitor)]
-   [("s c" "spacing cycle" moom-cycle-line-spacing)
-    ("s r" "spacing reset" moom-reset-line-spacing)]]
-  [[("f t" "font table" moom-generate-font-table) ;; should be added moom-reset
-    ("t f" "toggle font" moom-toggle-font-module)
-    ("t m" "toggle maximized" moom-toggle-frame-maximized)]
-   [("=" "++" moom-font-increase)
-    ("-" "--" moom-font-decrease)
-    ("R" "reset" moom-font-size-reset)
-    ("P" "print" moom-font-print-name-at-point :transient nil)]
-   [("u" "update margin" moom-update-user-margin)
+   [("t" "generate font table" moom-generate-font-table)
     ("c" "check margin" moom-check-user-margin)
-    ("p" "print" moom-print-status)
-    ("r" "restore last" moom-restore-last-status)
+    ("p" "print font name" moom-font-print-name-at-point)
     ("q" "quit" transient-quit-all)]])
 
 ;;;###autoload
@@ -158,7 +170,7 @@
 (defun moom-transient-version ()
   "Printing version of `moom' and `moom-transient'."
   (interactive)
-  (let ((alpha "0.9.3"))
+  (let ((alpha "0.9.4"))
     (message "%s" (concat (moom-version) "\n" "[Moom-transient] v" alpha))))
 
 (provide 'moom-transient)
