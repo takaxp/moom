@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.6.3
+;; Version: 1.6.4
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -257,7 +257,7 @@ Configure this variable before activating moom mode.
   "Init function."
   (run-hooks 'moom-before-setup-hook)
   (setq moom--font-module-p (when moom-use-font-module
-                              (require 'moom-font nil t)))
+                              (boundp 'moom-font--pause)))
   (setq moom-font--pause (not moom--font-module-p))
   (moom-identify-current-monitor)
   (unless moom--virtual-grid
@@ -1585,7 +1585,9 @@ The last frame position and size will be restored."
   (interactive)
   (if (not (fboundp 'moom-font--generate-font-table))
       (warn "moom-font.el is NOT installed.")
-    (let ((last (moom--save-last-status)))
+    (let* ((moom--font-module-p (boundp 'moom-font--pause))
+           (moom-font--pause (not moom--font-module-p))
+           (last (moom--save-last-status)))
       (moom-font--generate-font-table)
       (moom-restore-last-status last))))
 
@@ -1680,7 +1682,7 @@ The keybindings will be assigned only when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.6.3"))
+  (let ((moom-release "1.6.4"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
