@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 0.9.5
+;; Version: 0.9.6
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1") (transient "0.3.7"))
@@ -142,7 +142,7 @@ This option is used in `moom-transient-dispatch'."
    [("f s" "screen" moom-fill-screen)
     ("f m" "band" moom-fill-band)
     ""
-    ("T" "toggle font resizing" moom-transient-toggle-font-module)]]
+    ("F" "toggle font resizing" moom-transient-toggle-font-module)]]
   [["Monitors"
     ;; ("m j" "monitor jump" moom-jump-to-monitor)
     ("m c" "monitor cycle" moom-cycle-monitors)
@@ -192,7 +192,7 @@ This option is used in `moom-transient-dispatch'."
 (defun moom-transient-version ()
   "Printing version of `moom' and `moom-transient'."
   (interactive)
-  (let ((alpha "0.9.5"))
+  (let ((alpha "0.9.6"))
     (message "%s" (concat (moom-version) "\n" "[Moom-transient] v" alpha))))
 
 (provide 'moom-transient)
