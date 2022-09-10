@@ -29,7 +29,7 @@ or
 #+caption: demo for moving and zooming, frame maximized
 [[https://github.com/takaxp/contents/blob/master/moom/demo1.gif]]
 
-Note - This module has basically been tested on [[https://www.apple.com/macos/high-sierra/][macOS High Sierra]], [[https://www.apple.com/jp/macos/catalina/][Catalina]], and [[https://www.apple.com/jp/macos/big-sur/][BigSur]] with combinations of two Full HD (1920x1080) monitors and one 4K monitor. Additionally, tested in Windows 10 and Linux (Ubuntu 20.04 with Emacs 26.3, CentOS 8.2, and openSUSE 15.1) with GTK, but they may still have some issues. From version 1.4.1, =moom-multi-monitors-support= is non-nil as default so no need to change the setting in your init.el.
+Note - This module has basically been tested on macOS High Sierra, Catalina, BigSur, and [[https://www.apple.com/jp/macos/][Monterey]] with combinations of two Full HD (1920x1080) monitors and one 4K monitor. Additionally, tested in Windows 10 and Linux (Ubuntu 20.04 with Emacs 26.3, CentOS 8.2, and openSUSE 15.1) with GTK, but they may still have some issues.
 
 ** Move
 
@@ -72,6 +72,8 @@ These functions will not change font size in a frame.
  - moom-change-frame-width
  - moom-change-frame-height
  - moom-cycle-frame-height
+ - moom-change-frame-width-max (moom-fill-width)
+ - moom-change-frame-height-max (moom-fill-height)
 
 *** split and delete window
 
@@ -82,8 +84,6 @@ These functions will not change font size in a frame.
 
 These functions normally change font size in a frame. But the behavior can be changed by =M-x moom-toggle-font-module=.
 
- - moom-fill-width
- - moom-fill-height
  - moom-fill-screen
  - moom-fill-band
  - moom-fill-top
@@ -124,7 +124,6 @@ Note - If you find any problems around font settings when resizing the Emacs fra
 
 (obsoleted)
  - moom-screen-margin (was replaced with moom-check-user-margin)
- - moom-change-frame-width-max (was replaced with moom-fill-width)
 
 *** How to setup screen margins
 
@@ -235,7 +234,6 @@ Here is an example. ~Monaco~ is used for ASCII font and ~Migu 2M~ is used for Ja
 | moom-command-history-length          | 100                                | integer |
 | moom-verbose                         | nil                                | boolean |
 | moom-lighter                         | Moom                               | string  |
-| moom-multi-monitors-support          | t                                  | boolean |
 | moom-user-margin                     | '(0 0 0 0)                         | list    |
 | moom-use-font-module                 | t                                  | boolean |
 
@@ -389,6 +387,20 @@ Note: When maximizing a frame, =moom-fill-screen= is called internally.
 
   ;; Recommended for stable presentation during font size increasing
   (add-hook 'moom-font-after-resize-hook #'moom-move-frame-to-edge-top))
+#+end_src
+
+* transient.el support
+
+=moom-transient.el= provides a dispatcher to select a moom command listed in a popup menu. To use =moom-transient.el=, please put the following code to your init.el. The keybind =(C-c o)= should be changed for your environment. The module depends on [[https://github.com/magit/transient][transient.el]], so please install it first.
+
+#+caption: A dispatcher to select a moom command powered by transient.el
+[[https://github.com/takaxp/contents/blob/master/moom/transient.png]]
+
+#+begin_src emacs-lisp
+(with-eval-after-load "moom"
+  (when (require 'moom-transient nil t)
+    (moom-transient-hide-cursor) ;; if needed
+    (define-key moom-mode-map (kbd "C-c o") #'moom-transient-dispatch)))
 #+end_src
 
 * Collaboration with other packages
