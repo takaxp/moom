@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.6.6
+;; Version: 1.6.7
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -755,24 +755,24 @@ The frame width may be specified with TARGET-WIDTH."
   "Update right and bottom border for negative coordinate value on windows-nt."
   (let ((dma-list (display-monitor-attributes-list))
         (rb 0)
-	      (lb 0))
+	(lb 0))
     (dotimes (i (length dma-list))
       (let ((gm (alist-get 'geometry (nth i dma-list))))
-	      (when (< (nth 0 gm) 0)
-	        (setq rb (nth 0 gm)))
-	      (when (< (nth 1 gm) 0)
-	        (setq lb (nth 1 gm)))))
+	(when (< (nth 0 gm) 0)
+	  (setq rb (nth 0 gm)))
+	(when (< (nth 1 gm) 0)
+	  (setq lb (nth 1 gm)))))
     (setq moom--display-border
           (list (+ (display-pixel-width) rb)
-	              (+ (display-pixel-height) lb)))))
+	        (+ (display-pixel-height) lb)))))
 
 (defun moom--current-monitor-id ()
   "Provide id of the current monitor."
   (let ((dma-list (display-monitor-attributes-list))
-	      (id 0))
+	(id 0))
     (dotimes (i (length dma-list))
       (when (equal (alist-get 'geometry (nth i dma-list)) moom--last-monitor)
-	      (setq id i)))
+	(setq id i)))
     id))
 
 (defun moom--read-user-margin ()
@@ -882,7 +882,7 @@ actions when selecting a monitor."
   (let ((dma-list (display-monitor-attributes-list)))
     (moom-jump-to-monitor
      (let ((v (1+ (moom--current-monitor-id))))
-			 (if (equal v (length dma-list)) 0 v))))
+       (if (equal v (length dma-list)) 0 v))))
   (moom-print-monitors))
 
 ;;;###autoload
@@ -1593,22 +1593,35 @@ OPTIONS is a list of moom API types.  If you want to set all recommemded
 keybindings, put the following code in your init.el.
  (with-eval-after-load \"moom\"
    (moom-recommended-keybindings \='all))
-\='all is identical to \='(move fit expand fill font reset undo).
-If you give only \='(reset) as the argument, then \\[moom-reset] is activated.
+=\'all is identical to =\'(move fit expand fill font reset undo).
+If OPTIONS includes =\'wof, then each binding is configured not to use fn key.
+If you give only =\'(reset) as the argument, then \\[moom-reset] is activated.
 The keybindings will be assigned only when Emacs runs in GUI."
   (when window-system
-    (when (eq 'all options)
-      (setq options '(move fit expand fill font reset undo)))
+    (when (memq 'all options)
+      (if (memq 'wof options)
+          (setq options '(move fit expand fill font reset undo wof))
+        (setq options '(move fit expand fill font reset undo))))
     (when (memq 'move options)
       (define-key moom-mode-map (kbd "M-0") 'moom-move-frame)
       (define-key moom-mode-map (kbd "M-1") 'moom-move-frame-left)
       (define-key moom-mode-map (kbd "M-2") 'moom-move-frame-to-center)
       (define-key moom-mode-map (kbd "M-3") 'moom-move-frame-right))
     (when (memq 'fit options)
-      (define-key moom-mode-map (kbd "M-<f1>") 'moom-move-frame-to-edge-left)
-      (define-key moom-mode-map (kbd "M-<f3>") 'moom-move-frame-to-edge-right)
-      (define-key moom-mode-map (kbd "<f1>") 'moom-move-frame-to-edge-top)
-      (define-key moom-mode-map (kbd "S-<f1>") 'moom-move-frame-to-edge-bottom)
+      (cond
+       ((memq 'wof options)
+        (define-key moom-mode-map (kbd "C-c e l") 'moom-move-frame-to-edge-left)
+        (define-key moom-mode-map (kbd "C-c e r")
+          'moom-move-frame-to-edge-right)
+        (define-key moom-mode-map (kbd "C-c e t") 'moom-move-frame-to-edge-top)
+        (define-key moom-mode-map (kbd "C-c e b")
+          'moom-move-frame-to-edge-bottom))
+       (t
+        (define-key moom-mode-map (kbd "M-<f1>") 'moom-move-frame-to-edge-left)
+        (define-key moom-mode-map (kbd "M-<f3>") 'moom-move-frame-to-edge-right)
+        (define-key moom-mode-map (kbd "<f1>") 'moom-move-frame-to-edge-top)
+        (define-key moom-mode-map (kbd "S-<f1>")
+          'moom-move-frame-to-edge-bottom)))
       (define-key moom-mode-map (kbd "C-c f c l")
         'moom-move-frame-to-centerline-from-left)
       (define-key moom-mode-map (kbd "C-c f c r")
@@ -1618,15 +1631,18 @@ The keybindings will be assigned only when Emacs runs in GUI."
       (define-key moom-mode-map (kbd "C-c f c b")
         'moom-move-frame-to-centerline-from-bottom))
     (when (memq 'expand options)
-      (define-key moom-mode-map (kbd "<f2>") 'moom-cycle-frame-height)
+      (cond ((memq 'wof options)
+             (define-key moom-mode-map (kbd "C-2") 'moom-cycle-frame-height))
+            (t
+             (define-key moom-mode-map (kbd "<f2>") 'moom-cycle-frame-height)))
       (define-key moom-mode-map (kbd "C-c f s") 'moom-change-frame-width-single)
       (define-key moom-mode-map (kbd "C-c f d") 'moom-change-frame-width-double)
       (define-key moom-mode-map (kbd "C-c f S") 'moom-delete-windows)
       (define-key moom-mode-map (kbd "C-c f D") 'moom-split-window)
-      (define-key moom-mode-map (kbd "C-c f a")
-        'moom-change-frame-width-half-again)
       (define-key moom-mode-map (kbd "C-c f w") 'moom-change-frame-width-max)
-      (define-key moom-mode-map (kbd "C-c f h") 'moom-change-frame-height-max))
+      (define-key moom-mode-map (kbd "C-c f h") 'moom-change-frame-height-max)
+      (define-key moom-mode-map (kbd "C-c f a")
+        'moom-change-frame-width-half-again))
     (when (memq 'fill options)
       (define-key moom-mode-map (kbd "C-c f f t") 'moom-fill-top)
       (define-key moom-mode-map (kbd "C-c f f b") 'moom-fill-bottom)
@@ -1639,7 +1655,12 @@ The keybindings will be assigned only when Emacs runs in GUI."
       (define-key moom-mode-map (kbd "C-c f f m") 'moom-fill-band)
       (define-key moom-mode-map (kbd "C-c f f w") 'moom-fill-width) ;; will be deleted
       (define-key moom-mode-map (kbd "C-c f f h") 'moom-fill-height) ;; will be deleted
-      (define-key moom-mode-map (kbd "M-<f2>") 'moom-toggle-frame-maximized))
+      (cond ((memq 'wof options)
+             (define-key moom-mode-map (kbd "C-c f f x")
+               'moom-toggle-frame-maximized))
+            (t
+             (define-key moom-mode-map (kbd "M-<f2>")
+               'moom-toggle-frame-maximized))))
     (when (memq 'font options)
       (define-key moom-mode-map (kbd "C--") 'moom-font-decrease)
       (define-key moom-mode-map (kbd "C-=") 'moom-font-increase)
@@ -1679,7 +1700,7 @@ The keybindings will be assigned only when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.6.6"))
+  (let ((moom-release "1.6.7"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
