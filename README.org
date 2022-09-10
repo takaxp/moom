@@ -331,11 +331,15 @@ Additionally, move onto the center line.
   (define-key moom-mode-map (kbd "C-c f d") 'moom-change-frame-width-double)
   (define-key moom-mode-map (kbd "C-c f a") 'moom-change-frame-width-half-again)
   (define-key moom-mode-map (kbd "C-c f S") 'moom-split-window)
-  (define-key moom-mode-map (kbd "C-c f D") 'moom-delete-windows))
-
+  (define-key moom-mode-map (kbd "C-c f D") 'moom-delete-windows)
+  (define-key moom-mode-map (kbd "C-c f w") 'moom-change-frame-width-max)
+  (define-key moom-mode-map (kbd "C-c f h") 'moom-change-frame-height-max))
 #+end_src
 
 ** Fill
+:PROPERTIES:
+:ID:       4FF1C514-E9BD-4A98-91B4-916578FB697D
+:END:
 
 [[https://github.com/takaxp/contents/blob/master/moom/fill.gif]] [[https://github.com/takaxp/contents/blob/master/moom/quarters.gif]]
 
@@ -350,8 +354,9 @@ Additionally, move onto the center line.
   (define-key moom-mode-map (kbd "C-c f f 3") 'moom-fill-bottom-left)
   (define-key moom-mode-map (kbd "C-c f f 4") 'moom-fill-bottom-right)
   (define-key moom-mode-map (kbd "C-c f f m") 'moom-fill-band)
-  (define-key moom-mode-map (kbd "C-c f f w") 'moom-fill-width)
-  (define-key moom-mode-map (kbd "C-c f f h") 'moom-fill-height))
+  ;; (define-key moom-mode-map (kbd "C-c f f w") 'moom-fill-width)
+  ;; (define-key moom-mode-map (kbd "C-c f f h") 'moom-fill-height)
+)
 #+end_src
 
 ** Fill (screen by toggle)

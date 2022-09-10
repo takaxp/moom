@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.6.5
+;; Version: 1.6.6
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -132,7 +132,8 @@ For function `display-line-numbers-mode',
   :type 'integer)
 
 (defcustom moom-command-with-centering '(split delete)
-  "List of flags that specifies whether centerize the frame after changing the frame width."
+  "List of flags.
+It specifies whether centerize the frame after changing the frame width."
   :type '(repeat
           (choice
            (const :tag "Split window" :value split)
@@ -1471,7 +1472,7 @@ No information is stored for undo."
 
 ;;;###autoload
 (defun moom-update-height-steps (arg)
-  "Change number of steps of the height ring by ARG.
+  "Change number of step of the height ring by ARG.
 The default step is 4."
   (when (and (integerp arg)
              (> arg 1))
@@ -1526,7 +1527,8 @@ MARGIN shall be a list consists of 4 integer variables like '(10 10 20 20)."
 ;;;###autoload
 (defun moom-restore-last-status (&optional status)
   "Restore the last frame position, size, and font-size.
-STATUS is a list consists of font size, frame position, frame region, and pixel-region."
+STATUS is a list consists of font size, frame position, frame region,
+and pixel-region."
   (interactive)
   (when status
     (setq moom--last-status status))
@@ -1622,7 +1624,9 @@ The keybindings will be assigned only when Emacs runs in GUI."
       (define-key moom-mode-map (kbd "C-c f S") 'moom-delete-windows)
       (define-key moom-mode-map (kbd "C-c f D") 'moom-split-window)
       (define-key moom-mode-map (kbd "C-c f a")
-        'moom-change-frame-width-half-again))
+        'moom-change-frame-width-half-again)
+      (define-key moom-mode-map (kbd "C-c f w") 'moom-change-frame-width-max)
+      (define-key moom-mode-map (kbd "C-c f h") 'moom-change-frame-height-max))
     (when (memq 'fill options)
       (define-key moom-mode-map (kbd "C-c f f t") 'moom-fill-top)
       (define-key moom-mode-map (kbd "C-c f f b") 'moom-fill-bottom)
@@ -1633,8 +1637,8 @@ The keybindings will be assigned only when Emacs runs in GUI."
       (define-key moom-mode-map (kbd "C-c f f 3") 'moom-fill-bottom-left)
       (define-key moom-mode-map (kbd "C-c f f 4") 'moom-fill-bottom-right)
       (define-key moom-mode-map (kbd "C-c f f m") 'moom-fill-band)
-      (define-key moom-mode-map (kbd "C-c f f w") 'moom-fill-width)
-      (define-key moom-mode-map (kbd "C-c f f h") 'moom-fill-height)
+      (define-key moom-mode-map (kbd "C-c f f w") 'moom-fill-width) ;; will be deleted
+      (define-key moom-mode-map (kbd "C-c f f h") 'moom-fill-height) ;; will be deleted
       (define-key moom-mode-map (kbd "M-<f2>") 'moom-toggle-frame-maximized))
     (when (memq 'font options)
       (define-key moom-mode-map (kbd "C--") 'moom-font-decrease)
@@ -1675,7 +1679,7 @@ The keybindings will be assigned only when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.6.5"))
+  (let ((moom-release "1.6.6"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
@@ -1690,8 +1694,7 @@ implemented in `moom-mode', thus user setting is very easy.
 You just use `moom-recommended-keybindings' to apply the recommended
 keybindings.
 
-To see more details and examples, please visit https://github.com/takaxp/moom.
-"
+To see more details and examples, please visit https://github.com/takaxp/moom."
   :init-value nil
   :lighter (:eval (moom--lighter))
   :keymap moom-mode-map
