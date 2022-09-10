@@ -263,6 +263,13 @@ Note - *(breaking changes at v1.2.1)* ~moom-font-init-size~ was hidden. The size
 
 Note - *(breaking changes at v1.2.0)* Variables of ~moom-font-ascii~ and ~moom-font-ja~ were hidden so that font settings could be controlled conveniently by utility functions. Please utilize each function of the same name to setup fonts.
 
+** moom-transient.el
+
+#+caption: User variables in moom-transient.el
+|                                | default | type    |
+|--------------------------------+---------+---------|
+| moom-transient-dispatch-sticky | t       | boolean |
+
 * Example keybindings
 ** Overview
 
@@ -390,11 +397,13 @@ Note: When maximizing a frame, =moom-fill-screen= is called internally.
 #+end_src
 
 * transient.el support
+:PROPERTIES:
+:ID:       3D063E56-C322-4214-B600-733D3B9225B1
+:END:
 
 =moom-transient.el= provides a dispatcher to select a moom command listed in a popup menu. To use =moom-transient.el=, please put the following code to your init.el. The keybind =(C-c o)= should be changed for your environment. The module depends on [[https://github.com/magit/transient][transient.el]], so please install it first.
 
 #+caption: A dispatcher to select a moom command powered by transient.el
-#+attr_html: :width 480px
 [[https://github.com/takaxp/contents/blob/master/moom/transient.png]]
 
 #+begin_src emacs-lisp
@@ -403,6 +412,8 @@ Note: When maximizing a frame, =moom-fill-screen= is called internally.
     (moom-transient-hide-cursor) ;; if needed
     (define-key moom-mode-map (kbd "C-c o") #'moom-transient-dispatch)))
 #+end_src
+
+The dispatcher (=moom-transient-dispatch=) keep the menu window after a command is executed as default. If you like to hide the dispatcher each time, then please configure =moom-transient-dispatch-sticky=.
 
 * Collaboration with other packages
 ** Org mode (org-agenda)
