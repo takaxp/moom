@@ -1329,6 +1329,7 @@ No information is stored for undo."
     (moom--make-frame-height-list)
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last))))
+(defalias 'moom-change-frame-height-max 'moom-fill-height)
 
 ;;;###autoload
 (defun moom-change-frame-height (&optional frame-height pixelwise)
@@ -1426,8 +1427,6 @@ This function does not effect font size."
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last))))
 (defalias 'moom-change-frame-width-max 'moom-fill-width)
-
-(make-obsolete 'moom-change-frame-width-max 'moom-fill-width "2021-03-09")
 
 ;;;###autoload
 (defun moom-delete-windows ()
