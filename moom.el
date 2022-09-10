@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.6.4
+;; Version: 1.6.5
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -148,11 +148,6 @@ For function `display-line-numbers-mode',
                (integer :tag "Bottom margin")
                (integer :tag "Left margin")
                (integer :tag "Right margin"))
-  :group 'moom)
-
-(defcustom moom-multi-monitors-support t
-  "If non-nil, multiple monitors support is enabled."
-  :type 'boolean
   :group 'moom)
 
 (defcustom moom-use-font-module t
@@ -819,8 +814,7 @@ If SHIFT is nil, `moom--common-margin' will be applied."
   (interactive)
   (let ((geometry (moom--frame-monitor-geometry))
         (workarea (moom--frame-monitor-workarea)))
-    (if (not (and moom-multi-monitors-support
-                  (> (length (display-monitor-attributes-list)) 1)))
+    (if (not (> (length (display-monitor-attributes-list)) 1))
         (setq moom--screen-margin (moom--default-screen-margin))
       (setq moom--screen-margin
             (let ((shift (or shift moom--common-margin)))
@@ -1682,7 +1676,7 @@ The keybindings will be assigned only when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.6.4"))
+  (let ((moom-release "1.6.5"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
