@@ -394,6 +394,7 @@ Note: When maximizing a frame, =moom-fill-screen= is called internally.
 =moom-transient.el= provides a dispatcher to select a moom command listed in a popup menu. To use =moom-transient.el=, please put the following code to your init.el. The keybind =(C-c o)= should be changed for your environment. The module depends on [[https://github.com/magit/transient][transient.el]], so please install it first.
 
 #+caption: A dispatcher to select a moom command powered by transient.el
+#+attr_html: :width 480px
 [[https://github.com/takaxp/contents/blob/master/moom/transient.png]]
 
 #+begin_src emacs-lisp
