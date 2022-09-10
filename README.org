@@ -285,6 +285,22 @@ You can use =moom-recommended-keybindings= to set keybindings for each API in a 
   (moom-recommended-keybindings '(move fit expand fill font reset undo))) ;; 'all
 #+end_src
 
+Note: If you don't want rely on using function key to execute a moom command, then add a =wof= option for =moom-recommended-keybindings= as follows:
+
+#+begin_src emacs-lisp
+(with-eval-after-load "moom"
+  (moom-recommended-keybindings '(all wof))) ;; wof: WithOut Function key
+#+end_src
+
+| command                        | without wof | with wof  |
+|--------------------------------+-------------+-----------|
+| moom-move-frame-to-edge-left   | M-<f1>      | C-c e l   |
+| moom-move-frame-to-edge-right  | M-<f3>      | C-c e r   |
+| moom-move-frame-to-edge-top    | <f1>        | C-c e t   |
+| moom-move-frame-to-edge-bottom | S-<f1>      | C-c e b   |
+| moom-cycle-frame-height        | <f2>        | C-2       |
+| moom-toggle-frame-maximized    | M-<f2>      | C-c f f x |
+
 ** Move
 
 [[https://github.com/takaxp/contents/blob/master/moom/shifts.gif]] [[https://github.com/takaxp/contents/blob/master/moom/move-right.gif]] [[https://github.com/takaxp/contents/blob/master/moom/center.gif]]
@@ -418,7 +434,7 @@ Note: When maximizing a frame, =moom-fill-screen= is called internally.
     (define-key moom-mode-map (kbd "C-c o") #'moom-transient-dispatch)))
 #+end_src
 
-The dispatcher (=moom-transient-dispatch=) keep the menu window after a command is executed as default. If you like to hide the dispatcher each time, then please configure =moom-transient-dispatch-sticky=.
+The dispatcher (=moom-transient-dispatch=) keeps the menu window after a command is executed as default. If you like to hide the dispatcher each time, then please configure =moom-transient-dispatch-sticky=.
 
 * Collaboration with other packages
 ** Org mode (org-agenda)
