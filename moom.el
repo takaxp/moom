@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.6.7
+;; Version: 1.6.8
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1"))
@@ -1598,6 +1598,8 @@ If OPTIONS includes =\'wof, then each binding is configured not to use fn key.
 If you give only =\'(reset) as the argument, then \\[moom-reset] is activated.
 The keybindings will be assigned only when Emacs runs in GUI."
   (when window-system
+    (unless (listp options)
+      (setq options (list options)))
     (when (memq 'all options)
       (if (memq 'wof options)
           (setq options '(move fit expand fill font reset undo wof))
@@ -1700,7 +1702,7 @@ The keybindings will be assigned only when Emacs runs in GUI."
 (defun moom-version ()
   "The release version of Moom."
   (interactive)
-  (let ((moom-release "1.6.7"))
+  (let ((moom-release "1.6.8"))
     (message "[Moom] v%s" moom-release)))
 
 ;;;###autoload
