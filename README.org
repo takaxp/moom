@@ -231,11 +231,11 @@ Here is an example. ~Monaco~ is used for ASCII font and ~Migu 2M~ is used for Ja
 | moom-scaling-gradient                | 1.66                               | float   |
 | moom-moom-display-line-numbers-width | 6                                  | integer |
 | moom-command-with-centering          | '(split delete)                    | list    |
+| moom-user-margin                     | '(0 0 0 0)                         | list    |
+| moom-use-font-module                 | t                                  | boolean |
 | moom-command-history-length          | 100                                | integer |
 | moom-verbose                         | nil                                | boolean |
 | moom-lighter                         | Moom                               | string  |
-| moom-user-margin                     | '(0 0 0 0)                         | list    |
-| moom-use-font-module                 | t                                  | boolean |
 
 *** moom-command-with-centering
 
@@ -254,8 +254,8 @@ The following commands will centerize the frame position in display if =moom-com
 #+caption: User variables in moom-font.el
 |                       | default | type                            |
 |-----------------------+---------+---------------------------------|
-| moom-font-ascii-scale | 1.0     | float                           |
 | moom-font-ja-scale    | 1.2     | float                           |
+| moom-font-ascii-scale | 1.0     | float                           |
 | moom-font-table       | nil     | (repeat (list integer integer)) |
 | moom-font-verbose     | nil     | boolean                         |
 
