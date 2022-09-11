@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 0.9.6
+;; Version: 0.9.7
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1") (transient "0.3.7"))
@@ -122,8 +122,8 @@ This option is used in `moom-transient-dispatch'."
    ["Fit (edge)"
     ("e l" "edge left" moom-move-frame-to-edge-left)
     ("e r" "edge right" moom-move-frame-to-edge-right)
-    ("e t", "edge top" moom-move-frame-to-edge-top)
-    ("e b", "edge bottom" moom-move-frame-to-edge-bottom)]
+    ("e t" "edge top" moom-move-frame-to-edge-top)
+    ("e b" "edge bottom" moom-move-frame-to-edge-bottom)]
    ["Fit (center)"
     ("c l" "center left" moom-move-frame-to-centerline-from-left)
     ("c r" "center right" moom-move-frame-to-centerline-from-right)
@@ -192,7 +192,7 @@ This option is used in `moom-transient-dispatch'."
 (defun moom-transient-version ()
   "Printing version of `moom' and `moom-transient'."
   (interactive)
-  (let ((alpha "0.9.6"))
+  (let ((alpha "0.9.7"))
     (message "%s" (concat (moom-version) "\n" "[Moom-transient] v" alpha))))
 
 (provide 'moom-transient)
