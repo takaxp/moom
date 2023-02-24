@@ -1,10 +1,10 @@
 ;;; moom-font.el --- A module for resizing Japanese fonts for Moom
 
-;; Copyright (C) 2017-2021 Takaaki ISHIKAWA
+;; Copyright (C) 2017-2023 Takaaki ISHIKAWA
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.4.0
+;; Version: 1.4.1
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Twitter: @takaxp
@@ -88,12 +88,9 @@ If `ARG' is nil, the default size is used."
     (when arg
       (setq moom-font--size arg))
     (moom-font--update-rescale-alist
-     (concat ".*" moom-font--ascii ".*") moom-font-ascii-scale)
-    (moom-font--update-rescale-alist
      (concat ".*" moom-font--ja ".*") moom-font-ja-scale)
-    (set-fontset-font nil 'ascii
-                      (font-spec :family moom-font--ascii
-                                 :size moom-font--size))
+    (moom-font--update-rescale-alist
+     (concat ".*" moom-font--ascii ".*") moom-font-ascii-scale)
     (let ((spec (font-spec :family moom-font--ja
                            :size moom-font--size)))
       (set-fontset-font nil 'japanese-jisx0208 spec)
@@ -101,7 +98,10 @@ If `ARG' is nil, the default size is used."
       (set-fontset-font nil 'japanese-jisx0212 spec)
       (set-fontset-font nil '(#x0080 . #x024F) spec)
       (set-fontset-font nil '(#x0370 . #x03FF) spec)
-      (set-fontset-font nil 'mule-unicode-0100-24ff spec))))
+      (set-fontset-font nil 'mule-unicode-0100-24ff spec))
+    (set-fontset-font nil 'ascii
+                      (font-spec :family moom-font--ascii
+                                 :size moom-font--size))))
 
 (defun moom-font--extract-font-size (xlfd)
   "Try to identify the font size.
@@ -293,22 +293,14 @@ Optional argument DEC specifies a decreasing step."
   (let* ((default-font (face-font 'default nil ?A))
          (size
           (moom-font--extract-font-size default-font))
-         (ascii-font
-          (moom-font--extract-family-name default-font))
          (ja-font
-          (moom-font--extract-family-name (face-font 'default nil ?あ))))
+          (moom-font--extract-family-name (face-font 'default nil ?あ)))
+         (ascii-font
+          (moom-font--extract-family-name default-font)))
     (when size
       (setq moom-font--size
             (setq moom-font--init-size size)))
     ;; Apply font if found. Otherwise, use the default ASCII or Japanese font.
-    (if ascii-font
-        (moom-font-ascii ascii-font)
-      (cond ((memq window-system '(ns mac))
-             (moom-font-ascii "Monaco"))
-            ((eq window-system 'w32)
-             (moom-font-ascii "ＭＳ ゴシック"))
-            ((eq window-system 'x)
-             (moom-font-ascii "TakaoGothic"))))
     (if ja-font
         (moom-font-ja ja-font)
       (cond ((memq window-system '(ns mac))
@@ -316,7 +308,15 @@ Optional argument DEC specifies a decreasing step."
             ((eq window-system 'w32)
              (moom-font-ja "ＭＳ ゴシック" '(:size 1.0)))
             ((eq window-system 'x)
-             (moom-font-ja "TakaoGothic" '(:size 1.0)))))))
+             (moom-font-ja "TakaoGothic" '(:size 1.0)))))
+    (if ascii-font
+        (moom-font-ascii ascii-font)
+      (cond ((memq window-system '(ns mac))
+             (moom-font-ascii "Monaco"))
+            ((eq window-system 'w32)
+             (moom-font-ascii "ＭＳ ゴシック"))
+            ((eq window-system 'x)
+             (moom-font-ascii "TakaoGothic"))))))
 
 (provide 'moom-font)
 

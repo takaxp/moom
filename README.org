@@ -285,7 +285,7 @@ You can use =moom-recommended-keybindings= to set keybindings for each API in a 
   (moom-recommended-keybindings '(move fit expand fill font reset undo))) ;; 'all
 #+end_src
 
-Note: If you don't want rely on using function key to execute a moom command, then add a =wof= option for =moom-recommended-keybindings= as follows:
+Note: If you don't want to rely on using function key to execute a moom command, then add a =wof= option for =moom-recommended-keybindings= as follows:
 
 #+begin_src emacs-lisp
 (with-eval-after-load "moom"
