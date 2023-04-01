@@ -1,6 +1,6 @@
 ;;; moom.el --- Commands to control frame position and size -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2017-2022 Takaaki ISHIKAWA
+;; Copyright (C) 2017-2023 Takaaki ISHIKAWA
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
@@ -152,7 +152,7 @@ It specifies whether centerize the frame after changing the frame width."
   :group 'moom)
 
 (defcustom moom-use-font-module t
-  "If non-nil, font module will not integrated even if the module is available.
+  "If nil, font module will not integrated even if the module is available.
 Configure this variable before activating moom mode.
 `moom-toggle-font-module' could be also useful."
   :type 'boolean

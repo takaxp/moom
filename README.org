@@ -1,6 +1,5 @@
 #+title: Moom - A Moom port to GNU Emacs
 #+startup: showall
-#+setupfile: theme-readtheorg.setup
 
 [[https://melpa.org/#/moom][file:https://melpa.org/packages/moom-badge.svg]]
 
@@ -13,6 +12,7 @@ After installing =moom.el= and =moom-font.el= (optional), activate =moom= by =(m
 #+begin_src emacs-lisp
 (with-eval-after-load "moom"
   ;; add settings here ...
+  ;; (setq moom-use-font-module nil)
   (moom-mode 1))
 #+end_src
 
@@ -21,8 +21,11 @@ or
 #+begin_src emacs-lisp
 (when (require 'moom nil t)
   ;; add settings here ...
+  ;; (setq moom-use-font-module nil)
   (moom-mode 1))
 #+end_src
+
+If you don't want to change font size when resizing frame size, please configure ~moom-use-font-module~ before activating =moom-mode= by ~(moom-mode 1)~.
 
 * A set of commands to control frame position and size by keyboard
 
