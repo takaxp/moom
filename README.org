@@ -457,7 +457,7 @@ Expand the frame width temporarily during org-agenda is active.
 
 ** Org mode (org-tree-slide)
 
-Entering quickly to the frame maximized presentation with [[https://github.com/takaxp/org-tree-slide][org-tree-slide.el]]. No additional settings are required. Just =M-x moom-toggle-frame-maximized=. The font is automatically scaled to be maintained the frame width at 80 even if you use Japanese font.
+Entering quickly to the frame maximized presentation with [[https://github.com/takaxp/org-tree-slide][org-tree-slide.el]]. No additional settings are required except activating moom-mode by =(moom-mode 1)=. Just =M-x moom-toggle-frame-maximized=. The font is automatically scaled to be maintained the frame width at 80 even if you use Japanese font.
 
 [[https://github.com/takaxp/contents/blob/master/moom/org-tree-slide.gif]]
 
