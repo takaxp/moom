@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 1.4.1
+;; Version: 1.4.2
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Twitter: @takaxp
@@ -205,7 +205,10 @@ given FONT is immediately applied."
 Optional argument N specifies the target font size.
 If WIDTH is non-nil, ensure an appropriate font size so that
 the actual pixel width will not exceed the WIDTH."
-  (interactive "nSize: ")
+  ;;(interactive "nSize: ")
+  (interactive (list
+                (read-number
+                 "Size: " moom-font--size)))
   (run-hooks 'moom-font-before-resize-hook)
   (unless moom-font--pause
     (moom-font--change-size
