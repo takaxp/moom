@@ -94,8 +94,8 @@
 (defcustom moom-horizontal-shifts '(200 200)
   "Distance to move the frame horizontally."
   :type '(choice (integer :tag "Common value for left and right")
-                 (list (integer :tag "Value for left")
-                       (integer :tag "Value for right")))
+		 (list (integer :tag "Value for left")
+		       (integer :tag "Value for right")))
   :group 'moom)
 
 (defcustom moom-fill-band-options '(:direction vertical :range 50.0)
@@ -107,8 +107,8 @@ Note that even if DIRECTION is vertical and RANGE is 100.0, the screen
 may not be covered entirely because this package prioritize keeping
 the column at `moom-frame-width-single'.  Instead, if the value is integer,
 the screen will be covered precisely by the specified value in pixels.
-  :direction    symbol, horizontal or vertical
-  :range        float(%) or integer(px)."
+  :direction	symbol, horizontal or vertical
+  :range	float(%) or integer(px)."
   :type 'plist
   :group 'moom)
 
@@ -135,20 +135,20 @@ For function `display-line-numbers-mode',
   "List of flags.
 It specifies whether centerize the frame after changing the frame width."
   :type '(repeat
-          (choice
-           (const :tag "Split window" :value split)
-           (const :tag "Delete windows" :value delete)
-           (const :tag "Change frame width single" :value single)
-           (const :tag "Change frame width double" :value double)
-           (const :tag "Change frame width half again" :value half-again)))
+	  (choice
+	   (const :tag "Split window" :value split)
+	   (const :tag "Delete windows" :value delete)
+	   (const :tag "Change frame width single" :value single)
+	   (const :tag "Change frame width double" :value double)
+	   (const :tag "Change frame width half again" :value half-again)))
   :group 'moom)
 
 (defcustom moom-user-margin '(0 0 0 0)
   "User specified margin to adjust to the local environment."
   :type '(list (integer :tag "Top margin")
-               (integer :tag "Bottom margin")
-               (integer :tag "Left margin")
-               (integer :tag "Right margin"))
+	       (integer :tag "Bottom margin")
+	       (integer :tag "Left margin")
+	       (integer :tag "Right margin"))
   :group 'moom)
 
 (defcustom moom-use-font-module t
@@ -235,15 +235,15 @@ Configure this variable before activating moom mode.
 (defvar moom--print-status t)
 (defvar moom--common-margin
   (cond ((memq window-system '(ns mac)) '(23 0 0 0))
-        (t '(0 0 0 0))))
+	(t '(0 0 0 0))))
 (defvar moom--pos-options '(:grid nil :bound nil)) ;; {screen,virtual}, {nil,t}
 (defvar moom--local-margin (cond ((eq window-system 'w32) '(0 9 -16 16))
-                                 ((eq window-system 'x) '(-19 0 0 0))
-                                 (t '(0 0 0 0))))
+				 ((eq window-system 'x) '(-19 0 0 0))
+				 (t '(0 0 0 0))))
 (defvar moom--autoreset-hooks '(menu-bar-mode-hook
-                                tool-bar-mode-hook tab-bar-mode-hook
-                                horizontal-scroll-bar-mode-hook
-                                scroll-bar-mode-hook))
+				tool-bar-mode-hook tab-bar-mode-hook
+				horizontal-scroll-bar-mode-hook
+				scroll-bar-mode-hook))
 (defvar moom--last-monitor nil)
 (defvar moom--display-border '(0 0))
 (defvar moom--command-history nil)
@@ -253,7 +253,7 @@ Configure this variable before activating moom mode.
   "Init function."
   (run-hooks 'moom-before-setup-hook)
   (setq moom--font-module-p (when moom-use-font-module
-                              (boundp 'moom-font--pause)))
+			      (boundp 'moom-font--pause)))
   (setq moom-font--pause (not moom--font-module-p))
   (moom-identify-current-monitor)
   (unless moom--virtual-grid
@@ -261,14 +261,14 @@ Configure this variable before activating moom mode.
   (unless moom--screen-grid
     (setq moom--screen-grid (moom--screen-grid)))
   (setq moom--internal-border-width
-        (alist-get 'internal-border-width (frame-geometry)))
+	(alist-get 'internal-border-width (frame-geometry)))
   (unless (eq (setq moom--frame-width moom-frame-width-single) 80)
     (set-frame-width nil moom--frame-width))
   (moom--make-frame-height-list)
   (moom--save-last-status)
   (setq moom--init-status moom--last-status)
   (setq moom--frame-resize-pixelwise frame-resize-pixelwise
-        frame-resize-pixelwise t)
+	frame-resize-pixelwise t)
   ;; JP-font module
   (when moom--font-module-p
     (add-hook 'moom-font-after-resize-hook #'moom--make-frame-height-list)
@@ -276,9 +276,9 @@ Configure this variable before activating moom mode.
   ;; display-line-numbers-mode
   (when (fboundp 'global-display-line-numbers-mode)
     (add-hook 'global-display-line-numbers-mode-hook
-              #'moom--update-frame-display-line-numbers))
+	      #'moom--update-frame-display-line-numbers))
   (mapcar (lambda (hook) (add-hook hook #'moom-reset))
-          moom--autoreset-hooks))
+	  moom--autoreset-hooks))
 
 (defun moom--abort ()
   "Abort."
@@ -286,13 +286,13 @@ Configure this variable before activating moom mode.
   (moom-reset)
   (setq frame-resize-pixelwise moom--frame-resize-pixelwise)
   (setq moom--screen-margin nil
-        moom--virtual-grid nil
-        moom--screen-grid nil)
+	moom--virtual-grid nil
+	moom--screen-grid nil)
   (when (fboundp 'global-display-line-numbers-mode)
     (remove-hook 'global-display-line-numbers-mode-hook
-                 #'moom--update-frame-display-line-numbers))
+		 #'moom--update-frame-display-line-numbers))
   (mapcar (lambda (hook) (remove-hook hook #'moom-reset))
-          moom--autoreset-hooks))
+	  moom--autoreset-hooks))
 
 (defun moom--reload ()
   "Reload."
@@ -309,12 +309,12 @@ Configure this variable before activating moom mode.
 Including fringes and border."
   (if window-system
       (let ((fp (frame-parameters)))
-        (+ (alist-get 'right-fringe fp)
-           (alist-get 'left-fringe fp)
-           (if (get-scroll-bar-mode)
-               (alist-get 'scroll-bar-width fp)
-             0)
-           (* 2 moom--internal-border-width)))
+	(+ (alist-get 'right-fringe fp)
+	   (alist-get 'left-fringe fp)
+	   (if (get-scroll-bar-mode)
+	       (alist-get 'scroll-bar-width fp)
+	     0)
+	   (* 2 moom--internal-border-width)))
     0)) ;; TODO check this by terminal
 
 (defun moom--internal-border-height ()
@@ -326,11 +326,11 @@ Including fringes and border."
 Including title-bar, menu-bar, offset depends on window system, and border."
   (if window-system
       (let ((geometry (frame-geometry)))
-        (+ (cdr (alist-get 'title-bar-size geometry))
-           (cdr (alist-get 'tool-bar-size geometry))
-           (if (memq window-system '(x w32))
-               (cdr (alist-get 'menu-bar-size geometry)) 0)
-           (moom--internal-border-height)))
+	(+ (cdr (alist-get 'title-bar-size geometry))
+	   (cdr (alist-get 'tool-bar-size geometry))
+	   (if (memq window-system '(x w32))
+	       (cdr (alist-get 'menu-bar-size geometry)) 0)
+	   (moom--internal-border-height)))
     0)) ;; TODO check this by terminal
 
 (defun moom--frame-pixel-width ()
@@ -362,32 +362,32 @@ Including title-bar, menu-bar, offset depends on window system, and border."
 (defun moom--max-half-frame-pixel-height ()
   "Return the half of maximum height on pixel base."
   (floor (/ (- (display-pixel-height)
-               (nth 0 moom--screen-margin)
-               (nth 1 moom--screen-margin)
-               (* 2 (moom--frame-internal-height)))
-            2.0)))
+	       (nth 0 moom--screen-margin)
+	       (nth 1 moom--screen-margin)
+	       (* 2 (moom--frame-internal-height)))
+	    2.0)))
 
 (defun moom--frame-width ()
   "Return frame width."
   (/ (- (moom--frame-pixel-width)
-        (moom--frame-internal-width))
+	(moom--frame-internal-width))
      (frame-char-width)))
 
 (defun moom--frame-height ()
   "Return frame height."
   (/ (- (moom--frame-pixel-height)
-        (moom--internal-border-height))
+	(moom--internal-border-height))
      (frame-char-height)))
 
 (defun moom--max-frame-width ()
   "Return the maximum width based on screen size."
   (floor (/ (moom--max-frame-pixel-width)
-            (frame-char-width))))
+	    (frame-char-width))))
 
 (defun moom--max-frame-height ()
   "Return the maximum height based on screen size."
   (floor (/ (moom--max-frame-pixel-height)
-            (frame-char-height))))
+	    (frame-char-height))))
 
 (defun moom--min-frame-height ()
   "Return the minimum height of frame."
@@ -396,41 +396,41 @@ Including title-bar, menu-bar, offset depends on window system, and border."
 (defun moom--make-frame-height-list ()
   "Create an internal ring to change frame height."
   (let ((max-height (moom--max-frame-height))
-        (min-height (moom--min-frame-height))
-        (steps moom--height-steps)
-        (heights nil))
+	(min-height (moom--min-frame-height))
+	(steps moom--height-steps)
+	(heights nil))
     (while (> (setq steps (1- steps)) 0)
       (cl-pushnew (max min-height
-                       (/ (* steps max-height) moom--height-steps))
-                  heights))
+		       (/ (* steps max-height) moom--height-steps))
+		  heights))
     (cl-pushnew (max min-height max-height) heights)
     (setq moom--height-list (copy-sequence heights))
     ;; Skip the current height
     (when (eq (car moom--height-list)
-              (moom--frame-height))
+	      (moom--frame-height))
       (moom--cycle-frame-height-list))))
 
 (defun moom--cycle-frame-height-list ()
   "Rotate `moom--height-list'."
   (setq moom--height-list
-        (append (cdr moom--height-list)
-                (list (car moom--height-list)))))
+	(append (cdr moom--height-list)
+		(list (car moom--height-list)))))
 
 (defun moom--font-size (pixel-width)
   "Return an appropriate font-size based on PIXEL-WIDTH.
 If `moom-font-table' is non-nil, the returned value will be more precisely
 calculated."
   (let* ((font-width (/ (float (- pixel-width (moom--frame-internal-width)))
-                        moom-frame-width-single))
-         (scaled-width (/ font-width
-                          (if moom--font-module-p
-                              moom-font-ascii-scale 1.0)))
-         (font-size (when moom--font-module-p
-                      (moom-font--find-size
-                       (floor scaled-width) moom-font-table))))
+			moom-frame-width-single))
+	 (scaled-width (/ font-width
+			  (if moom--font-module-p
+			      moom-font-ascii-scale 1.0)))
+	 (font-size (when moom--font-module-p
+		      (moom-font--find-size
+		       (floor scaled-width) moom-font-table))))
     (if font-size font-size
       (floor (* (if (< scaled-width 1) 1 scaled-width)
-                moom-scaling-gradient)))))
+		moom-scaling-gradient)))))
 
 (defun moom--font-resize (font-size &optional pixel-width)
   "Resize font.
@@ -445,26 +445,26 @@ the actual pixel width will not exceed the WIDTH."
   "Return the maximum font-size for full screen."
   (if window-system
       (moom--font-size (+ (moom--max-frame-pixel-width)
-                          (moom--frame-internal-width)))
+			  (moom--frame-internal-width)))
     12)) ;; FIXME, use face-attribute
 
 (defun moom--virtual-grid ()
   "Alignment for pointing frame left and top position on `set-frame-position'."
   (cond ((eq window-system 'w32) '(-16 0))
-        ((and (eq window-system 'x)
-              (version< emacs-version "26.0")) '(0 27))
-        ((memq window-system '(ns mac)) '(0 0))
-        ((eq window-system 'x) '(10 8))
-        (t '(0 0))))
+	((and (eq window-system 'x)
+	      (version< emacs-version "26.0")) '(0 27))
+	((memq window-system '(ns mac)) '(0 0))
+	((eq window-system 'x) '(10 8))
+	(t '(0 0))))
 
 (defun moom--screen-grid ()
   "Alignment of frame left and top position on monitor."
   (cond ((eq window-system 'w32) '(8 0))
-        ((and (eq window-system 'x)
-              (version< emacs-version "26.0")) '(10 -19))
-        ((memq window-system '(ns mac)) '(0 0))
-        ((eq window-system 'x) '(0 0))
-        (t '(0 0))))
+	((and (eq window-system 'x)
+	      (version< emacs-version "26.0")) '(10 -19))
+	((memq window-system '(ns mac)) '(0 0))
+	((eq window-system 'x) '(0 0))
+	(t '(0 0))))
 
 (defun moom--frame-left ()
   "Return outer left position."
@@ -489,28 +489,28 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
   (when (eq window-system 'w32)
     (setq posx (+ posx 16))) ;; FIXME
   (when (or (plist-get options :bound)
-            (not (memq window-system '(ns mac w32)))) ;; TODO: support others if possible
+	    (not (memq window-system '(ns mac w32)))) ;; TODO: support others if possible
     (let ((bounds-left (- (nth 0 moom--last-monitor)
-                          (nth 0 moom--screen-grid)))
-          (bounds-right (+ (nth 0 moom--last-monitor)
-                           (nth 2 moom--last-monitor)
-                           (- (moom--frame-pixel-width)))))
+			  (nth 0 moom--screen-grid)))
+	  (bounds-right (+ (nth 0 moom--last-monitor)
+			   (nth 2 moom--last-monitor)
+			   (- (moom--frame-pixel-width)))))
       (setq posx (cond ((< posx bounds-left) bounds-left)
-                       ((> posx bounds-right) bounds-right)
-                       (t posx)))))
+		       ((> posx bounds-right) bounds-right)
+		       (t posx)))))
   (unless (plist-get options :grid)
     (setq options (if (eq window-system 'ns)
-                      '(:grid screen) '(:grid virtual))))
+		      '(:grid screen) '(:grid virtual))))
   (cond ((eq (plist-get options :grid) 'virtual)
-         (let ((pw (- (nth 0 moom--display-border)
-                      (moom--frame-pixel-width))))
-           (if (< posx 0)
-               (- posx (+ pw (nth 0 moom--virtual-grid)))
-             posx)))
-        ((eq (plist-get options :grid) 'screen)
-         posx)
-        (t
-         posx)))
+	 (let ((pw (- (nth 0 moom--display-border)
+		      (moom--frame-pixel-width))))
+	   (if (< posx 0)
+	       (- posx (+ pw (nth 0 moom--virtual-grid)))
+	     posx)))
+	((eq (plist-get options :grid) 'screen)
+	 posx)
+	(t
+	 posx)))
 
 (defun moom--pos-y (posy &optional options)
   "Return aligned POSY for `set-frame-position'.
@@ -519,42 +519,42 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
     (setq posy (nth 1 posy)))
   (setq posy (- posy (nth 1 moom--screen-grid)))
   (when (or (plist-get options :bound)
-            (not (memq window-system '(ns mac w32)))) ;; TODO: support others if possible
+	    (not (memq window-system '(ns mac w32)))) ;; TODO: support others if possible
     (let ((bounds-top (- (nth 1 moom--last-monitor)
-                         (nth 1 moom--screen-grid)))
-          (bounds-bottom (+ (nth 1 moom--last-monitor)
-                            (nth 3 moom--last-monitor)
-                            (- (moom--frame-pixel-height)))))
+			 (nth 1 moom--screen-grid)))
+	  (bounds-bottom (+ (nth 1 moom--last-monitor)
+			    (nth 3 moom--last-monitor)
+			    (- (moom--frame-pixel-height)))))
       (setq posy (cond ((< posy bounds-top) bounds-top)
-                       ((> posy bounds-bottom) bounds-bottom)
-                       (t posy)))))
+		       ((> posy bounds-bottom) bounds-bottom)
+		       (t posy)))))
   (unless (plist-get options :grid)
     (setq options (if (eq window-system 'ns)
-                      '(:grid screen) '(:grid virtual))))
+		      '(:grid screen) '(:grid virtual))))
   (cond ((eq (plist-get options :grid) 'virtual)
-         (let ((ph (- (nth 1 moom--display-border)
-                      (moom--frame-pixel-height))))
-           (if (< posy 0)
-               (- posy (+ ph (nth 1 moom--virtual-grid)))
-             posy)))
-        ((eq (plist-get options :grid) 'screen)
-         posy)
-        (t
-         posy)))
+	 (let ((ph (- (nth 1 moom--display-border)
+		      (moom--frame-pixel-height))))
+	   (if (< posy 0)
+	       (- posy (+ ph (nth 1 moom--virtual-grid)))
+	     posy)))
+	((eq (plist-get options :grid) 'screen)
+	 posy)
+	(t
+	 posy)))
 
 (defun moom--horizontal-center ()
   "Horizontal center position."
   (+ (nth 2 moom--screen-margin)
      (floor (/ (+ (moom--max-frame-pixel-width)
-                  (moom--frame-internal-width))
-               2.0))))
+		  (moom--frame-internal-width))
+	       2.0))))
 
 (defun moom--vertical-center ()
   "Vertical center position."
   (+ (nth 0 moom--screen-margin)
      (floor (/ (+ (moom--max-frame-pixel-height)
-                  (moom--frame-internal-height))
-               2.0))))
+		  (moom--frame-internal-height))
+	       2.0))))
 
 (defun moom--horizontal-center-pos ()
   "Left edge position when centering."
@@ -562,57 +562,58 @@ OPTIONS controls grid and bound.  See `moom--pos-options'."
      (moom--horizontal-center)
      (let ((scroll (frame-parameter nil 'scroll-bar-width)))
        (if (and (> scroll 0) (get-scroll-bar-mode)) ;; TBD
-           scroll
-         (frame-parameter nil 'left-fringe)))
+	   scroll
+	 (frame-parameter nil 'left-fringe)))
      (- (/ (+ (moom--frame-pixel-width)
-              (moom--frame-internal-width)
-              (- (moom--internal-border-height)))
-           2))))
+	      (moom--frame-internal-width)
+	      (- (moom--internal-border-height)))
+	   2))))
 
 (defun moom--vertical-center-pos ()
   "Top edge position when centering."
   (+ (cdr moom-move-frame-pixel-offset)
      (moom--vertical-center)
      (- (/ (+ (moom--frame-pixel-height)
-              (moom--frame-internal-height)
-              (- (moom--internal-border-height)))
-           2))))
+	      (moom--frame-internal-height)
+	      (- (moom--internal-border-height)))
+	   2))))
 
 (defun moom--save-last-status ()
   "Store the last frame position, size, and font-size."
   (setq moom--last-status
-        `(("font-size" . ,(if moom--font-module-p moom-font--size nil))
-          ("left" . ,(moom--pos-x (moom--frame-left)))
-          ("top" . ,(moom--frame-top))
-          ("width" . ,(moom--frame-width))
-          ("height" . ,(moom--frame-height))
-          ("pixel-width" . ,(moom--frame-pixel-width))
-          ("pixel-height" . ,(moom--frame-pixel-height)))))
+	`(("font-size" . ,(if moom--font-module-p moom-font--size nil))
+	  ("left" . ,(moom--pos-x (moom--frame-left)))
+	  ("top" . ,(moom--frame-top))
+	  ("width" . ,(moom--frame-width))
+	  ("height" . ,(moom--frame-height))
+	  ("pixel-width" . ,(moom--frame-pixel-width))
+	  ("pixel-height" . ,(moom--frame-pixel-height)))))
 
 (defun moom--fill-display (area)
   "Move the frame to AREA.
 Font size will be changed appropriately.
-AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
+AREA would be \=top, \=bottom, \=left, \=right, \=topl, \=topr,
+ \=botl, and \=botr."
   (let* ((align-width (+ (moom--max-frame-pixel-width)
-                         (moom--frame-internal-width)))
-         (pixel-width
-          (- (floor (/ align-width 2.0))
-             (moom--frame-internal-width)))
-         (pixel-height (moom--max-half-frame-pixel-height))
-         (pos-x (nth 2 moom--screen-margin))
-         (pos-y (nth 0 moom--screen-margin)))
+			 (moom--frame-internal-width)))
+	 (pixel-width
+	  (- (floor (/ align-width 2.0))
+	     (moom--frame-internal-width)))
+	 (pixel-height (moom--max-half-frame-pixel-height))
+	 (pos-x (nth 2 moom--screen-margin))
+	 (pos-y (nth 0 moom--screen-margin)))
     ;; Region
     (cond ((memq area '(top bottom))
-           (setq pixel-width (moom--max-frame-pixel-width)))
-          ((memq area '(left right))
-           (setq pixel-height (moom--max-frame-pixel-height))
-           (setq align-width (floor (/ align-width 2.0))))
-          ((memq area '(topl topr botl botr))
-           (setq align-width (floor (/ align-width 2.0))))
-          (nil t))
+	   (setq pixel-width (moom--max-frame-pixel-width)))
+	  ((memq area '(left right))
+	   (setq pixel-height (moom--max-frame-pixel-height))
+	   (setq align-width (floor (/ align-width 2.0))))
+	  ((memq area '(topl topr botl botr))
+	   (setq align-width (floor (/ align-width 2.0))))
+	  (nil t))
     ;; Font size
     (let ((moom-font-before-resize-hook nil)
-          (moom-font-after-resize-hook nil))
+	  (moom-font-after-resize-hook nil))
       (moom--font-resize (moom--font-size align-width) align-width))
     ;; Position
     (when (memq area '(right topr botr))
@@ -621,30 +622,30 @@ AREA would be 'top, 'bottom, 'left, 'right, 'topl, 'topr, 'botl, and 'botr."
       (setq pos-y (moom--vertical-center)))
     (when (memq area '(top bottom left right topl topr botl botr))
       (let ((flag (memq window-system '(ns mac w32))))
-        (unless flag
-          (set-frame-size nil pixel-width pixel-height t))
-        (when (and (not moom--font-module-p)
-                   (eq window-system 'w32))
-          (set-frame-width nil moom-frame-width-single)) ;; FIXME
-        (set-frame-position nil
-                            (moom--pos-x pos-x)
-                            (moom--pos-y pos-y))
-        (when flag
-          (set-frame-size nil pixel-width pixel-height t)))))
+	(unless flag
+	  (set-frame-size nil pixel-width pixel-height t))
+	(when (and (not moom--font-module-p)
+		   (eq window-system 'w32))
+	  (set-frame-width nil moom-frame-width-single)) ;; FIXME
+	(set-frame-position nil
+			    (moom--pos-x pos-x)
+			    (moom--pos-y pos-y))
+	(when flag
+	  (set-frame-size nil pixel-width pixel-height t)))))
   (moom--make-frame-height-list)
   (moom-print-status))
 
 (defun moom--shift-amount (direction)
   "Extract shift amount from `moom-horizontal-shifts' based on DIRECTION."
   (let ((index (cond ((eq direction 'left) 0)
-                     ((eq direction 'right) 1)
-                     (t 0))))
+		     ((eq direction 'right) 1)
+		     (t 0))))
     (cond ((integerp moom-horizontal-shifts)
-           moom-horizontal-shifts)
-          ((listp moom-horizontal-shifts)
-           (nth index moom-horizontal-shifts))
-          (t
-           (error (format "%s is wrong value." moom-horizontal-shifts))))))
+	   moom-horizontal-shifts)
+	  ((listp moom-horizontal-shifts)
+	   (nth index moom-horizontal-shifts))
+	  (t
+	   (error (format "%s is wrong value." moom-horizontal-shifts))))))
 
 (defun moom--frame-monitor-attribute (attribute &optional frame x y)
   "Return the value of ATTRIBUTE on FRAME's monitor.
@@ -655,18 +656,18 @@ the pixel coordinate (X, Y).
 
 Taken from frame.el in 26.1 to support previous Emacs versions, 25.1 or later."
   (if (and (numberp x)
-           (numberp y))
+	   (numberp y))
       (cl-loop for monitor in (display-monitor-attributes-list)
-               for geometry = (alist-get 'geometry monitor)
-               for min-x = (pop geometry)
-               for min-y = (pop geometry)
-               for max-x = (+ min-x (pop geometry))
-               for max-y = (+ min-y (car geometry))
-               when (and (<= min-x x)
-                         (< x max-x)
-                         (<= min-y y)
-                         (< y max-y))
-               return (alist-get attribute monitor))
+	       for geometry = (alist-get 'geometry monitor)
+	       for min-x = (pop geometry)
+	       for min-y = (pop geometry)
+	       for max-x = (+ min-x (pop geometry))
+	       for max-y = (+ min-y (car geometry))
+	       when (and (<= min-x x)
+			 (< x max-x)
+			 (<= min-y y)
+			 (< y max-y))
+	       return (alist-get attribute monitor))
     (alist-get attribute (frame-monitor-attributes frame))))
 
 (defun moom--frame-monitor-geometry (&optional frame x y)
@@ -692,24 +693,24 @@ Taken from frame.el in 26.1 to support previous Emacs versions, 25.1 or later."
 (defun moom--default-screen-margin ()
   "Calculate default screen margins."
   (let ((geometry (moom--frame-monitor-geometry))
-        (workarea (moom--frame-monitor-workarea)))
+	(workarea (moom--frame-monitor-workarea)))
     (setq moom--screen-margin
-          (list (- (nth 1 workarea) (nth 1 geometry))
-                (- (+ (nth 1 geometry) (nth 3 geometry))
-                   (+ (nth 1 workarea) (nth 3 workarea)))
-                (- (nth 0 workarea) (nth 0 geometry))
-                (- (+ (nth 0 geometry) (nth 2 geometry))
-                   (+ (nth 0 workarea) (nth 2 workarea)))))
+	  (list (- (nth 1 workarea) (nth 1 geometry))
+		(- (+ (nth 1 geometry) (nth 3 geometry))
+		   (+ (nth 1 workarea) (nth 3 workarea)))
+		(- (nth 0 workarea) (nth 0 geometry))
+		(- (+ (nth 0 geometry) (nth 2 geometry))
+		   (+ (nth 0 workarea) (nth 2 workarea)))))
     ;; Update
     (moom--merge-screen-margin moom--local-margin)))
 
 (defun moom--merge-screen-margin (margin)
   "Add MARGIN to `moom--screen-margin'."
   (setq moom--screen-margin
-        (list (+ (nth 0 margin) (nth 0 moom--screen-margin))
-              (+ (nth 1 margin) (nth 1 moom--screen-margin))
-              (+ (nth 2 margin) (nth 2 moom--screen-margin))
-              (+ (nth 3 margin) (nth 3 moom--screen-margin)))))
+	(list (+ (nth 0 margin) (nth 0 moom--screen-margin))
+	      (+ (nth 1 margin) (nth 1 moom--screen-margin))
+	      (+ (nth 2 margin) (nth 2 moom--screen-margin))
+	      (+ (nth 3 margin) (nth 3 moom--screen-margin)))))
 
 (defun moom--update-frame-display-line-numbers ()
   "Expand frame width by `moom-display-line-numbers-width'.
@@ -717,33 +718,33 @@ This feature is available when function `global-display-line-numbers-mode'
 is utilized."
   (if (numberp moom-display-line-numbers-width)
       (unless (eq moom-display-line-numbers-width 0)
-        (let ((flag (if global-display-line-numbers-mode 1 -1)))
-          (setq moom-frame-width-single
-                (+ moom-frame-width-single
-                   (* flag moom-display-line-numbers-width)))
-          (setq moom-frame-width-double
-                (+ (* 2 moom-frame-width-single) 3))
-          (set-frame-width nil
-                           (+ (frame-width)
-                              (* flag moom-display-line-numbers-width)))))
+	(let ((flag (if global-display-line-numbers-mode 1 -1)))
+	  (setq moom-frame-width-single
+		(+ moom-frame-width-single
+		   (* flag moom-display-line-numbers-width)))
+	  (setq moom-frame-width-double
+		(+ (* 2 moom-frame-width-single) 3))
+	  (set-frame-width nil
+			   (+ (frame-width)
+			      (* flag moom-display-line-numbers-width)))))
     (user-error "Unexpected value of `moom-display-line-numbers-width'"))
   (moom-print-status))
 
 (defun moom--centerize-p (arg)
   "Return nil when `ARG' is not listed in `moom-command-with-centering'."
   (memq arg (if (listp moom-command-with-centering)
-                moom-command-with-centering
-              (list moom-command-with-centering))))
+		moom-command-with-centering
+	      (list moom-command-with-centering))))
 
 (defun moom--stay-in-region (&optional target-width)
   "Shift the frame to try to keep the frame staying in the display.
 The frame width may be specified with TARGET-WIDTH."
   (let ((shift (- (+ (* (frame-char-width) (or target-width
-                                               (moom--frame-width)))
-                     (moom--frame-internal-width)
-                     (moom--pos-x (moom--frame-left)))
-                  (- (display-pixel-width)
-                     (nth 3 moom--screen-margin)))))
+					       (moom--frame-width)))
+		     (moom--frame-internal-width)
+		     (moom--pos-x (moom--frame-left)))
+		  (- (display-pixel-width)
+		     (nth 3 moom--screen-margin)))))
     ;; Left side border
     (when (< (moom--pos-x (moom--frame-left)) shift)
       (setq shift (moom--pos-x (moom--frame-left))))
@@ -754,7 +755,7 @@ The frame width may be specified with TARGET-WIDTH."
 (defun moom--update-display-border ()
   "Update right and bottom border for negative coordinate value on windows-nt."
   (let ((dma-list (display-monitor-attributes-list))
-        (rb 0)
+	(rb 0)
 	(lb 0))
     (dotimes (i (length dma-list))
       (let ((gm (alist-get 'geometry (nth i dma-list))))
@@ -763,8 +764,8 @@ The frame width may be specified with TARGET-WIDTH."
 	(when (< (nth 1 gm) 0)
 	  (setq lb (nth 1 gm)))))
     (setq moom--display-border
-          (list (+ (display-pixel-width) rb)
-	        (+ (display-pixel-height) lb)))))
+	  (list (+ (display-pixel-width) rb)
+		(+ (display-pixel-height) lb)))))
 
 (defun moom--current-monitor-id ()
   "Provide id of the current monitor."
@@ -778,11 +779,11 @@ The frame width may be specified with TARGET-WIDTH."
 (defun moom--read-user-margin ()
   "Read new user margin."
   (mapcar #'string-to-number
-          (split-string
-           (read-string "New user margin: "
-                        (mapconcat #'identity (mapcar
-                                               #'number-to-string
-                                               moom-user-margin) " ")))))
+	  (split-string
+	   (read-string "New user margin: "
+			(mapconcat #'identity (mapcar
+					       #'number-to-string
+					       moom-user-margin) " ")))))
 
 (defun moom--add-command-history (status)
   "Add the last STATUS to `moom--command-history' for undo feature."
@@ -799,12 +800,12 @@ If INDEX is non-nil, revert to the provided id of history."
   (unless index
     (setq index 0))
   (if (and (numberp index)
-           (> (length moom--command-history) index))
+	   (> (length moom--command-history) index))
       (let ((previous (nth index moom--command-history)))
-        (moom-restore-last-status previous)
-        (setq moom--command-history (nthcdr (1+ index) moom--command-history))
-        (when moom-verbose
-          (message "[moom] %s undo available" (length moom--command-history))))
+	(moom-restore-last-status previous)
+	(setq moom--command-history (nthcdr (1+ index) moom--command-history))
+	(when moom-verbose
+	  (message "[moom] %s undo available" (length moom--command-history))))
     (message "[moom] No further undo")))
 
 ;;;###autoload
@@ -814,30 +815,30 @@ SHIFT can control the margin, if needed.
 If SHIFT is nil, `moom--common-margin' will be applied."
   (interactive)
   (let ((geometry (moom--frame-monitor-geometry))
-        (workarea (moom--frame-monitor-workarea)))
+	(workarea (moom--frame-monitor-workarea)))
     (if (not (> (length (display-monitor-attributes-list)) 1))
-        (setq moom--screen-margin (moom--default-screen-margin))
+	(setq moom--screen-margin (moom--default-screen-margin))
       (setq moom--screen-margin
-            (let ((shift (or shift moom--common-margin)))
-              (list (+ (nth 1 workarea)
-                       (nth 0 shift))
-                    (+ (- (display-pixel-height)
-                          (nth 1 workarea)
-                          (nth 3 workarea))
-                       (nth 1 shift))
-                    (+ (nth 0 workarea)
-                       (nth 2 shift))
-                    (+ (- (display-pixel-width)
-                          (nth 0 workarea)
-                          (nth 2 workarea))
-                       (nth 3 shift)))))
+	    (let ((shift (or shift moom--common-margin)))
+	      (list (+ (nth 1 workarea)
+		       (nth 0 shift))
+		    (+ (- (display-pixel-height)
+			  (nth 1 workarea)
+			  (nth 3 workarea))
+		       (nth 1 shift))
+		    (+ (nth 0 workarea)
+		       (nth 2 shift))
+		    (+ (- (display-pixel-width)
+			  (nth 0 workarea)
+			  (nth 2 workarea))
+		       (nth 3 shift)))))
       (moom--merge-screen-margin moom--local-margin))
     (moom--merge-screen-margin moom-user-margin)
     (moom--update-display-border)
     (unless (equal moom--last-monitor geometry)
       (setq moom--last-monitor geometry)
       (when moom-verbose
-        (message "[Moom] The current monitor has been changed to %s" geometry))
+	(message "[Moom] The current monitor has been changed to %s" geometry))
       (moom--make-frame-height-list)))
   (when (eq window-system 'mac) ;; To avoid visual error
     (redraw-frame)))
@@ -848,12 +849,12 @@ If SHIFT is nil, `moom--common-margin' will be applied."
 `moom-jump-to-monitor' could be useful to jump to a monitor."
   (interactive)
   (let ((dma-list (display-monitor-attributes-list))
-        (msg nil))
+	(msg nil))
     (dotimes (i (length dma-list))
       (let ((gm (alist-get 'geometry (nth i dma-list))))
-        (push (format "[%s] W:%04s H:%04s (%05s,%05s) %s"
-                      i (nth 2 gm) (nth 3 gm) (nth 0 gm) (nth 1 gm)
-                      (if (equal gm moom--last-monitor) "<current>" "")) msg)))
+	(push (format "[%s] W:%04s H:%04s (%05s,%05s) %s"
+		      i (nth 2 gm) (nth 3 gm) (nth 0 gm) (nth 1 gm)
+		      (if (equal gm moom--last-monitor) "<current>" "")) msg)))
     (when moom-verbose
       (message "%s" (mapconcat 'concat (reverse msg) "\n")))))
 
@@ -861,16 +862,16 @@ If SHIFT is nil, `moom--common-margin' will be applied."
 (defun moom-jump-to-monitor (id)
   "Jump to a monitor by specifying ID."
   (interactive (list
-                (read-number
-                 "Target monitor: " (moom--current-monitor-id))))
+		(read-number
+		 "Target monitor: " (moom--current-monitor-id))))
   (let ((dma-list (display-monitor-attributes-list)))
     (if (< id (length dma-list))
-        (let ((workarea (alist-get 'workarea (nth id dma-list))))
-          (set-frame-position nil (nth 0 workarea) (nth 1 workarea))
-          (when (memq window-system '(x))
-            (sleep-for 0.2)) ;; FIXME
-          (moom-identify-current-monitor)
-          (run-hooks 'moom-after-select-monitor-hook))
+	(let ((workarea (alist-get 'workarea (nth id dma-list))))
+	  (set-frame-position nil (nth 0 workarea) (nth 1 workarea))
+	  (when (memq window-system '(x))
+	    (sleep-for 0.2)) ;; FIXME
+	  (moom-identify-current-monitor)
+	  (run-hooks 'moom-after-select-monitor-hook))
       (user-error "Target index shall be less than %s" id (length dma-list)))))
 
 ;;;###autoload
@@ -896,14 +897,14 @@ used to add additional actions."
   (let ((last (moom--save-last-status)))
     (run-hooks 'moom-before-fill-screen-hook)
     (moom--font-resize (moom--fullscreen-font-size)
-                       (+ (moom--max-frame-pixel-width)
-                          (moom--frame-internal-width)))
+		       (+ (moom--max-frame-pixel-width)
+			  (moom--frame-internal-width)))
     (set-frame-position nil
-                        (moom--pos-x (nth 2 moom--screen-margin))
-                        (moom--pos-y (nth 0 moom--screen-margin)))
+			(moom--pos-x (nth 2 moom--screen-margin))
+			(moom--pos-y (nth 0 moom--screen-margin)))
     (set-frame-size nil
-                    (moom--max-frame-pixel-width)
-                    (moom--max-frame-pixel-height) t)
+		    (moom--max-frame-pixel-width)
+		    (moom--max-frame-pixel-height) t)
     (moom-print-status)
     (run-hooks 'moom-after-fill-screen-hook)
     (when (or moom--non-interactive-history (called-interactively-p 'any))
@@ -916,9 +917,9 @@ No information is stored for undo."
   (interactive)
   (let ((moom--print-status nil))
     (if moom--maximized
-        (progn
-          (moom-restore-last-status moom--maximized)
-          (setq moom--maximized nil))
+	(progn
+	  (moom-restore-last-status moom--maximized)
+	  (setq moom--maximized nil))
       (setq moom--maximized (moom--save-last-status))
       (moom-fill-screen)))
   (moom-print-status))
@@ -1008,49 +1009,49 @@ If PLIST is nil, `moom-fill-band-options' is applied."
   (interactive)
   (let ((last (moom--save-last-status)))
     (let* ((moom--print-status nil)
-           (values (or plist moom-fill-band-options))
-           (direction (plist-get values :direction))
-           (range (plist-get values :range))
-           (band-pixel-width nil)
-           (band-pixel-height nil))
+	   (values (or plist moom-fill-band-options))
+	   (direction (plist-get values :direction))
+	   (range (plist-get values :range))
+	   (band-pixel-width nil)
+	   (band-pixel-height nil))
       (cond ((memq direction '(vertical nil))
-             (setq band-pixel-width
-                   (if (floatp range)
-                       (floor (/ (* range (+ (moom--max-frame-pixel-width)
-                                             (moom--frame-internal-width)))
-                                 100.0))
-                     range))
-             (when (< band-pixel-width moom--fill-minimum-range)
-               (setq band-pixel-width moom--fill-minimum-range)
-               (warn "Range was changed since given value is too small."))
-             (moom--font-resize
-              (moom--font-size band-pixel-width) band-pixel-width)
-             ;; Update band-pixel-width for `set-frame-size'
-             (setq band-pixel-width
-                   (- (if (and moom--font-module-p
-                               (floatp range))
-                          (moom--frame-pixel-width)
-                        band-pixel-width)
-                      (moom--frame-internal-width)))
-             (setq band-pixel-height (moom--max-frame-pixel-height)))
-            ((eq direction 'horizontal)
-             (setq band-pixel-height
-                   (- (if (floatp range)
-                          (floor (/ (* (+ (moom--max-frame-pixel-height)
-                                          (moom--frame-internal-height))
-                                       range)
-                                    100.0))
-                        range)
-                      (moom--frame-internal-height)))
-             (moom--font-resize (moom--fullscreen-font-size)
-                                (+ (moom--max-frame-pixel-width)
-                                   (moom--frame-internal-width)))
-             (setq band-pixel-width (moom--max-frame-pixel-width))))
+	     (setq band-pixel-width
+		   (if (floatp range)
+		       (floor (/ (* range (+ (moom--max-frame-pixel-width)
+					     (moom--frame-internal-width)))
+				 100.0))
+		     range))
+	     (when (< band-pixel-width moom--fill-minimum-range)
+	       (setq band-pixel-width moom--fill-minimum-range)
+	       (warn "Range was changed since given value is too small."))
+	     (moom--font-resize
+	      (moom--font-size band-pixel-width) band-pixel-width)
+	     ;; Update band-pixel-width for `set-frame-size'
+	     (setq band-pixel-width
+		   (- (if (and moom--font-module-p
+			       (floatp range))
+			  (moom--frame-pixel-width)
+			band-pixel-width)
+		      (moom--frame-internal-width)))
+	     (setq band-pixel-height (moom--max-frame-pixel-height)))
+	    ((eq direction 'horizontal)
+	     (setq band-pixel-height
+		   (- (if (floatp range)
+			  (floor (/ (* (+ (moom--max-frame-pixel-height)
+					  (moom--frame-internal-height))
+				       range)
+				    100.0))
+			range)
+		      (moom--frame-internal-height)))
+	     (moom--font-resize (moom--fullscreen-font-size)
+				(+ (moom--max-frame-pixel-width)
+				   (moom--frame-internal-width)))
+	     (setq band-pixel-width (moom--max-frame-pixel-width))))
       (when (and band-pixel-width
-                 band-pixel-height)
-        (set-frame-size nil band-pixel-width band-pixel-height t)
-        (moom-move-frame-to-center)
-        (moom--make-frame-height-list)))
+		 band-pixel-height)
+	(set-frame-size nil band-pixel-width band-pixel-height t)
+	(moom-move-frame-to-center)
+	(moom--make-frame-height-list)))
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last)))
   (moom-print-status))
@@ -1071,7 +1072,7 @@ If PLIST is nil, `moom-fill-band-options' is applied."
   (interactive)
   (setq line-spacing moom-init-line-spacing)
   (when (and moom-verbose
-             line-spacing)
+	     line-spacing)
     (message "[Moom] %.1f" line-spacing)))
 
 ;;;###autoload
@@ -1081,18 +1082,18 @@ If PLIST is nil, `moom-fill-band-options' is applied."
   (moom-identify-current-monitor)
   (let ((last (moom--save-last-status)))
     (let* ((pos-x (moom--frame-left))
-           (pos-y (moom--frame-top))
-           (new-pos-x (+ pos-x (or pixel
-                                   (moom--shift-amount 'right)))))
+	   (pos-y (moom--frame-top))
+	   (new-pos-x (+ pos-x (or pixel
+				   (moom--shift-amount 'right)))))
       (when (>= new-pos-x (- (display-pixel-width)
-                             (nth 3 moom--screen-margin)))
-        (setq new-pos-x (- new-pos-x
-                           (display-pixel-width)
-                           (moom--frame-pixel-width)
-                           (- (moom--shift-amount 'right)))))
+			     (nth 3 moom--screen-margin)))
+	(setq new-pos-x (- new-pos-x
+			   (display-pixel-width)
+			   (moom--frame-pixel-width)
+			   (- (moom--shift-amount 'right)))))
       (set-frame-position nil
-                          (moom--pos-x new-pos-x)
-                          (moom--pos-y pos-y)))
+			  (moom--pos-x new-pos-x)
+			  (moom--pos-y pos-y)))
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last)))
   (moom-print-status))
@@ -1104,18 +1105,18 @@ If PLIST is nil, `moom-fill-band-options' is applied."
   (moom-identify-current-monitor)
   (let ((last (moom--save-last-status)))
     (let* ((pos-x (moom--frame-left))
-           (pos-y (moom--frame-top))
-           (new-pos-x (- pos-x (or pixel
-                                   (moom--shift-amount 'left)))))
+	   (pos-y (moom--frame-top))
+	   (new-pos-x (- pos-x (or pixel
+				   (moom--shift-amount 'left)))))
       (when (<= new-pos-x (- (nth 2 moom--screen-margin)
-                             (moom--frame-pixel-width)))
-        (setq new-pos-x (+ new-pos-x
-                           (display-pixel-width)
-                           (moom--frame-pixel-width)
-                           (- (moom--shift-amount 'left)))))
+			     (moom--frame-pixel-width)))
+	(setq new-pos-x (+ new-pos-x
+			   (display-pixel-width)
+			   (moom--frame-pixel-width)
+			   (- (moom--shift-amount 'left)))))
       (set-frame-position nil
-                          (moom--pos-x new-pos-x)
-                          (moom--pos-y pos-y)))
+			  (moom--pos-x new-pos-x)
+			  (moom--pos-y pos-y)))
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last)))
   (moom-print-status))
@@ -1126,8 +1127,8 @@ If PLIST is nil, `moom-fill-band-options' is applied."
   (interactive)
   (let ((last (moom--save-last-status)))
     (set-frame-position nil
-                        (moom--pos-x (moom--horizontal-center-pos) '(:bound t))
-                        (moom--pos-y (moom--frame-top) '(:bound t)))
+			(moom--pos-x (moom--horizontal-center-pos) '(:bound t))
+			(moom--pos-y (moom--frame-top) '(:bound t)))
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last)))
   (moom-print-status))
@@ -1138,8 +1139,8 @@ If PLIST is nil, `moom-fill-band-options' is applied."
   (interactive)
   (let ((last (moom--save-last-status)))
     (set-frame-position nil
-                        (moom--pos-x (moom--frame-left) '(:bound t))
-                        (moom--pos-y (moom--vertical-center-pos) '(:bound t)))
+			(moom--pos-x (moom--frame-left) '(:bound t))
+			(moom--pos-y (moom--vertical-center-pos) '(:bound t)))
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last)))
   (moom-print-status))
@@ -1152,8 +1153,8 @@ please configure the margins by variable `moom-user-margin'."
   (interactive)
   (let ((last (moom--save-last-status)))
     (set-frame-position nil
-                        (moom--pos-x (moom--frame-left) '(:bound t))
-                        (moom--pos-y (nth 0 moom--screen-margin) '(:bound t)))
+			(moom--pos-x (moom--frame-left) '(:bound t))
+			(moom--pos-y (nth 0 moom--screen-margin) '(:bound t)))
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last)))
   (moom-print-status))
@@ -1166,13 +1167,13 @@ please configure the margins by variable `moom-user-margin'."
   (interactive)
   (let ((last (moom--save-last-status)))
     (set-frame-position nil
-                        (moom--pos-x (moom--frame-left) '(:bound t))
-                        (moom--pos-y
-                         (- (display-pixel-height)
-                            (moom--frame-pixel-height)
-                            (moom--frame-internal-height)
-                            (- (moom--internal-border-height))
-                            (nth 1 moom--screen-margin)) '(:bound t)))
+			(moom--pos-x (moom--frame-left) '(:bound t))
+			(moom--pos-y
+			 (- (display-pixel-height)
+			    (moom--frame-pixel-height)
+			    (moom--frame-internal-height)
+			    (- (moom--internal-border-height))
+			    (nth 1 moom--screen-margin)) '(:bound t)))
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last)))
   (moom-print-status))
@@ -1183,12 +1184,12 @@ please configure the margins by variable `moom-user-margin'."
   (interactive)
   (let ((last (moom--save-last-status)))
     (set-frame-position nil
-                        (moom--pos-x (- (display-pixel-width)
-                                        (moom--frame-pixel-width)
-                                        (nth 3 moom--screen-margin))
-                                     (when (eq window-system 'w32)
-                                       '(:bound t))) ;; FIXME
-                        (moom--pos-y (moom--frame-top) '(:bound t)))
+			(moom--pos-x (- (display-pixel-width)
+					(moom--frame-pixel-width)
+					(nth 3 moom--screen-margin))
+				     (when (eq window-system 'w32)
+				       '(:bound t))) ;; FIXME
+			(moom--pos-y (moom--frame-top) '(:bound t)))
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last)))
   (moom-print-status))
@@ -1199,8 +1200,8 @@ please configure the margins by variable `moom-user-margin'."
   (interactive)
   (let ((last (moom--save-last-status)))
     (set-frame-position nil
-                        (moom--pos-x (nth 2 moom--screen-margin))
-                        (moom--pos-y (moom--frame-top) '(:bound t)))
+			(moom--pos-x (nth 2 moom--screen-margin))
+			(moom--pos-y (moom--frame-top) '(:bound t)))
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last)))
   (moom-print-status))
@@ -1211,8 +1212,8 @@ please configure the margins by variable `moom-user-margin'."
   (interactive)
   (let ((last (moom--save-last-status)))
     (set-frame-position nil
-                        (- (moom--horizontal-center) (moom--frame-pixel-width))
-                        (moom--pos-y (moom--frame-top)))
+			(- (moom--horizontal-center) (moom--frame-pixel-width))
+			(moom--pos-y (moom--frame-top)))
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last)))
   (moom-print-status))
@@ -1223,8 +1224,8 @@ please configure the margins by variable `moom-user-margin'."
   (interactive)
   (let ((last (moom--save-last-status)))
     (set-frame-position nil
-                        (moom--horizontal-center)
-                        (moom--pos-y (moom--frame-top)))
+			(moom--horizontal-center)
+			(moom--pos-y (moom--frame-top)))
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last)))
   (moom-print-status))
@@ -1235,10 +1236,10 @@ please configure the margins by variable `moom-user-margin'."
   (interactive)
   (let ((last (moom--save-last-status)))
     (set-frame-position nil
-                        (moom--pos-x (moom--frame-left))
-                        (moom--pos-y (- (moom--vertical-center)
-                                        (moom--frame-internal-height)
-                                        (moom--frame-pixel-height))))
+			(moom--pos-x (moom--frame-left))
+			(moom--pos-y (- (moom--vertical-center)
+					(moom--frame-internal-height)
+					(moom--frame-pixel-height))))
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last)))
   (moom-print-status))
@@ -1249,8 +1250,8 @@ please configure the margins by variable `moom-user-margin'."
   (interactive)
   (let ((last (moom--save-last-status)))
     (set-frame-position nil
-                        (moom--pos-x (moom--frame-left))
-                        (moom--pos-y (moom--vertical-center)))
+			(moom--pos-x (moom--frame-left))
+			(moom--pos-y (moom--vertical-center)))
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last)))
   (moom-print-status))
@@ -1261,8 +1262,8 @@ please configure the margins by variable `moom-user-margin'."
   (interactive)
   (let ((last (moom--save-last-status)))
     (set-frame-position nil
-                        (moom--pos-x (moom--horizontal-center-pos))
-                        (moom--pos-y (moom--vertical-center-pos) '(:bound t)))
+			(moom--pos-x (moom--horizontal-center-pos))
+			(moom--pos-y (moom--vertical-center-pos) '(:bound t)))
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last)))
   (moom-print-status))
@@ -1270,29 +1271,29 @@ please configure the margins by variable `moom-user-margin'."
 ;;;###autoload
 (defun moom-move-frame (&optional arg)
   "Move the frame to somewhere (default: left top of workarea).
-When ARG is a list like '(10 10), move the frame to the position.
+When ARG is a list like \=(10 10), move the frame to the position.
 When ARG is a single number like 10, shift the frame horizontally +10 pixel.
 When ARG is nil, then move to the default position (i.e. left top of workarea)."
   (interactive)
   (let ((last (moom--save-last-status)))
     (let ((pos-x (nth 2 moom--screen-margin))
-          (pos-y (nth 0 moom--screen-margin)))
+	  (pos-y (nth 0 moom--screen-margin)))
       (when (eq window-system 'w32)
-        (setq pos-x (+ pos-x (nth 0 moom--screen-grid)))
-        (setq pos-y (+ pos-y (nth 1 moom--screen-grid))))
+	(setq pos-x (+ pos-x (nth 0 moom--screen-grid)))
+	(setq pos-y (+ pos-y (nth 1 moom--screen-grid))))
       (cond ((not arg) t) ;; left top of workarea by '(pos-x, pos-y)
-            ((numberp arg) ;; horizontal shift
-             (setq pos-x (+ pos-x arg))
-             (setq pos-y (moom--frame-top)))
-            ((listp arg) ;; move to '(x, y)
-             (setq pos-x (+ pos-x (nth 0 arg)))
-             (setq pos-y (+ pos-y (nth 1 arg)))))
+	    ((numberp arg) ;; horizontal shift
+	     (setq pos-x (+ pos-x arg))
+	     (setq pos-y (moom--frame-top)))
+	    ((listp arg) ;; move to '(x, y)
+	     (setq pos-x (+ pos-x (nth 0 arg)))
+	     (setq pos-y (+ pos-y (nth 1 arg)))))
       (if (eq window-system 'w32)
-          (modify-frame-parameters
-           nil `((left . (+ ,pos-x)) (top . (+ ,pos-y))))
-        (unless (and (eq pos-x (moom--frame-left))
-                     (eq pos-y (moom--frame-top)))
-          (set-frame-position nil (moom--pos-x pos-x) (moom--pos-y pos-y)))))
+	  (modify-frame-parameters
+	   nil `((left . (+ ,pos-x)) (top . (+ ,pos-y))))
+	(unless (and (eq pos-x (moom--frame-left))
+		     (eq pos-y (moom--frame-top)))
+	  (set-frame-position nil (moom--pos-x pos-x) (moom--pos-y pos-y)))))
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last)))
   (moom-print-status))
@@ -1313,10 +1314,10 @@ No information is stored for undo."
       (setq height (car moom--height-list)))
     ;; Align to center or bottom line
     (cond ((equal height (moom--max-frame-height))
-           (moom-change-frame-height (moom--max-frame-pixel-height) t))
-          ((equal height (/ (moom--max-frame-height) 2))
-           (moom-change-frame-height (moom--max-half-frame-pixel-height) t))
-          (t (moom-change-frame-height height))))
+	   (moom-change-frame-height (moom--max-frame-pixel-height) t))
+	  ((equal height (/ (moom--max-frame-height) 2))
+	   (moom-change-frame-height (moom--max-half-frame-pixel-height) t))
+	  (t (moom-change-frame-height height))))
   (moom--cycle-frame-height-list)
   (run-hooks 'moom-resize-frame-height-hook))
 
@@ -1343,18 +1344,18 @@ If PIXELWISE is non-nil, the frame height will be changed by pixel value."
     (when (not frame-height)
       (setq frame-height moom-min-frame-height))
     (if pixelwise
-        (set-frame-height nil frame-height nil pixelwise)
+	(set-frame-height nil frame-height nil pixelwise)
       (let ((min-height (moom--min-frame-height))
-            (max-height (moom--max-frame-height)))
-        (when (> frame-height max-height)
-          (setq frame-height max-height)
-          (when moom-verbose
-            (message "[Moom] Force set the height %s." frame-height)))
-        (when (< frame-height min-height)
-          (setq frame-height min-height)
-          (when moom-verbose
-            (message "[Moom] Force set the height %s." frame-height)))
-        (set-frame-height nil (floor frame-height))))
+	    (max-height (moom--max-frame-height)))
+	(when (> frame-height max-height)
+	  (setq frame-height max-height)
+	  (when moom-verbose
+	    (message "[Moom] Force set the height %s." frame-height)))
+	(when (< frame-height min-height)
+	  (setq frame-height min-height)
+	  (when moom-verbose
+	    (message "[Moom] Force set the height %s." frame-height)))
+	(set-frame-height nil (floor frame-height))))
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last)))
   (moom-print-status))
@@ -1372,7 +1373,7 @@ In that case, variable `moom--frame-width' will keep the same value."
     (unless frame-width
       (setq frame-width moom-frame-width-single))
     (if pixelwise
-        (set-frame-width nil frame-width nil pixelwise)
+	(set-frame-width nil frame-width nil pixelwise)
       (set-frame-width nil frame-width)
       (setq moom--frame-width frame-width))
     (when (or moom--non-interactive-history (called-interactively-p 'any))
@@ -1399,7 +1400,7 @@ This function does not effect font size."
   (let ((last (moom--save-last-status)))
     (moom-change-frame-width moom-frame-width-double)
     (if (moom--centerize-p 'double)
-        (moom-move-frame-to-horizontal-center)
+	(moom-move-frame-to-horizontal-center)
       (moom--stay-in-region))
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last))))
@@ -1412,7 +1413,7 @@ This function does not effect font size."
   (let ((last (moom--save-last-status)))
     (moom-change-frame-width (floor (* 1.5 moom-frame-width-single)))
     (if (moom--centerize-p 'half-again)
-        (moom-move-frame-to-horizontal-center)
+	(moom-move-frame-to-horizontal-center)
       (moom--stay-in-region))
     (when (or moom--non-interactive-history (called-interactively-p 'any))
       (moom--add-command-history last))))
@@ -1435,7 +1436,7 @@ This function does not effect font size."
 No information is stored for undo."
   (interactive)
   (let ((buffer (buffer-name))
-        (p (point)))
+	(p (point)))
     (delete-other-windows)
     (switch-to-buffer buffer)
     (goto-char p))
@@ -1475,17 +1476,17 @@ No information is stored for undo."
   "Change number of step of the height ring by ARG.
 The default step is 4."
   (when (and (integerp arg)
-             (> arg 1))
+	     (> arg 1))
     (setq moom--height-steps arg)
     (moom--make-frame-height-list)))
 
 ;;;###autoload
 (defun moom-screen-margin (margins &optional fill)
   "Change top, bottom, left, and right margin by provided MARGINS.
-MARGINS shall be a list consists of 4 integer variables like '(23 0 0 0).
+MARGINS shall be a list consists of 4 integer variables like \=(23 0 0 0).
 If FILL is non-nil, the frame will cover the screen with given margins."
   (when (and (listp margins)
-             (eq (length margins) 4))
+	     (eq (length margins) 4))
     (setq moom--screen-margin margins)
     (moom-reset)
     (when fill
@@ -1509,19 +1510,19 @@ MARGIN is a list with 4 integers in order of {top, down, left, right}."
 ;;;###autoload
 (defun moom-check-user-margin (margin)
   "Change top, bottom, left, and right margin by provided MARGINS.
-MARGIN shall be a list consists of 4 integer variables like '(10 10 20 20)."
+MARGIN shall be a list consists of 4 integer variables like \=(10 10 20 20)."
   (interactive (list (moom--read-user-margin)))
   (let ((last (moom--save-last-status))
-        (sm moom--screen-margin))
+	(sm moom--screen-margin))
     (when (eq 4 (length margin))
       (let ((moom-user-margin margin))
-        (moom-reset)
-        (moom-move-frame)
-        (moom-fill-screen))
+	(moom-reset)
+	(moom-move-frame)
+	(moom-fill-screen))
       (if (y-or-n-p "[moom] Update `moom-user-margin' for this session? ")
-          (moom-update-user-margin margin)
-        (message "[moom] Abort.")
-        (setq moom--screen-margin sm))
+	  (moom-update-user-margin margin)
+	(message "[moom] Abort.")
+	(setq moom--screen-margin sm))
       (moom-restore-last-status last))))
 
 ;;;###autoload
@@ -1533,20 +1534,20 @@ and pixel-region."
   (when status
     (setq moom--last-status status))
   (let ((moom-font-before-resize-hook nil)
-        (moom-font-after-resize-hook nil))
+	(moom-font-after-resize-hook nil))
     (moom--font-resize (cdr (assoc "font-size" moom--last-status)) nil))
   (set-frame-position nil
-                      (cdr (assoc "left" moom--last-status))
-                      (cdr (assoc "top" moom--last-status)))
+		      (cdr (assoc "left" moom--last-status))
+		      (cdr (assoc "top" moom--last-status)))
   (set-frame-size nil
-                  (cdr (assoc "width" moom--last-status))
-                  (cdr (assoc "height" moom--last-status)))
+		  (cdr (assoc "width" moom--last-status))
+		  (cdr (assoc "height" moom--last-status)))
   (set-frame-size nil
-                  (- (cdr (assoc "pixel-width" moom--last-status))
-                     (moom--frame-internal-width))
-                  (+ (- (cdr (assoc "pixel-height" moom--last-status))
-                        (moom--internal-border-height)))
-                  t)
+		  (- (cdr (assoc "pixel-width" moom--last-status))
+		     (moom--frame-internal-width))
+		  (+ (- (cdr (assoc "pixel-height" moom--last-status))
+			(moom--internal-border-height)))
+		  t)
   (when moom--screen-margin
     (moom--make-frame-height-list))
   (moom-print-status))
@@ -1559,17 +1560,17 @@ even if \"moom-font.el\" is loaded."
   (interactive)
   (if (require 'moom-font nil t)
       (progn
-        (setq moom--font-module-p (not moom--font-module-p))
-        (setq moom-font--pause (not moom--font-module-p))
-        (if moom--font-module-p
-            (add-hook 'moom-font-after-resize-hook
-                      #'moom--make-frame-height-list)
-          (remove-hook 'moom-font-after-resize-hook
-                       #'moom--make-frame-height-list))
-        (when moom-verbose
-          (message
-           (concat "[Moom] Using font module ... "
-                   (if moom--font-module-p "ON" "OFF")))))
+	(setq moom--font-module-p (not moom--font-module-p))
+	(setq moom-font--pause (not moom--font-module-p))
+	(if moom--font-module-p
+	    (add-hook 'moom-font-after-resize-hook
+		      #'moom--make-frame-height-list)
+	  (remove-hook 'moom-font-after-resize-hook
+		       #'moom--make-frame-height-list))
+	(when moom-verbose
+	  (message
+	   (concat "[Moom] Using font module ... "
+		   (if moom--font-module-p "ON" "OFF")))))
     (when moom-verbose
       (message "[Moom] moom-font.el is NOT installed."))))
 
@@ -1581,8 +1582,8 @@ The last frame position and size will be restored."
   (if (not (fboundp 'moom-font--generate-font-table))
       (warn "moom-font.el is NOT installed.")
     (let* ((moom--font-module-p (boundp 'moom-font--pause))
-           (moom-font--pause (not moom--font-module-p))
-           (last (moom--save-last-status)))
+	   (moom-font--pause (not moom--font-module-p))
+	   (last (moom--save-last-status)))
       (moom-font--generate-font-table)
       (moom-restore-last-status last))))
 
@@ -1602,8 +1603,8 @@ The keybindings will be assigned only when Emacs runs in GUI."
       (setq options (list options)))
     (when (memq 'all options)
       (if (memq 'wof options)
-          (setq options '(move fit expand fill font reset undo wof))
-        (setq options '(move fit expand fill font reset undo))))
+	  (setq options '(move fit expand fill font reset undo wof))
+	(setq options '(move fit expand fill font reset undo))))
     (when (memq 'move options)
       (define-key moom-mode-map (kbd "M-0") 'moom-move-frame)
       (define-key moom-mode-map (kbd "M-1") 'moom-move-frame-left)
@@ -1612,31 +1613,31 @@ The keybindings will be assigned only when Emacs runs in GUI."
     (when (memq 'fit options)
       (cond
        ((memq 'wof options)
-        (define-key moom-mode-map (kbd "C-c e l") 'moom-move-frame-to-edge-left)
-        (define-key moom-mode-map (kbd "C-c e r")
-          'moom-move-frame-to-edge-right)
-        (define-key moom-mode-map (kbd "C-c e t") 'moom-move-frame-to-edge-top)
-        (define-key moom-mode-map (kbd "C-c e b")
-          'moom-move-frame-to-edge-bottom))
+	(define-key moom-mode-map (kbd "C-c e l") 'moom-move-frame-to-edge-left)
+	(define-key moom-mode-map (kbd "C-c e r")
+		    'moom-move-frame-to-edge-right)
+	(define-key moom-mode-map (kbd "C-c e t") 'moom-move-frame-to-edge-top)
+	(define-key moom-mode-map (kbd "C-c e b")
+		    'moom-move-frame-to-edge-bottom))
        (t
-        (define-key moom-mode-map (kbd "M-<f1>") 'moom-move-frame-to-edge-left)
-        (define-key moom-mode-map (kbd "M-<f3>") 'moom-move-frame-to-edge-right)
-        (define-key moom-mode-map (kbd "<f1>") 'moom-move-frame-to-edge-top)
-        (define-key moom-mode-map (kbd "S-<f1>")
-          'moom-move-frame-to-edge-bottom)))
+	(define-key moom-mode-map (kbd "M-<f1>") 'moom-move-frame-to-edge-left)
+	(define-key moom-mode-map (kbd "M-<f3>") 'moom-move-frame-to-edge-right)
+	(define-key moom-mode-map (kbd "<f1>") 'moom-move-frame-to-edge-top)
+	(define-key moom-mode-map (kbd "S-<f1>")
+		    'moom-move-frame-to-edge-bottom)))
       (define-key moom-mode-map (kbd "C-c f c l")
-        'moom-move-frame-to-centerline-from-left)
+		  'moom-move-frame-to-centerline-from-left)
       (define-key moom-mode-map (kbd "C-c f c r")
-        'moom-move-frame-to-centerline-from-right)
+		  'moom-move-frame-to-centerline-from-right)
       (define-key moom-mode-map (kbd "C-c f c t")
-        'moom-move-frame-to-centerline-from-top)
+		  'moom-move-frame-to-centerline-from-top)
       (define-key moom-mode-map (kbd "C-c f c b")
-        'moom-move-frame-to-centerline-from-bottom))
+		  'moom-move-frame-to-centerline-from-bottom))
     (when (memq 'expand options)
       (cond ((memq 'wof options)
-             (define-key moom-mode-map (kbd "C-2") 'moom-cycle-frame-height))
-            (t
-             (define-key moom-mode-map (kbd "<f2>") 'moom-cycle-frame-height)))
+	     (define-key moom-mode-map (kbd "C-2") 'moom-cycle-frame-height))
+	    (t
+	     (define-key moom-mode-map (kbd "<f2>") 'moom-cycle-frame-height)))
       (define-key moom-mode-map (kbd "C-c f s") 'moom-change-frame-width-single)
       (define-key moom-mode-map (kbd "C-c f d") 'moom-change-frame-width-double)
       (define-key moom-mode-map (kbd "C-c f S") 'moom-delete-windows)
@@ -1644,7 +1645,7 @@ The keybindings will be assigned only when Emacs runs in GUI."
       (define-key moom-mode-map (kbd "C-c f w") 'moom-change-frame-width-max)
       (define-key moom-mode-map (kbd "C-c f h") 'moom-change-frame-height-max)
       (define-key moom-mode-map (kbd "C-c f a")
-        'moom-change-frame-width-half-again))
+		  'moom-change-frame-width-half-again))
     (when (memq 'fill options)
       (define-key moom-mode-map (kbd "C-c f f t") 'moom-fill-top)
       (define-key moom-mode-map (kbd "C-c f f b") 'moom-fill-bottom)
@@ -1658,11 +1659,11 @@ The keybindings will be assigned only when Emacs runs in GUI."
       (define-key moom-mode-map (kbd "C-c f f w") 'moom-fill-width) ;; will be deleted
       (define-key moom-mode-map (kbd "C-c f f h") 'moom-fill-height) ;; will be deleted
       (cond ((memq 'wof options)
-             (define-key moom-mode-map (kbd "C-c f f x")
-               'moom-toggle-frame-maximized))
-            (t
-             (define-key moom-mode-map (kbd "M-<f2>")
-               'moom-toggle-frame-maximized))))
+	     (define-key moom-mode-map (kbd "C-c f f x")
+			 'moom-toggle-frame-maximized))
+	    (t
+	     (define-key moom-mode-map (kbd "M-<f2>")
+			 'moom-toggle-frame-maximized))))
     (when (memq 'font options)
       (define-key moom-mode-map (kbd "C--") 'moom-font-decrease)
       (define-key moom-mode-map (kbd "C-=") 'moom-font-increase)
@@ -1672,7 +1673,7 @@ The keybindings will be assigned only when Emacs runs in GUI."
     (when (memq 'undo options)
       (define-key moom-mode-map (kbd "C-c C-/") 'moom-undo))
     (when (and moom-verbose
-               options)
+	       options)
       (message "[Moom] Key defined for APIs of %s." options))))
 
 ;;;###autoload
@@ -1680,23 +1681,23 @@ The keybindings will be assigned only when Emacs runs in GUI."
   "Print font size, frame size and origin in mini buffer."
   (interactive)
   (when (and moom-verbose
-             moom--print-status)
+	     moom--print-status)
     ;; (message "--- print!")
     (let ((message-log-max nil)
-          (fc-width (frame-char-width))
-          (fp-width (moom--frame-pixel-width))
-          (fp-height (moom--frame-pixel-height)))
+	  (fc-width (frame-char-width))
+	  (fp-width (moom--frame-pixel-width))
+	  (fp-height (moom--frame-pixel-height)))
       (message
        (format
-        "[Moom] Font: %spt(%dpx) | Frame: c(%d, %d) p(%d, %d) | Origin: (%s, %s)"
-        (if moom--font-module-p moom-font--size "**")
-        fc-width
-        (/ (- fp-width (moom--frame-internal-width)) fc-width)
-        (/ (- fp-height (moom--internal-border-height)) (frame-char-height))
-        fp-width
-        fp-height
-        (- (moom--frame-left) (nth 2 moom--local-margin))
-        (- (moom--frame-top) (nth 0 moom--local-margin)))))))
+	"[Moom] Font: %spt(%dpx) | Frame: c(%d, %d) p(%d, %d) | Origin: (%s, %s)"
+	(if moom--font-module-p moom-font--size "**")
+	fc-width
+	(/ (- fp-width (moom--frame-internal-width)) fc-width)
+	(/ (- fp-height (moom--internal-border-height)) (frame-char-height))
+	fp-width
+	fp-height
+	(- (moom--frame-left) (nth 2 moom--local-margin))
+	(- (moom--frame-top) (nth 0 moom--local-margin)))))))
 
 ;;;###autoload
 (defun moom-version ()
@@ -1726,7 +1727,7 @@ To see more details and examples, please visit https://github.com/takaxp/moom."
   :group 'moom
   (when window-system
     (if moom-mode
-        (moom--setup)
+	(moom--setup)
       (moom--abort))))
 
 (provide 'moom)

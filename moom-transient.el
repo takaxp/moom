@@ -53,12 +53,12 @@ This option is used in `moom-transient-dispatch'."
 (defun moom-transient--dispatch-description ()
   "Update description about executed command."
   (let ((prompt "[moom] Last Command: ")
-        (command (symbol-name this-command)))
+	(command (symbol-name this-command)))
     (if (eq 0 (string-match "^moom-" command))
-        (setq moom-transient--last-command
-              (format "%s%s"
-                      (propertize prompt 'face 'font-lock-type-face)
-                      (propertize command 'face 'bold)))
+	(setq moom-transient--last-command
+	      (format "%s%s"
+		      (propertize prompt 'face 'font-lock-type-face)
+		      (propertize command 'face 'bold)))
       moom-transient--last-command)))
 
 (defun moom-transient--insert-groups ()
@@ -78,26 +78,26 @@ This option is used in `moom-transient-dispatch'."
 (defun moom-transient--font-module-status ()
   "Return whether `moom-module' is activating or not."
   (format "%s" (if moom--font-module-p
-                   (propertize "on" 'face 'font-lock-type-face)
-                 (propertize "off" 'face 'font-lock-warning-face))))
+		   (propertize "on" 'face 'font-lock-type-face)
+		 (propertize "off" 'face 'font-lock-warning-face))))
 
 (defun moom-transient--font-module-status-description ()
   "Update description on whether `moom-font' is activating or not."
   (format "%s%s%s"
-          (propertize "Fill (font resizing: " 'face 'transient-heading)
-          (moom-transient--font-module-status)
-          (propertize ")" 'face 'transient-heading)))
+	  (propertize "Fill (font resizing: " 'face 'transient-heading)
+	  (moom-transient--font-module-status)
+	  (propertize ")" 'face 'transient-heading)))
 
 (defun moom-transient--font-api-status-description ()
   "Update description on whether font api is available."
   (format "%s%s"
-          (propertize "Font " 'face 'transient-heading)
-          (if moom--font-module-p
-              ""
-            (concat
-             (propertize "(" 'face 'transient-heading)
-             (propertize "disabled" 'face 'font-lock-warning-face)
-             (propertize ")" 'face 'transient-heading)))))
+	  (propertize "Font " 'face 'transient-heading)
+	  (if moom--font-module-p
+	      ""
+	    (concat
+	     (propertize "(" 'face 'transient-heading)
+	     (propertize "disabled" 'face 'font-lock-warning-face)
+	     (propertize ")" 'face 'transient-heading)))))
 
 ;;;###autoload
 (transient-define-prefix moom-transient-dispatch ()
