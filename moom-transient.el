@@ -192,7 +192,7 @@ This option is used in `moom-transient-dispatch'."
 (defun moom-transient-version ()
   "Printing version of `moom' and `moom-transient'."
   (interactive)
-  (let ((alpha "0.9.7"))
+  (let ((alpha "0.9.8"))
     (message "%s" (concat (moom-version) "\n" "[Moom-transient] v" alpha))))
 
 (provide 'moom-transient)
