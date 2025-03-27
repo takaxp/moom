@@ -207,8 +207,8 @@ If WIDTH is non-nil, ensure an appropriate font size so that
 the actual pixel width will not exceed the WIDTH."
   ;;(interactive "nSize: ")
   (interactive (list
-                (read-number
-                 "Size: " moom-font--size)))
+		(read-number
+		 "Size: " moom-font--size)))
   (run-hooks 'moom-font-before-resize-hook)
   (unless moom-font--pause
     (moom-font--change-size
