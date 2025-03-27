@@ -1,10 +1,10 @@
 ;;; moom-transient.el --- Moom command dispatcher by transient -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022 Takaaki ISHIKAWA
+;; Copyright (C) 2022-2025 Takaaki ISHIKAWA
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: frames, faces, convenience
-;; Version: 0.9.7
+;; Version: 0.9.8
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/Moom
 ;; Package-Requires: ((emacs "25.1") (transient "0.3.7"))
@@ -99,7 +99,7 @@ This option is used in `moom-transient-dispatch'."
 	     (propertize "disabled" 'face 'font-lock-warning-face)
 	     (propertize ")" 'face 'transient-heading)))))
 
-;;;###autoload
+;;;###autoload (autoload 'moom-transient-dispatch "moom-transient" nil t)
 (transient-define-prefix moom-transient-dispatch ()
   "Command list of `moom'."
   :transient-suffix 'moom-transient--do-stay
@@ -165,7 +165,7 @@ This option is used in `moom-transient-dispatch'."
     ("v" "version" moom-transient-version)
     ("q" "quit" transient-quit-all)]])
 
-;;;###autoload
+;;;###autoload (autoload 'moom-transient-config "moom-transient" nil t)
 (transient-define-prefix moom-transient-config ()
   "Command list of `moom' configuration."
   ["[moom] Configuration"

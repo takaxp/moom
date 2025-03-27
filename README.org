@@ -27,6 +27,12 @@ or
 
 If you don't want to change font size when resizing frame size, please configure ~moom-use-font-module~ before activating =moom-mode= by ~(moom-mode 1)~.
 
+#+begin_quote
+[!NOTE]
+moom can display a command list supported by `transient'.
+see [[https://github.com/takaxp/moom?tab=readme-ov-file#transientel-support][transient.el support]] section.
+#+end_quote
+
 * A set of commands to control frame position and size by keyboard
 
 #+caption: demo for moving and zooming, frame maximized
@@ -425,7 +431,7 @@ Note: When maximizing a frame, =moom-fill-screen= is called internally.
 :ID:       3D063E56-C322-4214-B600-733D3B9225B1
 :END:
 
-=moom-transient.el= provides a dispatcher to select a moom command listed in a popup menu. To use =moom-transient.el=, please put the following code to your init.el. The keybind =(C-c o)= should be changed for your environment. The module depends on [[https://github.com/magit/transient][transient.el]], so please install it first.
+=moom-transient.el= provides a dispatcher to select a moom command listed in a popup menu. To use =moom-transient.el=, please put the following code (below the figure) to your init.el. The keybind =(C-c o)= should be changed for your environment. The module depends on [[https://github.com/magit/transient][transient.el]], so please install it first.
 
 #+caption: A dispatcher to select a moom command powered by transient.el
 [[https://github.com/takaxp/contents/blob/master/moom/transient.png]]
