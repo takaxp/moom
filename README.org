@@ -29,8 +29,7 @@ If you don't want to change font size when resizing frame size, please configure
 
 #+begin_quote
 [!NOTE]
-moom can display a command list supported by `transient'.
-see [[https://github.com/takaxp/moom?tab=readme-ov-file#transientel-support][transient.el support]] section.
+=moom= can display a command list supported by =transient.el=. See [[https://github.com/takaxp/moom?tab=readme-ov-file#transientel-support][transient.el support]] section.
 #+end_quote
 
 * A set of commands to control frame position and size by keyboard
